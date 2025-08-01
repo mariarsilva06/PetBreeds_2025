@@ -60,16 +60,4 @@ class PreferencesManager @Inject constructor(
         preferences[IS_FIRST_LAUNCH_KEY] ?: true // Default to true for first launch
     }
 
-    suspend fun clearPetType() {
-        context.dataStore.edit { preferences ->
-            preferences.remove(PET_TYPE_KEY)
-            preferences[IS_FIRST_LAUNCH_KEY] = true // Reset to show onboarding
-        }
-    }
-
-    suspend fun markOnboardingCompleted() {
-        context.dataStore.edit { preferences ->
-            preferences[IS_FIRST_LAUNCH_KEY] = false
-        }
-    }
 }

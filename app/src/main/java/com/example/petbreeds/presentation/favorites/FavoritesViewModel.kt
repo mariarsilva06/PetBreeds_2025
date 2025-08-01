@@ -9,15 +9,17 @@ import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val getFavoritePetsUseCase: GetFavoritePetsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val preferencesManager: PreferencesManager
+    preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     val currentPetType = preferencesManager.petTypeFlow.stateIn(
