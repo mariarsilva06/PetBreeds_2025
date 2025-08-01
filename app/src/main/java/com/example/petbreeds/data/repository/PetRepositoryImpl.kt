@@ -4,7 +4,9 @@ import com.example.petbreeds.core.data.NetworkResult
 import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
-import com.example.petbreeds.data.mapper.*
+import com.example.petbreeds.data.mapper.toCatEntities
+import com.example.petbreeds.data.mapper.toDogEntities
+import com.example.petbreeds.data.mapper.toDomain
 import com.example.petbreeds.domain.model.Pet
 import com.example.petbreeds.domain.model.PetType
 import com.example.petbreeds.domain.repository.PetRepository

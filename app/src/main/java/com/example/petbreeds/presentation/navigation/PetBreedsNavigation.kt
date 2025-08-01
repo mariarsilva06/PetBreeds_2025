@@ -13,7 +13,6 @@ import com.example.petbreeds.presentation.breeds.BreedsScreen
 import com.example.petbreeds.presentation.details.DetailsScreen
 import com.example.petbreeds.presentation.favorites.FavoritesScreen
 import com.example.petbreeds.presentation.onboarding.OnboardingScreen
-import com.example.petbreeds.presentation.settings.SettingsScreen
 import com.example.petbreeds.presentation.splash.SplashScreen
 import com.example.petbreeds.utils.PreferencesManager
 
@@ -72,10 +71,6 @@ fun PetBreedsNavigation(
                     navController.navigate(Routes.Details.createRoute(petId))
                 }
             )
-        }
-
-        composable(Routes.Settings.route) {
-            SettingsScreen()
         }
 
         composable(

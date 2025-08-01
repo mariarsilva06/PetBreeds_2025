@@ -1,5 +1,6 @@
 package com.example.petbreeds.presentation.breeds
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.petbreeds.core.data.NetworkResult
@@ -10,6 +11,7 @@ import com.example.petbreeds.domain.usecase.RefreshPetsUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,6 +43,7 @@ class BreedsViewModel @Inject constructor(
         initialValue = null // Changed from PetType.CAT to null
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val petsState = combine(
         currentPetType.filterNotNull(),
         _searchQuery,
@@ -118,6 +121,7 @@ class BreedsViewModel @Inject constructor(
                         }
                     } catch (e: Exception) {
                         // Handle error silently for pagination
+                        Log.e("BreedsViewModel", "Error loading next page", e)
                     } finally {
                         _isLoadingMore.value = false
                     }

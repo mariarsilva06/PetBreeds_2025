@@ -17,7 +17,7 @@ data class PetEntity(
     val description: String,
     val lifeSpan: String,
     val imageUrl: String?,
-    val additionalImages: List<String> = emptyList(), // New field
+    val additionalImages: List<String> = emptyList(),
     val isFavorite: Boolean = false,
     val petType: PetType,
     val lastUpdated: Long = System.currentTimeMillis()

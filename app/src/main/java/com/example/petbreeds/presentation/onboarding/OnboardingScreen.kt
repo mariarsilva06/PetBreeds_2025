@@ -1,5 +1,6 @@
 package com.example.petbreeds.presentation.onboarding
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -48,7 +49,7 @@ fun OnboardingScreen(
                 delay(200) // Small delay to ensure saving is complete
                 onPetTypeSelected()
             } catch (e: Exception) {
-                // Fallback - still navigate even if there's an error
+                Log.e("OnboardingScreen", "Error saving pet type: ${e.message}")
                 onPetTypeSelected()
             }
         }

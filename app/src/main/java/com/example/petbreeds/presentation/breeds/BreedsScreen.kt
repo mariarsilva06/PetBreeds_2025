@@ -17,13 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.petbreeds.domain.model.PetType
 import com.example.petbreeds.presentation.components.*
-import com.example.petbreeds.utils.PreferencesManager
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +68,7 @@ fun BreedsScreen(
                 modifier = Modifier.width(320.dp)
             ) {
                 DrawerContent(
-                    currentPetType = currentPetType ?: com.example.petbreeds.domain.model.PetType.CAT,
+                    currentPetType = currentPetType ?: PetType.CAT,
                     onPetTypeChanged = { petType ->
                         viewModel.setPetType(petType)
                         scope.launch {
