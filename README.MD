@@ -58,20 +58,36 @@ This app follows MVVM (Model-View-ViewModel) architecture with:
 ## Project Structure
 
 ```
-com.example.petbreeds/
-├── data/               # Data layer
-│   ├── api/           # Retrofit services
-│   ├── local/         # Room database
-│   ├── model/         # Data models
-│   └── repository/    # Repository implementations
-├── presentation/       # UI layer
-│   ├── onboarding/    # Pet type selection
-│   ├── breeds/        # Breeds list
-│   ├── favorites/     # Favorites screen
-│   ├── details/       # Breed details
-│   └── theme/         # Compose theme
-├── di/                # Dependency injection
-└── utils/             # Utilities
+   com.example.petbreeds/
+   ├── core/               
+   │   ├── data/           
+   │   └── ui.theme/ 
+   ├── data/               
+   │   ├── api/ 
+   │   │   ├── dto/   
+   │   │   ├── service/   
+   │   │   └── interceptor/         
+   │   ├── local/    
+   │   │   ├── dao/   
+   │   │   ├── database/   
+   │   │   └── entity/         
+   │   ├── mapper/               
+   │   └── repository/
+   ├── domain/               
+   │   ├── model/
+   │   ├── repository/          
+   │   └── usecase/          
+   ├── presentation/      
+   │   ├── onboarding/   
+   │   ├── breeds/    
+   │   ├── components/    
+   │   ├── favorites/   
+   │   ├── details/     
+   │   ├── navigation/     
+   │   ├── settings/     
+   │   └── theme/    
+   ├── di/               
+   └── utils/        
 ```
 
 ## Build & Run
