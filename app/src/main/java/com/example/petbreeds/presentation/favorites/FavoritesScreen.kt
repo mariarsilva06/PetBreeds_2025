@@ -1,5 +1,6 @@
 package com.example.petbreeds.presentation.favorites
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,6 +31,7 @@ import com.example.petbreeds.presentation.components.TopBar
 import com.example.petbreeds.presentation.components.PetCard
 import kotlinx.coroutines.launch
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FavoritesScreen(
@@ -70,7 +72,7 @@ fun FavoritesScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             TopBar(
-                title = "Pet Breeds",
+                title = "Favorite Breeds",
                 subtitle = if (currentPetType == PetType.CAT) "Exploring Cats" else "Dogs",
                 onMenuClick = {
                     scope.launch {
@@ -103,36 +105,42 @@ fun FavoritesScreen(
                             ) {
                                 Column {
                                     Text(
-                                        text = "Favorite Breeds",
+                                        text = "Average Lifespan",
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                     Text(
-                                        text = "${currentFavoritesState.pets.size} ${currentPetType?.name?.lowercase() ?: "pet"} breeds selected",
+                                        text = "Based on ${currentFavoritesState.pets.size} favorite breeds",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(
-                                            alpha = 0.8f
-                                        )
+                                            alpha = 0.9f
+                                        ),
+                                        modifier = Modifier.padding(top = 4.dp)
                                     )
                                 }
 
-                                Card(
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    ),
-                                    modifier = Modifier.size(50.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
+                                Box(modifier = Modifier.padding(horizontal = 8.dp)) {
+                                    Card(
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MaterialTheme.colorScheme.primary
+                                        ),
+                                        modifier = Modifier.size(width = 70.dp, height = 60.dp),
                                     ) {
-                                        Text(
-                                            text = "${currentFavoritesState.pets.size}",
-                                            style = MaterialTheme.typography.headlineSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onPrimary
-                                        )
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = String.format(
+                                                    "%.1f",
+                                                    currentFavoritesState.averageLifespan
+                                                ),
+                                                style = MaterialTheme.typography.headlineSmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
                                     }
                                 }
 

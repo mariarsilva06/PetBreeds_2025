@@ -34,7 +34,8 @@ class FavoritesViewModel @Inject constructor(
             if (list.isEmpty()) FavoritePetsState.Empty
             else FavoritePetsState.Success(
                 pets = list,
-                favoritesCount = list.size.toFloat()
+                favoritesCount = list.size.toFloat(),
+                averageLifespan = calculateAverageLifespan(list)
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FavoritePetsState.Empty)
 
@@ -61,5 +62,26 @@ class FavoritesViewModel @Inject constructor(
 
     fun setPetType(petType: PetType) {
         preferencesManager.setPetType(petType)
+    }
+
+    private fun calculateAverageLifespan(pets: List<Pet>): Float {
+        if (pets.isEmpty()) return 0f
+        
+        val totalLifespan = pets.sumOf { pet ->
+            val lifespan = pet.lifeSpan.replace(" years", "").trim()
+            try {
+                // Handle ranges like "9 - 12" by taking the average
+                if (lifespan.contains("-")) {
+                    val parts = lifespan.split("-").map { it.trim().toInt() }
+                    (parts[0] + parts[1]) / 2
+                } else {
+                    lifespan.toInt()
+                }
+            } catch (e: NumberFormatException) {
+                0
+            }
+        }
+        
+        return totalLifespan.toFloat() / pets.size
     }
 }

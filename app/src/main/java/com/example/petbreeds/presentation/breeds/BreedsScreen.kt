@@ -94,7 +94,7 @@ fun BreedsScreen(
                 ) {
                     TopBar(
                         title = "Pet Breeds",
-                        subtitle = "Exploring ${currentPetType?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "Pets"}",
+                        subtitle = if (currentPetType == PetType.CAT) "Exploring Cats" else "Dogs",
                         onMenuClick = {
                             scope.launch {
                                 drawerState.open()

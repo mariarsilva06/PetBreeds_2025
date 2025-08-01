@@ -53,6 +53,7 @@ fun DetailsScreen(
     val pet by viewModel.pet.collectAsState()
     val additionalImages by viewModel.additionalImages.collectAsState()
     val isLoadingImages by viewModel.isLoadingImages.collectAsState()
+    val averageLifespan by viewModel.averageFavoriteLifeSpan.collectAsState()
 
     Scaffold(
         topBar = {
@@ -338,7 +339,7 @@ fun TemperamentChips(
     ) {
         temperaments.forEach { trait ->
             AssistChip(
-                onClick = { /* Could implement filtering by trait */ },
+                onClick = {  },
                 label = {
                     Text(
                         text = trait,
@@ -347,7 +348,7 @@ fun TemperamentChips(
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondary
+                    labelColor = MaterialTheme.colorScheme.primary
                 )
             )
         }

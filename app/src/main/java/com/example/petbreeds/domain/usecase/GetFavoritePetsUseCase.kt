@@ -17,10 +17,32 @@ class GetFavoritePetsUseCase @Inject constructor(
             } else {
                 FavoritePetsState.Success(
                     pets = pets,
-                    favoritesCount = pets.size.toFloat()
+                    favoritesCount = pets.size.toFloat(),
+                    averageLifespan = calculateAverageLifespan(pets)
                 )
             }
         }
+    }
+
+    private fun calculateAverageLifespan(pets: List<Pet>): Float {
+        if (pets.isEmpty()) return 0f
+        
+        val totalLifespan = pets.sumOf { pet ->
+            val lifespan = pet.lifeSpan.replace(" years", "").trim()
+            try {
+                // Handle ranges like "9 - 12" by taking the average
+                if (lifespan.contains("-")) {
+                    val parts = lifespan.split("-").map { it.trim().toInt() }
+                    (parts[0] + parts[1]) / 2
+                } else {
+                    lifespan.toInt()
+                }
+            } catch (e: NumberFormatException) {
+                0
+            }
+        }
+        
+        return totalLifespan.toFloat() / pets.size
     }
 }
 
@@ -28,6 +50,7 @@ sealed interface FavoritePetsState {
     object Empty : FavoritePetsState
     data class Success(
         val pets: List<Pet>,
-        val favoritesCount: Float
+        val favoritesCount: Float,
+        val averageLifespan: Float
     ) : FavoritePetsState
 }

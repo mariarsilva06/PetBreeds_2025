@@ -27,8 +27,7 @@ fun PetCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(110.dp)
-            .clickable { onCardClick() },
+            .height(110.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -37,7 +36,9 @@ fun PetCard(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onCardClick() } // MOVED: From Column to Row for full card click
         ) {
             AsyncImage(
                 model = pet.imageUrl,
@@ -55,6 +56,7 @@ fun PetCard(
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 12.dp)
+                // REMOVED: .clickable { onCardClick() } from here
             ) {
                 Text(
                     text = pet.name,
@@ -80,7 +82,7 @@ fun PetCard(
             ) {
                 Icon(
                     imageVector = if (pet.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = null,
+                    contentDescription = "Click to favorite",
                     tint = if (pet.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             }

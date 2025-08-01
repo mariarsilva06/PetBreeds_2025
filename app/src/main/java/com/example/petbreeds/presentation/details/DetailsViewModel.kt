@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.util.Log
+import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
+import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +21,7 @@ class DetailsViewModel @Inject constructor(
     private val getPetDetailsUseCase: GetPetDetailsUseCase,
     private val getPetImagesUseCase: GetPetImagesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val getFavoritePetsUseCase: GetFavoritePetsUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,6 +35,9 @@ class DetailsViewModel @Inject constructor(
 
     private val _isLoadingImages = MutableStateFlow(false)
     val isLoadingImages = _isLoadingImages.asStateFlow()
+
+    private val _averageFavoriteLifeSpan = MutableStateFlow<Double?>(null)
+    val averageFavoriteLifeSpan = _averageFavoriteLifeSpan.asStateFlow()
 
     init {
         loadPetDetails()
@@ -72,4 +78,5 @@ class DetailsViewModel @Inject constructor(
             _pet.value = updatedPet
         }
     }
+
 }

@@ -110,7 +110,10 @@ class BreedsViewModel @Inject constructor(
     fun loadNextPage() {
         viewModelScope.launch {
             currentPetType.value?.let { petType ->
-                if (!_isLoadingMore.value) {
+                if (!_isLoadingMore.value &&
+                    _searchQuery.value.isEmpty() &&
+                    _lifeSpanRange.value.start == 0f &&
+                    _lifeSpanRange.value.endInclusive == 30f) {
                     _isLoadingMore.value = true
                     val nextPage = _currentPage.value + 1
 
