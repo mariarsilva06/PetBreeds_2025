@@ -10,11 +10,9 @@ import com.example.petbreeds.domain.usecase.RefreshPetsUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
 class BreedsViewModel @Inject constructor(
     private val getPetsUseCase: GetPetsUseCase,
@@ -32,30 +30,35 @@ class BreedsViewModel @Inject constructor(
     private val _currentPage = MutableStateFlow(0)
     private val _isLoadingMore = MutableStateFlow(false)
 
+    private val _lifeSpanRange = MutableStateFlow(0f..30f)
+    val lifeSpanRange = _lifeSpanRange.asStateFlow()
+
+    val isLoadingMore = _isLoadingMore.asStateFlow()
+
     val currentPetType = preferencesManager.petTypeFlow.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = PetType.CAT
+        initialValue = null // Changed from PetType.CAT to null
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val petsState = combine(
         currentPetType.filterNotNull(),
-        _searchQuery
-    ) { petType, searchQuery ->
-        Pair(petType, searchQuery)
-    }.flatMapLatest { (petType, searchQuery) ->
+        _searchQuery,
+        _lifeSpanRange
+    ) { petType, searchQuery, range ->
+        Triple(petType, searchQuery, range)
+    }.flatMapLatest { (petType, searchQuery, lifeSpanRange) ->
         getPetsUseCase(petType).map { result ->
             when (result) {
                 is NetworkResult.Success -> {
-                    val filteredPets = filterPets(result.data ?: emptyList(), searchQuery)
+                    val filteredPets = filterPets(result.data ?: emptyList(), searchQuery, lifeSpanRange)
                     BreedsUiState.Success(filteredPets)
                 }
                 is NetworkResult.Error -> {
                     BreedsUiState.Error(result.message ?: "Unknown error")
                 }
                 is NetworkResult.Loading -> {
-                    BreedsUiState.Success(emptyList())
+                    BreedsUiState.Loading
                 }
             }
         }
@@ -64,8 +67,6 @@ class BreedsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = BreedsUiState.Loading
     )
-
-    val isLoadingMore = _isLoadingMore.asStateFlow()
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
@@ -82,19 +83,23 @@ class BreedsViewModel @Inject constructor(
             currentPetType.value?.let { petType ->
                 _isRefreshing.value = true
                 _currentPage.value = 0
-                refreshPetsUseCase(petType, 0)
+                refreshPetsUseCase(petType, 0, _searchQuery.value.takeIf { it.isNotBlank() })
                 _isRefreshing.value = false
             }
         }
     }
 
-    // Initial load when pet type changes
+    // Initial load when pet type changes - only if pet type is set
     init {
         viewModelScope.launch {
-            currentPetType.filterNotNull().collect { petType ->
-                _currentPage.value = 0
-                // Load initial data if no cached data exists
-                refreshPetsUseCase(petType, 0)
+            try {
+                currentPetType.filterNotNull().collect { petType ->
+                    _currentPage.value = 0
+                    refreshPetsUseCase(petType, 0)
+                }
+            } catch (e: Exception) {
+                // Handle initialization errors
+                e.printStackTrace()
             }
         }
     }
@@ -105,8 +110,9 @@ class BreedsViewModel @Inject constructor(
                 if (!_isLoadingMore.value) {
                     _isLoadingMore.value = true
                     val nextPage = _currentPage.value + 1
+
                     try {
-                        val result = refreshPetsUseCase(petType, nextPage)
+                        val result = refreshPetsUseCase(petType, nextPage, null)
                         if (result is NetworkResult.Success) {
                             _currentPage.value = nextPage
                         }
@@ -120,13 +126,37 @@ class BreedsViewModel @Inject constructor(
         }
     }
 
-    private fun filterPets(pets: List<Pet>, query: String): List<Pet> {
-        return if (query.isEmpty()) {
-            pets
+    private fun filterPets(
+        pets: List<Pet>,
+        query: String,
+        lifeSpanRange: ClosedFloatingPointRange<Float>
+    ): List<Pet> {
+        return pets.filter { pet ->
+            val matchesQuery = query.isEmpty() || pet.name.contains(query, ignoreCase = true)
+
+            val lifeSpanValue = extractLifeSpan(pet.lifeSpan)
+            val matchesLifeSpan = lifeSpanValue?.let { it in lifeSpanRange } ?: true
+
+            matchesQuery && matchesLifeSpan
+        }
+    }
+
+    fun onLifeSpanRangeChanged(range: ClosedFloatingPointRange<Float>) {
+        _lifeSpanRange.value = range
+    }
+
+    fun setPetType(petType: PetType) {
+        preferencesManager.setPetType(petType)
+    }
+
+    private fun extractLifeSpan(lifeSpan: String): Float? {
+        // Extract numbers from strings like "10 - 12 years" or "10 years"
+        val regex = Regex("(\\d+)")
+        val numbers = regex.findAll(lifeSpan).mapNotNull { it.value.toFloatOrNull() }.toList()
+        return if (numbers.isNotEmpty()) {
+            numbers.average().toFloat()
         } else {
-            pets.filter { pet ->
-                pet.name.contains(query, ignoreCase = true)
-            }
+            null
         }
     }
 }

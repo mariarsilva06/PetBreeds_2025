@@ -3,6 +3,7 @@ package com.example.petbreeds.utils
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,10 +22,26 @@ class PreferencesManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val PET_TYPE_KEY = stringPreferencesKey("pet_type")
+    private val IS_FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")
 
     suspend fun savePetType(petType: PetType) {
-        context.dataStore.edit { preferences ->
-            preferences[PET_TYPE_KEY] = petType.name
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[PET_TYPE_KEY] = petType.name
+                // Mark that the user has completed onboarding
+                preferences[IS_FIRST_LAUNCH_KEY] = false
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Retry once if failed
+            try {
+                context.dataStore.edit { preferences ->
+                    preferences[PET_TYPE_KEY] = petType.name
+                    preferences[IS_FIRST_LAUNCH_KEY] = false
+                }
+            } catch (retryException: Exception) {
+                retryException.printStackTrace()
+            }
         }
     }
 
@@ -39,9 +56,20 @@ class PreferencesManager @Inject constructor(
         preferences[PET_TYPE_KEY]?.let { PetType.valueOf(it) }
     }
 
+    val isFirstLaunchFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[IS_FIRST_LAUNCH_KEY] ?: true // Default to true for first launch
+    }
+
     suspend fun clearPetType() {
         context.dataStore.edit { preferences ->
             preferences.remove(PET_TYPE_KEY)
+            preferences[IS_FIRST_LAUNCH_KEY] = true // Reset to show onboarding
+        }
+    }
+
+    suspend fun markOnboardingCompleted() {
+        context.dataStore.edit { preferences ->
+            preferences[IS_FIRST_LAUNCH_KEY] = false
         }
     }
 }

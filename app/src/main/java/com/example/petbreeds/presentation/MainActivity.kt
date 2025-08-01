@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -32,13 +31,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val currentPetType by preferencesManager.petTypeFlow.collectAsState(initial = PetType.CAT)
+            val currentPetType by preferencesManager.petTypeFlow.collectAsState(initial = null)
+            val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = true)
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
 
+            // Handle navigation after splash based on first launch
+            LaunchedEffect(isFirstLaunch, currentPetType) {
+                try {
+                    val currentRoute = navController.currentDestination?.route
+                    if (currentRoute == Routes.Breeds.route) {
+                        // If it's first launch OR no pet type is set, show onboarding
+                        if (isFirstLaunch || currentPetType == null) {
+                            navController.navigate(Routes.Onboarding.route) {
+                                popUpTo(Routes.Breeds.route) { inclusive = true }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Handle navigation errors gracefully
+                    e.printStackTrace()
+                }
+            }
+
+            // Use a default theme during loading, but don't load data
             PetBreedsTheme(petType = currentPetType ?: PetType.CAT) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                // Check if we should show bottom bar
                 val showBottomBar = currentDestination?.hierarchy?.any { destination ->
                     destination.route == Routes.Breeds.route ||
                             destination.route == Routes.Favorites.route ||
@@ -52,7 +69,6 @@ class MainActivity : ComponentActivity() {
                                 val items = listOf(
                                     BottomNavItem.Breeds,
                                     BottomNavItem.Favorites,
-                                    BottomNavItem.Settings
                                 )
 
                                 items.forEach { item ->

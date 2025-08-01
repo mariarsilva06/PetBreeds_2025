@@ -2,13 +2,14 @@ package com.example.petbreeds.presentation.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,11 +22,15 @@ import coil.compose.AsyncImage
 @Composable
 fun ImageCarousel(
     images: List<String>,
-    modifier: Modifier = Modifier
+    petName: String = "Pet",
+    modifier: Modifier = Modifier,
+    onImageClick: ((Int) -> Unit)? = null
 ) {
     if (images.isEmpty()) return
 
     val pagerState = rememberPagerState(pageCount = { images.size })
+    var showFullScreenViewer by remember { mutableStateOf(false) }
+    var selectedImageIndex by remember { mutableIntStateOf(0) }
 
     Column(modifier = modifier) {
         Card(
@@ -41,8 +46,15 @@ fun ImageCarousel(
                 ) { page ->
                     AsyncImage(
                         model = images[page],
-                        contentDescription = "Pet image ${page + 1}",
-                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = "$petName image ${page + 1}",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                selectedImageIndex = page
+                                onImageClick?.invoke(page) ?: run {
+                                    showFullScreenViewer = true
+                                }
+                            },
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -70,7 +82,55 @@ fun ImageCarousel(
                         }
                     }
                 }
+
+                // Click hint overlay for first time users
+                if (pagerState.currentPage == 0 && images.size > 0) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Black.copy(alpha = 0.6f)
+                        )
+                    ) {
+                        Text(
+                            text = "Tap to expand",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+
+                // Image counter in top-left
+                if (images.size > 1) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.Black.copy(alpha = 0.6f)
+                        )
+                    ) {
+                        Text(
+                            text = "${pagerState.currentPage + 1}/${images.size}",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
             }
         }
+    }
+
+    // Full Screen Image Viewer
+    if (showFullScreenViewer) {
+        FullScreenImageViewer(
+            images = images,
+            initialIndex = selectedImageIndex,
+            petName = petName,
+            onDismiss = { showFullScreenViewer = false }
+        )
     }
 }

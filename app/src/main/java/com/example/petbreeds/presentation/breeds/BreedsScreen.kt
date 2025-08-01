@@ -2,9 +2,12 @@ package com.example.petbreeds.presentation.breeds
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshotFlow
@@ -12,12 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.petbreeds.domain.model.PetType
 import com.example.petbreeds.presentation.components.*
+import com.example.petbreeds.utils.PreferencesManager
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedsScreen(
     onNavigateToDetails: (String) -> Unit,
@@ -28,11 +36,15 @@ fun BreedsScreen(
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val currentPetType by viewModel.currentPetType.collectAsState()
-
     val listState = rememberLazyListState()
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+    var showFilters by remember { mutableStateOf(false) }
+    val lifeSpanRange by viewModel.lifeSpanRange.collectAsState()
 
-    // Load more when reaching the end
+    // Drawer state
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .distinctUntilChanged()
@@ -40,53 +52,128 @@ fun BreedsScreen(
                 val currentState = uiState
                 currentState is BreedsUiState.Success &&
                         lastVisibleItemIndex != null &&
-                        lastVisibleItemIndex >= currentState.pets.size - 5 &&
-                        !isLoadingMore
+                        lastVisibleItemIndex >= currentState.pets.size - 3 &&
+                        !isLoadingMore &&
+                        !isRefreshing &&
+                        searchQuery.isEmpty() &&
+                        lifeSpanRange.start == 0f && lifeSpanRange.endInclusive == 30f
             }
             .collect {
                 viewModel.loadNextPage()
             }
     }
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        onRefresh = viewModel::onRefresh
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.width(320.dp)
+            ) {
+                DrawerContent(
+                    currentPetType = currentPetType ?: com.example.petbreeds.domain.model.PetType.CAT,
+                    onPetTypeChanged = { petType ->
+                        viewModel.setPetType(petType)
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onCloseDrawer = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
+                )
+            }
+        }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = viewModel::onRefresh
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = viewModel::onSearchQueryChanged,
-                placeholder = "Search ${currentPetType?.name?.lowercase()} breeds..."
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val currentUiState = uiState
-            when (currentUiState) {
-                is BreedsUiState.Loading -> {
-                    LoadingIndicator()
-                }
-                is BreedsUiState.Success -> {
-                    if (currentUiState.pets.isEmpty()) {
-                        EmptyState(
-                            message = if (searchQuery.isEmpty()) {
-                                "No breeds available"
-                            } else {
-                                "No breeds found for \"$searchQuery\""
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TopAppBar(
+                        title = {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text("Pet Breeds", style = MaterialTheme.typography.titleLarge)
+                                Text(
+                                    text = if (currentPetType == PetType.CAT) "Exploring Cats" else "Exploring Dogs",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "Open Menu"
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { /* FUTURE IMPROV: MyAccount */ }) {
+                                Icon(
+                                    imageVector = Icons.Default.AccountCircle,
+                                    contentDescription = "Account"
+                                )
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SearchBar(
+                            query = searchQuery,
+                            onQueryChange = viewModel::onSearchQueryChanged,
+                            placeholder = "Search ${currentPetType?.name?.lowercase() ?: "pet"} breeds...",
+                            modifier = Modifier.weight(1f).padding(end = 8.dp)
                         )
-                    } else {
-                        Box {
+                        IconButton(onClick = { showFilters = true }, modifier = Modifier.padding(start = 8.dp)) {
+                            Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val currentUiState = uiState
+                when (currentUiState) {
+                    is BreedsUiState.Loading -> LoadingIndicator()
+
+                    is BreedsUiState.Success -> {
+                        if (currentUiState.pets.isEmpty() && !isRefreshing) {
+                            EmptyState(
+                                message = if (searchQuery.isEmpty()) {
+                                    "No breeds available"
+                                } else {
+                                    "No breeds found for \"$searchQuery\""
+                                }
+                            )
+                        } else {
                             LazyColumn(
                                 state = listState,
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                                contentPadding = PaddingValues(bottom = 16.dp)
+                                contentPadding = PaddingValues(end = 16.dp, start = 16.dp, bottom = 16.dp)
                             ) {
                                 items(
                                     items = currentUiState.pets,
@@ -98,45 +185,39 @@ fun BreedsScreen(
                                         onFavoriteClick = { viewModel.onToggleFavorite(pet.id) }
                                     )
                                 }
-                            }
 
-                            if (isLoadingMore) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
+                                if (isLoadingMore) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                is BreedsUiState.Error -> {
-                    ErrorMessage(
-                        message = currentUiState.message,
-                        onRetry = viewModel::onRefresh
-                    )
+
+                    is BreedsUiState.Error -> {
+                        ErrorMessage(
+                            message = currentUiState.message,
+                            onRetry = viewModel::onRefresh
+                        )
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-fun EmptyState(
-    message: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+    if (showFilters) {
+        FilterBottomSheet(
+            currentRange = lifeSpanRange,
+            onRangeChange = viewModel::onLifeSpanRangeChanged,
+            onDismiss = { showFilters = false }
         )
     }
 }
