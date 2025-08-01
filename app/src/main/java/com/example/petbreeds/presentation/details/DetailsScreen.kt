@@ -1,42 +1,58 @@
 package com.example.petbreeds.presentation.details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.*
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.example.petbreeds.presentation.components.ImageCarousel
 import com.example.petbreeds.presentation.components.LoadingIndicator
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DetailsScreen(
     onNavigateBack: () -> Unit,
     viewModel: DetailsViewModel = hiltViewModel(),
 ) {
     val pet by viewModel.pet.collectAsState()
-    val showFullImage = remember { mutableStateOf(false) }
     val additionalImages by viewModel.additionalImages.collectAsState()
-
+    val isLoadingImages by viewModel.isLoadingImages.collectAsState()
 
     Scaffold(
         topBar = {
@@ -45,7 +61,7 @@ fun DetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Navigate back"
                         )
                     }
@@ -83,18 +99,27 @@ fun DetailsScreen(
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
+                // Image Section
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     val allImages = buildList {
-                        currentPet.imageUrl?.let { add(it) }
-                        addAll(additionalImages)
+                        // Add main image first (if exists)
+                        currentPet.imageUrl?.let { mainImage ->
+                            add(mainImage)
+                        }
+                        // Add additional images, but filter out duplicates
+                        additionalImages.forEach { additionalImage ->
+                            if (additionalImage != currentPet.imageUrl) {
+                                add(additionalImage)
+                            }
+                        }
                     }
 
                     if (allImages.isNotEmpty()) {
                         ImageCarousel(
                             images = allImages,
+                            petName = currentPet.name,
                             modifier = Modifier.fillMaxWidth()
                         )
                     } else {
@@ -102,83 +127,167 @@ fun DetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(300.dp)
-                                .background(Color.White)
-                        )
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isLoadingImages) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    CircularProgressIndicator()
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = "Loading more images...",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "No images available",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     }
                 }
 
-
+                // Content Section
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    // Breed Name
                     Text(
                         text = currentPet.name,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    InfoRow(label = "Origin", value = currentPet.origin)
-
-                    if (currentPet.lifeSpan.isNotEmpty()) {
-                        InfoRow(label = "Life Span", value = currentPet.lifeSpan)
+                    // Basic Info with clean layout
+                    if (currentPet.origin.isNotEmpty() &&
+                        currentPet.origin.lowercase() != "unknown" &&
+                        currentPet.origin != "Unknown") {
+                        InfoRow(label = "Origin", value = currentPet.origin)
                     }
 
+                    if (currentPet.lifeSpan.isNotEmpty()) {
+                        InfoRow(label = "Life Span", value = "${currentPet.lifeSpan} years")
+                    }
+
+                    // Temperament Section
                     if (currentPet.temperament.isNotEmpty()) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                        )
+
                         Text(
                             text = "Temperament",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         TemperamentChips(temperament = currentPet.temperament)
                     }
 
+                    // Description Section
                     if (currentPet.description.isNotEmpty()) {
-                        HorizontalDivider()
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                        )
+
                         Text(
-                            text = "Description",
+                            text = "About this Breed",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = currentPet.description,
                             style = MaterialTheme.typography.bodyLarge,
-                            lineHeight = 22.sp
+                            lineHeight = 24.sp,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                }
 
-            }
-            if (showFullImage.value) {
-                Dialog(onDismissRequest = { showFullImage.value = false }) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
+                    // Favorite Action Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (currentPet.isFavorite) {
+                                MaterialTheme.colorScheme.errorContainer
+                            } else {
+                                MaterialTheme.colorScheme.primaryContainer
+                            }
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        AsyncImage(
-                            model = currentPet.imageUrl,
-                            contentDescription = currentPet.name,
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.Center),
-                            contentScale = ContentScale.Fit
-                        )
-                        IconButton(
-                            onClick = { showFullImage.value = false },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(16.dp)
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Close preview",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
+                            Column {
+                                Text(
+                                    text = if (currentPet.isFavorite) "Added to Favorites" else "Add to Favorites",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = if (currentPet.isFavorite) {
+                                        MaterialTheme.colorScheme.onErrorContainer
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                    }
+                                )
+                                Text(
+                                    text = if (currentPet.isFavorite) {
+                                        "This breed is in your favorites"
+                                    } else {
+                                        "Save this breed to your favorites"
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (currentPet.isFavorite) {
+                                        MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                                    } else {
+                                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                    }
+                                )
+                            }
+
+                            IconButton(
+                                onClick = viewModel::onToggleFavorite
+                            ) {
+                                Icon(
+                                    imageVector = if (currentPet.isFavorite) {
+                                        Icons.Filled.Favorite
+                                    } else {
+                                        Icons.Outlined.FavoriteBorder
+                                    },
+                                    contentDescription = if (currentPet.isFavorite) {
+                                        "Remove from favorites"
+                                    } else {
+                                        "Add to favorites"
+                                    },
+                                    tint = if (currentPet.isFavorite) {
+                                        MaterialTheme.colorScheme.error
+                                    } else {
+                                        MaterialTheme.colorScheme.primary
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
                         }
                     }
+
+                    // Bottom spacing
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         } ?: LoadingIndicator()
@@ -194,18 +303,22 @@ fun InfoRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -216,7 +329,7 @@ fun TemperamentChips(
     temperament: String,
     modifier: Modifier = Modifier
 ) {
-    val temperaments = temperament.split(",").map { it.trim() }
+    val temperaments = temperament.split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
     FlowRow(
         modifier = modifier,
@@ -225,8 +338,17 @@ fun TemperamentChips(
     ) {
         temperaments.forEach { trait ->
             AssistChip(
-                onClick = { },
-                label = { Text(trait) }
+                onClick = { /* Could implement filtering by trait */ },
+                label = {
+                    Text(
+                        text = trait,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             )
         }
     }

@@ -8,5 +8,6 @@ sealed class Routes(val route: String) {
     object Details : Routes("details/{petId}") {
         fun createRoute(petId: String) = "details/$petId"
     }
-}
+    object Splash : Routes("splash")
 
+}
