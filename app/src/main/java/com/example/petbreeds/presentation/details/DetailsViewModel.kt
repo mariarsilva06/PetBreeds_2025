@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.util.Log
 import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
-import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +20,6 @@ class DetailsViewModel @Inject constructor(
     private val getPetDetailsUseCase: GetPetDetailsUseCase,
     private val getPetImagesUseCase: GetPetImagesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val getFavoritePetsUseCase: GetFavoritePetsUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

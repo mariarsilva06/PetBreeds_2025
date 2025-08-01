@@ -53,7 +53,6 @@ fun DetailsScreen(
     val pet by viewModel.pet.collectAsState()
     val additionalImages by viewModel.additionalImages.collectAsState()
     val isLoadingImages by viewModel.isLoadingImages.collectAsState()
-    val averageLifespan by viewModel.averageFavoriteLifeSpan.collectAsState()
 
     Scaffold(
         topBar = {
