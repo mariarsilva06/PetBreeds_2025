@@ -83,7 +83,8 @@ fun SplashScreen(
             Icon(
                 painter = painterResource(id = R.drawable.catdog2),
                 contentDescription = "Pet Breeds Logo",
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(120.dp),
+                tint = Color.White
             )
 
             Spacer(modifier = Modifier.height(24.dp))

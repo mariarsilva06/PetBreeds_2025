@@ -8,8 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +25,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.petbreeds.R
 import com.example.petbreeds.domain.model.PetType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
 fun OnboardingScreen(
@@ -43,17 +43,20 @@ fun OnboardingScreen(
         animationStarted = true
     }
 
-    // Handle pet type selection with slower transition
     LaunchedEffect(selectedPetType) {
         selectedPetType?.let { petType ->
             try {
-                delay(1200) // Longer delay for better animation experience
-                viewModel.selectPetType(petType)
-                delay(200) // Small delay to ensure saving is complete
-                onPetTypeSelected()
+                delay(1200)
+
+                withContext(Dispatchers.Main) {
+                    viewModel.selectPetType(petType)
+                    delay(200)
+                    onPetTypeSelected()
+                }
             } catch (e: Exception) {
-                Log.e("OnboardingScreen", "Error saving pet type: ${e.message}")
-                onPetTypeSelected()
+                withContext(Dispatchers.Main) {
+                    onPetTypeSelected()
+                }
             }
         }
     }
@@ -86,32 +89,17 @@ fun OnboardingScreen(
                 visible = animationStarted,
                 enter = fadeIn(animationSpec = tween(800)) + scaleIn(animationSpec = tween(800))
             ) {
-                Card(
+                Icon(
+                    painter = painterResource(id = R.drawable.catdog2),
+                    contentDescription = "Pet Breeds App Logo",
                     modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    elevation = CardDefaults.cardElevation(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Pets,
-                            contentDescription = "PetBreeds Logo",
-                            modifier = Modifier.size(40.dp),
-                            tint = Color.White
-                        )
-                    }
-                }
+                        .size(85.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Welcome text with staggered animation
             AnimatedVisibility(
                 visible = animationStarted,
                 enter = fadeIn(animationSpec = tween(800, delayMillis = 200)) +
@@ -187,7 +175,7 @@ fun OnboardingScreen(
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
-                            painter = painterResource(id = R.drawable.cat2),
+                            painter = painterResource(id = R.drawable.cat7),
                             label = "Cat Person",
                             petType = PetType.CAT,
                             isSelected = selectedPetType == PetType.CAT,
@@ -199,7 +187,7 @@ fun OnboardingScreen(
 
                     Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
-                            painter = painterResource(id = R.drawable.dog3),
+                            painter = painterResource(id = R.drawable.dog7),
                             label = "Dog Person",
                             petType = PetType.DOG,
                             isSelected = selectedPetType == PetType.DOG,
@@ -283,7 +271,8 @@ fun TypeCard(
             Icon(
                 painter = painter,
                 contentDescription = label,
-                modifier = Modifier.size(48.dp).scale(emojiScale)
+                modifier = Modifier.size(48.dp).scale(emojiScale),
+                tint = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(8.dp))

@@ -1,6 +1,7 @@
 package com.example.petbreeds.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ import com.example.petbreeds.presentation.favorites.FavoritesScreen
 import com.example.petbreeds.presentation.onboarding.OnboardingScreen
 import com.example.petbreeds.presentation.splash.SplashScreen
 import com.example.petbreeds.utils.PreferencesManager
+import kotlinx.coroutines.delay
 
 @Composable
 fun PetBreedsNavigation(
@@ -31,19 +33,22 @@ fun PetBreedsNavigation(
         modifier = modifier
     ) {
         composable(Routes.Splash.route) {
-            SplashScreen(
-                onSplashFinished = {
-                    // Navigate based on first launch and pet type status
-                    if (isFirstLaunch || petType == null) {
-                        navController.navigate(Routes.Onboarding.route) {
-                            popUpTo(Routes.Splash.route) { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate(Routes.Breeds.route) {
-                            popUpTo(Routes.Splash.route) { inclusive = true }
-                        }
+
+            LaunchedEffect(isFirstLaunch, petType) {
+                delay(2000)
+                if (isFirstLaunch || petType == null) {
+                    navController.navigate(Routes.Onboarding.route) {
+                        popUpTo(Routes.Splash.route) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(Routes.Breeds.route) {
+                        popUpTo(Routes.Splash.route) { inclusive = true }
                     }
                 }
+            }
+
+            SplashScreen(
+                onSplashFinished = { }
             )
         }
 
