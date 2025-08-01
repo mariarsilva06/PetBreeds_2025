@@ -10,7 +10,6 @@ import com.example.petbreeds.domain.model.PetType
 import com.example.petbreeds.domain.repository.PetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,32 +33,59 @@ class PetRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshPets(petType: PetType, page: Int): NetworkResult<Unit> {
+    override suspend fun refreshPets(petType: PetType, page: Int, query: String?): NetworkResult<Unit> {
         return try {
+            // Fetch data from API
             val pets = when (petType) {
                 PetType.CAT -> {
-                    val response = catApiService.getBreeds(limit = 20, page = page)
+                    val response = if (!query.isNullOrBlank()) {
+                        catApiService.searchBreeds(query)
+                    } else {
+                        catApiService.getBreeds(limit = 20, page = page)
+                    }
                     response.toCatEntities()
                 }
                 PetType.DOG -> {
-                    val response = dogApiService.getBreeds(limit = 20, page = page)
+                    val response = if (!query.isNullOrBlank()) {
+                        dogApiService.searchBreeds(query)
+                    } else {
+                        dogApiService.getBreeds(limit = 20, page = page)
+                    }
                     response.toDogEntities()
                 }
             }
 
-            // Always preserve favorites, even for the first page
-            val existingPets = petDao.getPetsByType(petType).first()
-            val petsWithFavorites = pets.map { newPet ->
-                val existingPet = existingPets.firstOrNull { existing -> existing.id == newPet.id }
-                newPet.copy(isFavorite = existingPet?.isFavorite ?: false)
-            }
+            // Handle different scenarios
+            when {
+                // Search query - replace all data
+                !query.isNullOrBlank() -> {
+                    val favoriteIds = petDao.getFavoritePetsByType(petType).first().map { it.id }.toSet()
+                    val petsWithFavorites = pets.map { newPet ->
+                        newPet.copy(isFavorite = favoriteIds.contains(newPet.id))
+                    }
+                    petDao.refreshPetsForFirstPage(petsWithFavorites, petType)
+                }
 
-            if (page == 0) {
-                // First page - refresh all but preserve favorites
-                petDao.refreshPets(petsWithFavorites, petType)
-            } else {
-                // Subsequent pages - append
-                petDao.insertPets(petsWithFavorites)
+                // First page - replace all data
+                page == 0 -> {
+                    val favoriteIds = petDao.getFavoritePetsByType(petType).first().map { it.id }.toSet()
+                    val petsWithFavorites = pets.map { newPet ->
+                        newPet.copy(isFavorite = favoriteIds.contains(newPet.id))
+                    }
+                    petDao.refreshPetsForFirstPage(petsWithFavorites, petType)
+                }
+
+                // Subsequent pages - append only new data
+                else -> {
+                    val existingPets = petDao.getPetsByType(petType).first()
+                    val favoriteIds = existingPets.filter { it.isFavorite }.map { it.id }.toSet()
+
+                    val petsWithFavorites = pets.map { newPet ->
+                        newPet.copy(isFavorite = favoriteIds.contains(newPet.id))
+                    }
+
+                    petDao.appendPets(petsWithFavorites, petType)
+                }
             }
 
             NetworkResult.Success(Unit)

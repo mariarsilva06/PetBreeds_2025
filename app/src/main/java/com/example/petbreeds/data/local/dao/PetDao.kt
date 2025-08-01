@@ -19,15 +19,34 @@ interface PetDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPets(pets: List<PetEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPet(pet: PetEntity)
+
     @Query("UPDATE pets SET isFavorite = :isFavorite WHERE id = :petId")
     suspend fun updateFavoriteStatus(petId: String, isFavorite: Boolean)
 
     @Query("DELETE FROM pets WHERE petType = :petType")
     suspend fun deleteAllPetsByType(petType: PetType)
 
+    @Query("SELECT COUNT(*) FROM pets WHERE petType = :petType")
+    suspend fun getPetCountByType(petType: PetType): Int
+
+    @Query("SELECT id FROM pets WHERE petType = :petType")
+    suspend fun getPetIdsByType(petType: PetType): List<String>
+
     @Transaction
-    suspend fun refreshPets(pets: List<PetEntity>, petType: PetType) {
+    suspend fun refreshPetsForFirstPage(pets: List<PetEntity>, petType: PetType) {
         deleteAllPetsByType(petType)
         insertPets(pets)
+    }
+
+    @Transaction
+    suspend fun appendPets(pets: List<PetEntity>, petType: PetType) {
+        // Get existing IDs to avoid duplicates
+        val existingIds = getPetIdsByType(petType).toSet()
+        val newPets = pets.filter { !existingIds.contains(it.id) }
+        if (newPets.isNotEmpty()) {
+            insertPets(newPets)
+        }
     }
 }
