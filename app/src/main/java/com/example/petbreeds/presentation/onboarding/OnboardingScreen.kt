@@ -18,11 +18,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.petbreeds.R
 import com.example.petbreeds.domain.model.PetType
 import kotlinx.coroutines.delay
 
@@ -179,12 +182,12 @@ fun OnboardingScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), // Add some horizontal padding to the Row
-                    horizontalArrangement = Arrangement.SpaceAround // Use SpaceAround for equal spacing
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Box(modifier = Modifier.weight(1f)) { // Use weight to make cards take equal space
+                    Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
-                            emoji = "🐱",
+                            painter = painterResource(id = R.drawable.cat2),
                             label = "Cat Person",
                             petType = PetType.CAT,
                             isSelected = selectedPetType == PetType.CAT,
@@ -194,9 +197,9 @@ fun OnboardingScreen(
                     // Add some space between the cards
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Box(modifier = Modifier.weight(1f)) { // Use weight to make cards take equal space
+                    Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
-                            emoji = "🐕",
+                            painter = painterResource(id = R.drawable.dog3),
                             label = "Dog Person",
                             petType = PetType.DOG,
                             isSelected = selectedPetType == PetType.DOG,
@@ -215,7 +218,7 @@ fun OnboardingScreen(
 
 @Composable
 fun TypeCard(
-    emoji: String,
+    painter: Painter,
     label: String,
     petType: PetType,
     isSelected: Boolean,
@@ -241,8 +244,8 @@ fun TypeCard(
 
     Card(
         modifier = Modifier
-            .widthIn(min = 140.dp, max = 160.dp) // Allow flexible width
-            .aspectRatio(1f) // Maintain square aspect ratio
+            .widthIn(min = 140.dp, max = 160.dp)
+            .aspectRatio(1f)
             .scale(scale)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
@@ -268,7 +271,6 @@ fun TypeCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Emoji with animation
             val emojiScale by animateFloatAsState(
                 targetValue = if (isSelected) 1.2f else 1f,
                 animationSpec = spring(
@@ -278,10 +280,10 @@ fun TypeCard(
                 label = "emoji_scale"
             )
 
-            Text(
-                text = emoji,
-                fontSize = 48.sp,
-                modifier = Modifier.scale(emojiScale)
+            Icon(
+                painter = painter,
+                contentDescription = label,
+                modifier = Modifier.size(48.dp).scale(emojiScale)
             )
 
             Spacer(modifier = Modifier.height(8.dp))

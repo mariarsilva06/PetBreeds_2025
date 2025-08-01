@@ -11,9 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.petbreeds.R
 import com.example.petbreeds.domain.model.PetType
 
 @Composable
@@ -93,10 +96,9 @@ private fun DrawerHeader() {
         modifier = Modifier.fillMaxWidth()
     ) {
         Icon(
-            imageVector = Icons.Default.Pets,
+            painter = painterResource(id = R.drawable.catdog2),
             contentDescription = null,
-            modifier = Modifier.size(32.dp),
-            tint = MaterialTheme.colorScheme.primary
+            modifier = Modifier.size(40.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -115,7 +117,7 @@ private fun DrawerHeader() {
 }
 
 @Composable
-private fun     PetTypeSwitcher(
+private fun PetTypeSwitcher(
     currentPetType: PetType,
     onPetTypeChanged: (PetType) -> Unit
 ) {
@@ -132,7 +134,7 @@ private fun     PetTypeSwitcher(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Pet Preference",
+                text = "Explore by",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -147,18 +149,18 @@ private fun     PetTypeSwitcher(
                     petType = PetType.CAT,
                     currentPetType = currentPetType,
                     onPetTypeChanged = onPetTypeChanged,
-                    icon = "🐱",
+                    painter = painterResource(id = R.drawable.cat7),
                     label = "Cats",
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(6f)
                 )
 
                 PetTypeButton(
                     petType = PetType.DOG,
                     currentPetType = currentPetType,
                     onPetTypeChanged = onPetTypeChanged,
-                    icon = "🐕",
+                    painter = painterResource(id = R.drawable.dog7),
                     label = "Dogs",
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(6f)
                 )
             }
         }
@@ -170,7 +172,7 @@ private fun PetTypeButton(
     petType: PetType,
     currentPetType: PetType,
     onPetTypeChanged: (PetType) -> Unit,
-    icon: String,
+    painter: Painter,
     label: String,
     modifier: Modifier = Modifier
 ) {
@@ -199,9 +201,10 @@ private fun PetTypeButton(
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = icon,
-                style = MaterialTheme.typography.headlineSmall
+            Icon(
+                painter = painter,
+                contentDescription = label,
+                modifier = Modifier.size(25.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -269,13 +272,7 @@ private fun DrawerMenuItem(
 
 @Composable
 private fun VersionInfo() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -294,5 +291,5 @@ private fun VersionInfo() {
             )
             
         }
-    }
+
 }

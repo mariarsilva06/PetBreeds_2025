@@ -62,7 +62,7 @@ fun ComingSoonDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "We're working hard to bring you this amazing feature. Stay tuned for updates!",
+                    text = "Working to bring you this feature. Stay tuned for updates!",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
