@@ -5,9 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshotFlow
@@ -94,39 +92,12 @@ fun BreedsScreen(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    TopAppBar(
-                        title = {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text("Pet Breeds", style = MaterialTheme.typography.titleLarge)
-                                Text(
-                                    text = if (currentPetType == PetType.CAT) "Exploring Cats" else "Exploring Dogs",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "Open Menu"
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { /* FUTURE IMPROV: MyAccount */ }) {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = "Account"
-                                )
+                    TopBar(
+                        title = "Pet Breeds",
+                        subtitle = "Exploring ${currentPetType?.name?.lowercase()?.replaceFirstChar { it.uppercase() } ?: "Pets"}",
+                        onMenuClick = {
+                            scope.launch {
+                                drawerState.open()
                             }
                         }
                     )

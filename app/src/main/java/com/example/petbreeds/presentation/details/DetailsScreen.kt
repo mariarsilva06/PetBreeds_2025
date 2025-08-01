@@ -347,7 +347,7 @@ fun TemperamentChips(
                 },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    labelColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
         }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.petbreeds.domain.model.PetType
 import com.example.petbreeds.domain.usecase.FavoritePetsState
+import com.example.petbreeds.presentation.components.DrawerContent
+import com.example.petbreeds.presentation.components.TopBar
 import com.example.petbreeds.presentation.components.PetCard
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -34,89 +39,132 @@ fun FavoritesScreen(
     val favoritesState by viewModel.favoritesState.collectAsState()
     val currentPetType by viewModel.currentPetType.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-        when (val currentFavoritesState = favoritesState) {
-            is FavoritePetsState.Empty -> {
-                EmptyFavoritesState(
-                    petType = currentPetType?.name?.lowercase() ?: "pet"
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.width(320.dp)
+            ) {
+                DrawerContent(
+                    currentPetType = currentPetType ?: PetType.CAT,
+                    onPetTypeChanged = { petType ->
+                        viewModel.setPetType(petType)
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onCloseDrawer = {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
                 )
             }
+        }
+    ) {
 
-            is FavoritePetsState.Success -> {
-                Column {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            TopBar(
+                title = "Pet Breeds",
+                subtitle = if (currentPetType == PetType.CAT) "Exploring Cats" else "Dogs",
+                onMenuClick = {
+                    scope.launch {
+                        drawerState.open()
+                    }
+                }
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(20.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Favorite Breeds",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                                Text(
-                                    text = "${currentFavoritesState.pets.size} ${currentPetType?.name?.lowercase() ?: "pet"} breeds selected",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                                )
-                            }
-
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                ),
-                                modifier = Modifier.size(60.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "${currentFavoritesState.pets.size}",
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                }
-                            }
-
+                when (val currentFavoritesState = favoritesState) {
+                    is FavoritePetsState.Empty -> {
+                        EmptyFavoritesState(
+                            petType = currentPetType?.name?.lowercase() ?: "pet"
+                        )
                     }
 
-                    // Favorites Grid
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(bottom = 16.dp)
-                    ) {
-                        items(
-                            items = currentFavoritesState.pets,
-                            key = { it.id }
-                        ) { pet ->
-                            var visible by remember(pet.id) { mutableStateOf(true) }
+                    is FavoritePetsState.Success -> {
+                        Column {
 
-                            AnimatedVisibility(
-                                visible = visible,
-                                enter = fadeIn(),
-                                exit = fadeOut(),
-                                modifier = Modifier.animateItemPlacement()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 20.dp, bottom = 20.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                PetCard(
-                                    pet = pet,
-                                    onCardClick = { onNavigateToDetails(pet.id) },
-                                    onFavoriteClick = {
-                                        visible = false
-                                        viewModel.toggleFavorite(pet.id)
+                                Column {
+                                    Text(
+                                        text = "Favorite Breeds",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Text(
+                                        text = "${currentFavoritesState.pets.size} ${currentPetType?.name?.lowercase() ?: "pet"} breeds selected",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(
+                                            alpha = 0.8f
+                                        )
+                                    )
+                                }
+
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                                    ),
+                                    modifier = Modifier.size(50.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "${currentFavoritesState.pets.size}",
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
                                     }
-                                )
+                                }
+
+                            }
+
+                            // Favorites Grid
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                contentPadding = PaddingValues(bottom = 16.dp)
+                            ) {
+                                items(
+                                    items = currentFavoritesState.pets,
+                                    key = { it.id }
+                                ) { pet ->
+                                    var visible by remember(pet.id) { mutableStateOf(true) }
+
+                                    AnimatedVisibility(
+                                        visible = visible,
+                                        enter = fadeIn(),
+                                        exit = fadeOut(),
+                                        modifier = Modifier.animateItemPlacement()
+                                    ) {
+                                        PetCard(
+                                            pet = pet,
+                                            onCardClick = { onNavigateToDetails(pet.id) },
+                                            onFavoriteClick = {
+                                                visible = false
+                                                viewModel.toggleFavorite(pet.id)
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -125,41 +173,40 @@ fun FavoritesScreen(
         }
     }
 }
-
-@Composable
-fun EmptyFavoritesState(
-    petType: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    @Composable
+    fun EmptyFavoritesState(
+        petType: String,
+        modifier: Modifier = Modifier
     ) {
-        Icon(
-            imageVector = Icons.Default.Favorite,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-        )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "No favorite $petType breeds yet",
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "No favorite $petType breeds yet",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = "Start exploring breeds and tap the heart icon to add them to your favorites",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            Text(
+                text = "Start exploring breeds and tap the heart icon to add them to your favorites",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
-}

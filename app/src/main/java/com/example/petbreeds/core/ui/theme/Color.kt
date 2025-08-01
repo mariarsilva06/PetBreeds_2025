@@ -11,7 +11,7 @@ val CatSurface = Color(0xFFFFFFFF)        // Pure white
 val CatCard = Color(0xFFF0F2FF)           // Light purple-blue tint
 
 // Modern Dog Theme
-val DogPrimary = Color(0xFF00BFA6)        // Vibrant teal
+val DogPrimary = Color(0xBA00BFA6)        // Vibrant teal
 val DogPrimaryDark = Color(0xFF00A693)    // Darker teal
 val DogSecondary = Color(0xFF4DD0E1)      // Light cyan
 val DogBackground = Color(0xFFF0FFFF)     // Very light cyan

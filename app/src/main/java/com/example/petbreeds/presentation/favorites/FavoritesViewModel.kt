@@ -19,7 +19,7 @@ import javax.inject.Inject
 class FavoritesViewModel @Inject constructor(
     private val getFavoritePetsUseCase: GetFavoritePetsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     val currentPetType = preferencesManager.petTypeFlow.stateIn(
@@ -57,5 +57,9 @@ class FavoritesViewModel @Inject constructor(
             toggleFavoriteUseCase(petId)
             _favoritePets.update { it.filterNot { pet -> pet.id == petId } }
         }
+    }
+
+    fun setPetType(petType: PetType) {
+        preferencesManager.setPetType(petType)
     }
 }
