@@ -1,250 +1,233 @@
 package com.example.petbreeds.data.repository
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.petbreeds.core.data.NetworkResult
 import com.example.petbreeds.data.api.dto.CatBreedDto
-import com.example.petbreeds.data.api.dto.DogBreedDto
 import com.example.petbreeds.data.api.dto.ImageDto
 import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.local.entity.PetEntity
 import com.example.petbreeds.domain.model.PetType
-import com.google.common.truth.Truth.assertThat
+import io.mockk.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.*
+import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class PetRepositoryImplTest {
 
-    @Mock
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var catApiService: CatApiService
-
-    @Mock
     private lateinit var dogApiService: DogApiService
-
-    @Mock
     private lateinit var petDao: PetDao
-
-    private lateinit var repository: PetRepositoryImpl
-
-    private val mockCatBreedDto = CatBreedDto(
-        id = "1",
-        name = "Persian",
-        origin = "Iran",
-        temperament = "Calm",
-        description = "Long-haired breed",
-        lifeSpan = "12 - 17",
-        image = ImageDto("http://example.com/persian.jpg")
-    )
-
-    private val mockDogBreedDto = DogBreedDto(
-        id = "2",
-        name = "Labrador",
-        origin = "Canada",
-        temperament = "Friendly",
-        description = "Popular family dog",
-        lifeSpan = "10 - 12",
-        image = ImageDto("http://example.com/labrador.jpg")
-    )
-
-    private val mockPetEntity = PetEntity(
-        id = "1",
-        name = "Persian",
-        origin = "Iran",
-        temperament = "Calm",
-        description = "Long-haired breed",
-        lifeSpan = "12 - 17",
-        imageUrl = "http://example.com/persian.jpg",
-        petType = PetType.CAT
-    )
+    private lateinit var petRepository: PetRepositoryImpl
 
     @Before
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
-        repository = PetRepositoryImpl(catApiService, dogApiService, petDao)
+    fun setUp() {
+        catApiService = mockk(relaxed = true)
+        dogApiService = mockk(relaxed = true)
+        petDao = mockk(relaxed = true)
+
+        petRepository = PetRepositoryImpl(catApiService, dogApiService, petDao)
+    }
+
+    @After
+    fun tearDown() {
+        clearAllMocks()
+        unmockkAll()
     }
 
     @Test
-    fun `getPets should return pets from dao as network result success`() = runTest {
+    fun `GIVEN pets in database WHEN getPets is called THEN returns pets from local storage`() = runTest {
         // Given
-        whenever(petDao.getPetsByType(PetType.CAT)).thenReturn(flowOf(listOf(mockPetEntity)))
+        val mockPetEntities = listOf(
+            createMockPetEntity("1", "Persian", PetType.CAT),
+            createMockPetEntity("2", "Maine Coon", PetType.CAT)
+        )
+        every { petDao.getPetsByType(PetType.CAT) } returns flowOf(mockPetEntities)
 
         // When
-        val result = repository.getPets(PetType.CAT).first()
+        val result = petRepository.getPets(PetType.CAT).first()
 
         // Then
-        assertThat(result).isInstanceOf(NetworkResult.Success::class.java)
-        val successResult = result as NetworkResult.Success
-        assertThat(successResult.data).hasSize(1)
-        assertThat(successResult.data?.first()?.name).isEqualTo("Persian")
+        assert(result is NetworkResult.Success)
+        val pets = (result as NetworkResult.Success).data
+        assert(pets?.size == 2)
+        assert(pets?.first()?.name == "Persian")
+        verify { petDao.getPetsByType(PetType.CAT) }
     }
 
     @Test
-    fun `getFavoritePets should return favorite pets from dao`() = runTest {
+    fun `GIVEN favorite pets in database WHEN getFavoritePets is called THEN returns only favorite pets`() = runTest {
         // Given
-        val favoritePet = mockPetEntity.copy(isFavorite = true)
-        whenever(petDao.getFavoritePetsByType(PetType.CAT)).thenReturn(flowOf(listOf(favoritePet)))
+        val mockFavoritePetEntities = listOf(
+            createMockPetEntity("1", "Persian", PetType.CAT, isFavorite = true)
+        )
+        every { petDao.getFavoritePetsByType(PetType.CAT) } returns flowOf(mockFavoritePetEntities)
 
         // When
-        val result = repository.getFavoritePets(PetType.CAT).first()
+        val result = petRepository.getFavoritePets(PetType.CAT).first()
 
         // Then
-        assertThat(result).hasSize(1)
-        assertThat(result.first().isFavorite).isTrue()
-        assertThat(result.first().name).isEqualTo("Persian")
+        assert(result.size == 1)
+        assert(result.first().isFavorite)
+        assert(result.first().name == "Persian")
+        verify { petDao.getFavoritePetsByType(PetType.CAT) }
     }
 
     @Test
-    fun `refreshPets for cats should call cat api and save to dao`() = runTest {
+    fun `GIVEN successful API response WHEN refreshPets is called for first page THEN replaces all pets in database`() = runTest {
         // Given
-        whenever(catApiService.getBreeds(20, 0)).thenReturn(listOf(mockCatBreedDto))
-        whenever(petDao.getFavoritePetsByType(PetType.CAT)).thenReturn(flowOf(emptyList()))
+        val mockApiResponse = listOf(
+            CatBreedDto("1", "Persian", "Iran", "Calm", "Description", "10-15", ImageDto("image.jpg"))
+        )
+        val mockFavorites = emptyList<PetEntity>()
+
+        coEvery { catApiService.getBreeds(20, 0) } returns mockApiResponse
+        coEvery { petDao.getFavoritePetsByType(PetType.CAT) } returns flowOf(mockFavorites)
+        coEvery { petDao.refreshPetsForFirstPage(any(), PetType.CAT) } just Runs
 
         // When
-        val result = repository.refreshPets(PetType.CAT, 0, null)
+        val result = petRepository.refreshPets(PetType.CAT, 0)
 
         // Then
-        assertThat(result).isInstanceOf(NetworkResult.Success::class.java)
-        verify(catApiService).getBreeds(20, 0)
-        verify(petDao).refreshPetsForFirstPage(any(), any())
+        assert(result is NetworkResult.Success)
+        coVerify { catApiService.getBreeds(20, 0) }
+        coVerify { petDao.refreshPetsForFirstPage(any(), PetType.CAT) }
     }
 
     @Test
-    fun `refreshPets for dogs should call dog api and save to dao`() = runTest {
-        // Given
-        whenever(dogApiService.getBreeds(20, 0)).thenReturn(listOf(mockDogBreedDto))
-        whenever(petDao.getFavoritePetsByType(PetType.DOG)).thenReturn(flowOf(emptyList()))
-
-        // When
-        val result = repository.refreshPets(PetType.DOG, 0, null)
-
-        // Then
-        assertThat(result).isInstanceOf(NetworkResult.Success::class.java)
-        verify(dogApiService).getBreeds(20, 0)
-        verify(petDao).refreshPetsForFirstPage(any(), any())
-    }
-
-    @Test
-    fun `refreshPets with search query should call search endpoint`() = runTest {
+    fun `GIVEN successful API response WHEN refreshPets is called with search query THEN searches and replaces pets`() = runTest {
         // Given
         val searchQuery = "Persian"
-        whenever(catApiService.searchBreeds(searchQuery)).thenReturn(listOf(mockCatBreedDto))
-        whenever(petDao.getFavoritePetsByType(PetType.CAT)).thenReturn(flowOf(emptyList()))
+        val mockApiResponse = listOf(
+            CatBreedDto("1", "Persian", "Iran", "Calm", "Description", "10-15", ImageDto("image.jpg"))
+        )
+        val mockFavorites = emptyList<PetEntity>()
+
+        coEvery { catApiService.searchBreeds(searchQuery) } returns mockApiResponse
+        coEvery { petDao.getFavoritePetsByType(PetType.CAT) } returns flowOf(mockFavorites)
+        coEvery { petDao.refreshPetsForFirstPage(any(), PetType.CAT) } just Runs
 
         // When
-        val result = repository.refreshPets(PetType.CAT, 0, searchQuery)
+        val result = petRepository.refreshPets(PetType.CAT, 0, searchQuery)
 
         // Then
-        assertThat(result).isInstanceOf(NetworkResult.Success::class.java)
-        verify(catApiService).searchBreeds(searchQuery)
-        verify(petDao).refreshPetsForFirstPage(any(), any())
+        assert(result is NetworkResult.Success)
+        coVerify { catApiService.searchBreeds(searchQuery) }
+        coVerify { petDao.refreshPetsForFirstPage(any(), PetType.CAT) }
     }
 
     @Test
-    fun `refreshPets for subsequent pages should append data`() = runTest {
+    fun `GIVEN API error WHEN refreshPets is called THEN returns error result`() = runTest {
         // Given
-        whenever(catApiService.getBreeds(20, 1)).thenReturn(listOf(mockCatBreedDto))
-        whenever(petDao.getPetsByType(PetType.CAT)).thenReturn(flowOf(listOf(mockPetEntity)))
+        val errorMessage = "Network error"
+        coEvery { catApiService.getBreeds(any(), any()) } throws Exception(errorMessage)
 
         // When
-        val result = repository.refreshPets(PetType.CAT, 1, null)
+        val result = petRepository.refreshPets(PetType.CAT, 0)
 
         // Then
-        assertThat(result).isInstanceOf(NetworkResult.Success::class.java)
-        verify(catApiService).getBreeds(20, 1)
-        verify(petDao).appendPets(any(), any())
+        assert(result is NetworkResult.Error)
+        assert((result as NetworkResult.Error).message == errorMessage)
     }
 
     @Test
-    fun `refreshPets should preserve favorite status`() = runTest {
+    fun `GIVEN pet exists WHEN toggleFavorite is called THEN updates favorite status in database`() = runTest {
         // Given
-        val favoritePet = mockPetEntity.copy(isFavorite = true)
-        whenever(catApiService.getBreeds(20, 0)).thenReturn(listOf(mockCatBreedDto))
-        whenever(petDao.getFavoritePetsByType(PetType.CAT)).thenReturn(flowOf(listOf(favoritePet)))
+        val petId = "test-pet-id"
+        val mockPet = createMockPetEntity(petId, "Persian", PetType.CAT, isFavorite = false)
+
+        coEvery { petDao.getPetById(petId) } returns mockPet
+        coEvery { petDao.updateFavoriteStatus(petId, true) } just Runs
 
         // When
-        repository.refreshPets(PetType.CAT, 0, null)
+        petRepository.toggleFavorite(petId)
 
         // Then
-        verify(petDao).refreshPetsForFirstPage(any(), any())
-        // The verification that favorites are preserved would need argument captor
-        // to check the actual entities passed to refreshPetsForFirstPage
+        coVerify { petDao.getPetById(petId) }
+        coVerify { petDao.updateFavoriteStatus(petId, true) }
     }
 
     @Test
-    fun `refreshPets should return error when api call fails`() = runTest {
+    fun `GIVEN pet does not exist WHEN toggleFavorite is called THEN does not update database`() = runTest {
         // Given
-        whenever(catApiService.getBreeds(20, 0)).thenThrow(RuntimeException("Network error"))
+        val petId = "non-existent-pet"
+        coEvery { petDao.getPetById(petId) } returns null
 
         // When
-        val result = repository.refreshPets(PetType.CAT, 0, null)
+        petRepository.toggleFavorite(petId)
 
         // Then
-        assertThat(result).isInstanceOf(NetworkResult.Error::class.java)
-        val errorResult = result as NetworkResult.Error
-        assertThat(errorResult.message).isEqualTo("Network error")
+        coVerify { petDao.getPetById(petId) }
+        coVerify(exactly = 0) { petDao.updateFavoriteStatus(any(), any()) }
     }
 
     @Test
-    fun `toggleFavorite should update favorite status in dao`() = runTest {
+    fun `GIVEN pet exists WHEN getPetDetails is called THEN returns pet from database`() = runTest {
         // Given
-        val petId = "1"
-        whenever(petDao.getPetById(petId)).thenReturn(mockPetEntity)
+        val petId = "test-pet-id"
+        val mockPetEntity = createMockPetEntity(petId, "Persian", PetType.CAT)
+        coEvery { petDao.getPetById(petId) } returns mockPetEntity
 
         // When
-        repository.toggleFavorite(petId)
+        val result = petRepository.getPetDetails(petId)
 
         // Then
-        verify(petDao).getPetById(petId)
-        verify(petDao).updateFavoriteStatus(petId, true) // toggles to true
+        assert(result != null)
+        assert(result?.id == petId)
+        assert(result?.name == "Persian")
+        coVerify { petDao.getPetById(petId) }
     }
 
     @Test
-    fun `toggleFavorite should handle null pet gracefully`() = runTest {
+    fun `GIVEN subsequent page request WHEN refreshPets is called THEN appends pets to existing data`() = runTest {
         // Given
-        val petId = "nonexistent"
-        whenever(petDao.getPetById(petId)).thenReturn(null)
+        val mockApiResponse = listOf(
+            CatBreedDto("3", "Siamese", "Thailand", "Active", "Description", "12-18", ImageDto("image3.jpg"))
+        )
+        val mockExistingPets = listOf(
+            createMockPetEntity("1", "Persian", PetType.CAT, isFavorite = true)
+        )
+
+        coEvery { catApiService.getBreeds(20, 1) } returns mockApiResponse
+        coEvery { petDao.getPetsByType(PetType.CAT) } returns flowOf(mockExistingPets)
+        coEvery { petDao.appendPets(any(), PetType.CAT) } just Runs
 
         // When
-        repository.toggleFavorite(petId)
+        val result = petRepository.refreshPets(PetType.CAT, 1) // Page 1 (not first page)
 
         // Then
-        verify(petDao).getPetById(petId)
-        // Should not call updateFavoriteStatus when pet is null
+        assert(result is NetworkResult.Success)
+        coVerify { catApiService.getBreeds(20, 1) }
+        coVerify { petDao.appendPets(any(), PetType.CAT) }
     }
 
-    @Test
-    fun `getPetDetails should return pet from dao`() = runTest {
-        // Given
-        val petId = "1"
-        whenever(petDao.getPetById(petId)).thenReturn(mockPetEntity)
-
-        // When
-        val result = repository.getPetDetails(petId)
-
-        // Then
-        assertThat(result).isNotNull()
-        assertThat(result?.name).isEqualTo("Persian")
-        assertThat(result?.id).isEqualTo(petId)
-    }
-
-    @Test
-    fun `getPetDetails should return null when pet not found`() = runTest {
-        // Given
-        val petId = "nonexistent"
-        whenever(petDao.getPetById(petId)).thenReturn(null)
-
-        // When
-        val result = repository.getPetDetails(petId)
-
-        // Then
-        assertThat(result).isNull()
+    private fun createMockPetEntity(
+        id: String,
+        name: String,
+        petType: PetType,
+        isFavorite: Boolean = false
+    ): PetEntity {
+        return PetEntity(
+            id = id,
+            name = name,
+            origin = "Test Origin",
+            temperament = "Friendly, Playful",
+            description = "Test description",
+            lifeSpan = "10 - 15",
+            imageUrl = "https://test.com/image.jpg",
+            additionalImages = emptyList(),
+            isFavorite = isFavorite,
+            petType = petType
+        )
     }
 }

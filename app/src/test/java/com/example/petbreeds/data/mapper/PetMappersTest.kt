@@ -4,7 +4,6 @@ import com.example.petbreeds.data.api.dto.CatBreedDto
 import com.example.petbreeds.data.api.dto.DogBreedDto
 import com.example.petbreeds.data.api.dto.ImageDto
 import com.example.petbreeds.data.local.entity.PetEntity
-import com.example.petbreeds.domain.model.Pet
 import com.example.petbreeds.domain.model.PetType
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
