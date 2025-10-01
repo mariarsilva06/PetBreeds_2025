@@ -1,4 +1,4 @@
-package com.example.petbreeds.domain.model
+package com.example.model
 
 data class Pet(
     val id: String,

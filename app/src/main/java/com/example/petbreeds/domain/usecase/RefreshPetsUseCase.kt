@@ -1,7 +1,7 @@
 package com.example.petbreeds.domain.usecase
 
 import com.example.petbreeds.core.data.NetworkResult
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import com.example.petbreeds.domain.repository.PetRepository
 import javax.inject.Inject
 

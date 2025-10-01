@@ -35,12 +35,12 @@ android {
         buildConfigField(
             "String",
             "CAT_API_KEY",
-            "\"${localProperties.getProperty("CAT_API_KEY", "")}\""
+            "\"${localProperties.getProperty("CAT_API_KEY", "live_p39XAKu1IAsBhHoUxSqSSOTRQml7SeDuhIlN42HHlIM5yT2loeIE9XMb5GJOPYQD")}\""
         )
         buildConfigField(
             "String",
             "DOG_API_KEY",
-            "\"${localProperties.getProperty("DOG_API_KEY", "")}\""
+            "\"${localProperties.getProperty("DOG_API_KEY", "live_p7qKaHfjoSmTgl44Sh8Jj6kAEmmx8ruMep7UYjHNUOqmhyhflZm7cb8lIMqoHspt")}\""
         )
     }
 
@@ -98,6 +98,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:model"))
+
     // Core Android - Latest versions
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -117,7 +119,7 @@ dependencies {
     // Hilt - Latest version
     implementation("com.google.dagger:hilt-android:2.50")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    implementation(libs.androidx.junit.ktx)
+    //implementation(libs.androidx.junit.ktx)
     ksp("com.google.dagger:hilt-compiler:2.50")
 
     // Networking - Latest versions

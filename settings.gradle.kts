@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PetBreeds"
 include(":app")
+include(":core:model")

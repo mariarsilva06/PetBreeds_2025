@@ -3,7 +3,7 @@ package com.example.petbreeds.domain.usecase
 import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import javax.inject.Inject
 import android.util.Log
 

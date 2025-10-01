@@ -3,8 +3,8 @@ package com.example.petbreeds.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.model.PetType
 import com.example.petbreeds.data.local.database.Converters
-import com.example.petbreeds.domain.model.PetType
 
 @Entity(tableName = "pets")
 @TypeConverters(Converters::class)

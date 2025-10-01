@@ -9,7 +9,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
+
 
 private val CatLightColorScheme = lightColorScheme(
     primary = CatPrimary,

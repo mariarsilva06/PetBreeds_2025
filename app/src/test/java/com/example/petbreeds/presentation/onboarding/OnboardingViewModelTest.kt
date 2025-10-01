@@ -1,7 +1,7 @@
 package com.example.petbreeds.presentation.onboarding
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import com.example.petbreeds.utils.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers

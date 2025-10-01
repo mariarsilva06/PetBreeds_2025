@@ -2,8 +2,8 @@ package com.example.petbreeds.presentation.details
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.example.petbreeds.domain.model.Pet
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.Pet
+import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.GetPetDetailsUseCase
 import com.example.petbreeds.domain.usecase.GetPetImagesUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
