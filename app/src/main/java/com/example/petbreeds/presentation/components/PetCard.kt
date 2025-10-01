@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.petbreeds.domain.model.Pet
+import com.example.model.Pet
 
 @Composable
 fun PetCard(

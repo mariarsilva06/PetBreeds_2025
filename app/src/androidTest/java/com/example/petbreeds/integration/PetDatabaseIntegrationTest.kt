@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.local.database.PetDatabase
 import com.example.petbreeds.data.local.entity.PetEntity
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

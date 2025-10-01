@@ -2,8 +2,8 @@ package com.example.petbreeds.presentation.breeds
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.petbreeds.core.data.NetworkResult
-import com.example.petbreeds.domain.model.Pet
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.Pet
+import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.GetPetsUseCase
 import com.example.petbreeds.domain.usecase.RefreshPetsUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase

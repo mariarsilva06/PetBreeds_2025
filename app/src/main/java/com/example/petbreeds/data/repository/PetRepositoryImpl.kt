@@ -7,8 +7,8 @@ import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.mapper.toCatEntities
 import com.example.petbreeds.data.mapper.toDogEntities
 import com.example.petbreeds.data.mapper.toDomain
-import com.example.petbreeds.domain.model.Pet
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
+import com.example.model.Pet
 import com.example.petbreeds.domain.repository.PetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

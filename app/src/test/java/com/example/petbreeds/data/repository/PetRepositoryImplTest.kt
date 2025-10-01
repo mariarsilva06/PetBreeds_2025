@@ -8,7 +8,7 @@ import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.local.entity.PetEntity
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

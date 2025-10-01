@@ -1,7 +1,7 @@
 package com.example.petbreeds.data.local.database
 
 import androidx.room.TypeConverter
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

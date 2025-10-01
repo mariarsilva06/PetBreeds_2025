@@ -1,7 +1,7 @@
 package com.example.petbreeds.domain.usecase
 
-import com.example.petbreeds.domain.model.Pet
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
+import com.example.model.Pet
 import com.example.petbreeds.domain.repository.PetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

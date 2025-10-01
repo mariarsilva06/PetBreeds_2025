@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.FavoritePetsState
 import com.example.petbreeds.presentation.components.DrawerContent
 import com.example.petbreeds.presentation.components.TopBar

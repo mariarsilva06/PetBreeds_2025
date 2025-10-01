@@ -3,7 +3,7 @@ package com.example.petbreeds.presentation.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.petbreeds.domain.model.Pet
+import com.example.model.Pet
 import com.example.petbreeds.domain.usecase.GetPetDetailsUseCase
 import com.example.petbreeds.domain.usecase.GetPetImagesUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase

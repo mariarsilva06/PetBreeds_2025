@@ -2,8 +2,8 @@ package com.example.petbreeds.presentation.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.petbreeds.domain.model.Pet
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.Pet
+import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.FavoritePetsState
 import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
 import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase

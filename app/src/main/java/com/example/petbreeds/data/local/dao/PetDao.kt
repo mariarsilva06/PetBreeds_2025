@@ -2,7 +2,7 @@ package com.example.petbreeds.data.local.dao
 
 import androidx.room.*
 import com.example.petbreeds.data.local.entity.PetEntity
-import com.example.petbreeds.domain.model.PetType
+import com.example.model.PetType
 import kotlinx.coroutines.flow.Flow
 
 @Dao

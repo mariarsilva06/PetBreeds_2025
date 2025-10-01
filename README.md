@@ -9,7 +9,8 @@ A modern Android application built with Jetpack Compose that allows users to exp
 | ![Onboarding](docs/screenshots/img.png) | ![Breeds List](docs/screenshots/img_1.png) | ![Details](docs/screenshots/img_2.png) | ![Favorites](docs/screenshots/img_3.png) |
 
 ## Features
-
+api
+implementation
 ### Core Requirements
 - Cat and dog breed listings with images and names
 - Search functionality to filter breeds by name
