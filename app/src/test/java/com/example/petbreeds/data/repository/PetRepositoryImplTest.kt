@@ -1,14 +1,14 @@
 package com.example.petbreeds.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.petbreeds.core.data.NetworkResult
-import com.example.petbreeds.data.api.dto.CatBreedDto
-import com.example.petbreeds.data.api.dto.ImageDto
-import com.example.petbreeds.data.api.service.CatApiService
-import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.local.entity.PetEntity
 import com.example.model.PetType
+import com.example.network.service.CatApiService
+import com.example.network.service.DogApiService
+import com.example.common.NetworkResult
+import com.example.network.dto.ImageDto
+import com.example.network.dto.CatBreedDto
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

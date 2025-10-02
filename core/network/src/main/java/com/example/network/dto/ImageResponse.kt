@@ -1,4 +1,4 @@
-package com.example.petbreeds.data.api.dto
+package com.example.network.dto
 
 import com.google.gson.annotations.SerializedName
 

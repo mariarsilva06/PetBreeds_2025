@@ -1,7 +1,7 @@
 package com.example.petbreeds.presentation.breeds
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.petbreeds.core.data.NetworkResult
+import import com.example.common.NetworkResult
 import com.example.model.Pet
 import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.GetPetsUseCase

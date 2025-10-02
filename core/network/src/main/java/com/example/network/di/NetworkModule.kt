@@ -1,10 +1,10 @@
-package com.example.petbreeds.di
+package com.example.network.di
 
-import com.example.petbreeds.BuildConfig
-import com.example.petbreeds.data.api.interceptor.AuthInterceptor
-import com.example.petbreeds.data.api.service.CatApiService
-import com.example.petbreeds.data.api.service.DogApiService
-import com.example.petbreeds.utils.Constants
+import com.example.network.interceptor.AuthInterceptor
+import com.example.network.service.CatApiService
+import com.example.network.service.DogApiService
+import com.example.common.Constants
+import com.example.petbreeds.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

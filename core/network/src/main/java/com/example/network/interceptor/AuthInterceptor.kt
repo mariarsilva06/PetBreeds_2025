@@ -1,4 +1,4 @@
-package com.example.petbreeds.data.api.interceptor
+package com.example.network.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response

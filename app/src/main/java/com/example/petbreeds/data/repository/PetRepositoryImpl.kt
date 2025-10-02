@@ -1,14 +1,14 @@
 package com.example.petbreeds.data.repository
 
-import com.example.petbreeds.core.data.NetworkResult
-import com.example.petbreeds.data.api.service.CatApiService
-import com.example.petbreeds.data.api.service.DogApiService
+import com.example.common.NetworkResult
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.petbreeds.data.mapper.toCatEntities
 import com.example.petbreeds.data.mapper.toDogEntities
 import com.example.petbreeds.data.mapper.toDomain
 import com.example.model.PetType
 import com.example.model.Pet
+import com.example.network.service.CatApiService
+import com.example.network.service.DogApiService
 import com.example.petbreeds.domain.repository.PetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

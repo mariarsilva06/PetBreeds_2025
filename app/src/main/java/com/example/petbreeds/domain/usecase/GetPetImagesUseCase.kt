@@ -1,11 +1,11 @@
 package com.example.petbreeds.domain.usecase
 
-import com.example.petbreeds.data.api.service.CatApiService
-import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
 import com.example.model.PetType
 import javax.inject.Inject
 import android.util.Log
+import com.example.network.service.CatApiService
+import com.example.network.service.DogApiService
 
 class GetPetImagesUseCase @Inject constructor(
     private val catApiService: CatApiService,

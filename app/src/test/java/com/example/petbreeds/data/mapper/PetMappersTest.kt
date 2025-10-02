@@ -1,7 +1,7 @@
 package com.example.petbreeds.data.mapper
 
 import com.example.petbreeds.data.api.dto.CatBreedDto
-import com.example.petbreeds.data.api.dto.DogBreedDto
+import com.example.network.dto.DogBreedDto
 import com.example.petbreeds.data.api.dto.ImageDto
 import com.example.petbreeds.data.local.entity.PetEntity
 import com.example.model.PetType

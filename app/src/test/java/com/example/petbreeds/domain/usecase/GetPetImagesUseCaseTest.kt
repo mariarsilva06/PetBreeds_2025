@@ -1,7 +1,7 @@
 package com.example.petbreeds.domain.usecase
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.petbreeds.data.api.dto.ImageResponse
+import com.example.network.dto.ImageResponse
 import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
 import com.example.petbreeds.data.local.dao.PetDao
