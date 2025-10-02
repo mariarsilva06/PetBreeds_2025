@@ -1,8 +1,8 @@
-package com.example.petbreeds.data.api.dto
+package com.example.network.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class DogBreedDto(
+data class CatBreedDto(
     @SerializedName("id")
     val id: String,
     @SerializedName("name")
@@ -19,3 +19,7 @@ data class DogBreedDto(
     val image: ImageDto?
 )
 
+data class ImageDto(
+    @SerializedName("url")
+    val url: String
+)

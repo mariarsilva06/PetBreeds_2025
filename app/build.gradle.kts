@@ -8,12 +8,6 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-// API keys - local.properties
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localProperties.load(FileInputStream(localPropertiesFile))
-}
 
 android {
     namespace = "com.example.petbreeds"
@@ -30,18 +24,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        // Add API keys as BuildConfig fields
-        buildConfigField(
-            "String",
-            "CAT_API_KEY",
-            "\"${localProperties.getProperty("CAT_API_KEY", "live_p39XAKu1IAsBhHoUxSqSSOTRQml7SeDuhIlN42HHlIM5yT2loeIE9XMb5GJOPYQD")}\""
-        )
-        buildConfigField(
-            "String",
-            "DOG_API_KEY",
-            "\"${localProperties.getProperty("DOG_API_KEY", "live_p7qKaHfjoSmTgl44Sh8Jj6kAEmmx8ruMep7UYjHNUOqmhyhflZm7cb8lIMqoHspt")}\""
-        )
     }
 
     buildTypes {
@@ -68,7 +50,6 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 
     composeOptions {
@@ -99,6 +80,8 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
+    implementation(project(":core:network"))
 
     // Core Android - Latest versions
     implementation("androidx.core:core-ktx:1.12.0")

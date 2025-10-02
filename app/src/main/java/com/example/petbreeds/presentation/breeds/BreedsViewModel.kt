@@ -3,7 +3,7 @@ package com.example.petbreeds.presentation.breeds
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.petbreeds.core.data.NetworkResult
+import com.example.common.NetworkResult
 import com.example.model.Pet
 import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.GetPetsUseCase

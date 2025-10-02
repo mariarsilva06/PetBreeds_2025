@@ -1,10 +1,10 @@
 package com.example.petbreeds.data.mapper
 
-import com.example.petbreeds.data.api.dto.CatBreedDto
-import com.example.petbreeds.data.api.dto.DogBreedDto
+import com.example.network.dto.DogBreedDto
 import com.example.petbreeds.data.local.entity.PetEntity
 import com.example.model.PetType
 import com.example.model.Pet
+import com.example.network.dto.CatBreedDto
 
 // DTO to Entity
 fun CatBreedDto.toEntity(

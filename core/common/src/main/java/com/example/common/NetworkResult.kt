@@ -1,4 +1,4 @@
-package com.example.petbreeds.core.data
+package com.example.common
 
 sealed class NetworkResult<T>(
     val data: T? = null,

@@ -1,7 +1,7 @@
-package com.example.petbreeds.data.api.service
+package com.example.network.service
 
-import com.example.petbreeds.data.api.dto.CatBreedDto
-import com.example.petbreeds.data.api.dto.ImageResponse
+import com.example.network.dto.CatBreedDto
+import com.example.network.dto.ImageResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
