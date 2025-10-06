@@ -2,7 +2,7 @@ package com.example.petbreeds.domain.usecase
 
 import com.example.common.NetworkResult
 import com.example.model.PetType
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import javax.inject.Inject
 
 class RefreshPetsUseCase @Inject constructor(

@@ -1,8 +1,8 @@
 package com.example.petbreeds.domain.usecase
 
+import com.example.domain.repository.PetRepository
 import com.example.model.PetType
 import com.example.model.Pet
-import com.example.petbreeds.domain.repository.PetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

@@ -82,6 +82,10 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:common"))
     implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+
 
     // Core Android - Latest versions
     implementation("androidx.core:core-ktx:1.12.0")

@@ -4,8 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.network.dto.ImageResponse
 import com.example.petbreeds.data.api.service.CatApiService
 import com.example.petbreeds.data.api.service.DogApiService
-import com.example.petbreeds.data.local.dao.PetDao
-import com.example.petbreeds.data.local.entity.PetEntity
+import com.example.database.dao.PetDao
+import com.example.database.entity.PetEntity
 import com.example.model.PetType
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi

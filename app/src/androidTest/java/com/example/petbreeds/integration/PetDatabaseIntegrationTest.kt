@@ -4,9 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.petbreeds.data.local.dao.PetDao
-import com.example.petbreeds.data.local.database.PetDatabase
-import com.example.petbreeds.data.local.entity.PetEntity
+import com.example.database.dao.PetDao
+import com.example.database.PetDatabase
+import com.example.database.entity.PetEntity
 import com.example.model.PetType
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first

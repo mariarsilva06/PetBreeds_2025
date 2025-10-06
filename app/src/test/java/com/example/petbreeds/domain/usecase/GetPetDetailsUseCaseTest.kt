@@ -2,7 +2,7 @@ package com.example.petbreeds.domain.usecase
 
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
