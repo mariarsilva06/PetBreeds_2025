@@ -3,7 +3,7 @@ package com.example.petbreeds.domain.usecase
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

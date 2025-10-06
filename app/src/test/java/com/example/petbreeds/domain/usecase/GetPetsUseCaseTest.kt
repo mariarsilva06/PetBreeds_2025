@@ -1,9 +1,9 @@
 package com.example.petbreeds.domain.usecase
 
-import import com.example.common.NetworkResult
+com.example.common.NetworkResult
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

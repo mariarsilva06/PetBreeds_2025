@@ -15,6 +15,7 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
+
 android {
     namespace = "com.example.petbreeds.core.network"
     compileSdk = 34
@@ -22,7 +23,6 @@ android {
     defaultConfig {
         minSdk = 24
 
-        // Add API keys as BuildConfig fields
         buildConfigField(
             "String",
             "CAT_API_KEY",

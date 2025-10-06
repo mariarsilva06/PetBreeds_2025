@@ -1,8 +1,8 @@
 package com.example.petbreeds.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.petbreeds.data.local.dao.PetDao
-import com.example.petbreeds.data.local.entity.PetEntity
+import com.example.database.dao.PetDao
+import com.example.database.entity.PetEntity
 import com.example.model.PetType
 import com.example.network.service.CatApiService
 import com.example.network.service.DogApiService

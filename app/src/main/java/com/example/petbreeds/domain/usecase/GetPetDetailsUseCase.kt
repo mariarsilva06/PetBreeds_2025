@@ -1,7 +1,7 @@
 package com.example.petbreeds.domain.usecase
 
 import com.example.model.Pet
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import javax.inject.Inject
 
 class GetPetDetailsUseCase @Inject constructor(

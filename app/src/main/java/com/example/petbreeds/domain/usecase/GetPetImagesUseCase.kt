@@ -1,6 +1,6 @@
 package com.example.petbreeds.domain.usecase
 
-import com.example.petbreeds.data.local.dao.PetDao
+import com.example.database.dao.PetDao
 import com.example.model.PetType
 import javax.inject.Inject
 import android.util.Log

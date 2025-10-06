@@ -1,6 +1,6 @@
 package com.example.petbreeds.domain.usecase
 
-import com.example.petbreeds.domain.repository.PetRepository
+import com.example.domain.repository.PetRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
