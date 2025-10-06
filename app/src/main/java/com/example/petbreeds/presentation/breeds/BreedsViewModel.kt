@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.NetworkResult
+import com.example.domain.usecase.GetPetsUseCase
+import com.example.domain.usecase.RefreshPetsUseCase
+import com.example.domain.usecase.ToggleFavoriteUseCase
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.usecase.GetPetsUseCase
-import com.example.petbreeds.domain.usecase.RefreshPetsUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

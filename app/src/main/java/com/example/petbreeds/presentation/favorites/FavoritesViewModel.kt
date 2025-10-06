@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.usecase.FavoritePetsState
-import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
+import com.example.domain.usecase.FavoritePetsState
+import com.example.domain.usecase.GetFavoritePetsUseCase
+import com.example.domain.usecase.ToggleFavoriteUseCase
+
 import com.example.petbreeds.utils.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

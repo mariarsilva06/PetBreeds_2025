@@ -1,7 +1,6 @@
 package com.example.petbreeds.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -12,13 +11,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.petbreeds.core.ui.theme.PetBreedsTheme
 import com.example.model.PetType
-import com.example.petbreeds.core.network.BuildConfig
 import com.example.petbreeds.presentation.navigation.BottomNavItem
 import com.example.petbreeds.presentation.navigation.PetBreedsNavigation
 import com.example.petbreeds.presentation.navigation.Routes
 import com.example.petbreeds.utils.PreferencesManager
+import com.example.ui.theme.PetBreedsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

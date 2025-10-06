@@ -4,9 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import import com.example.common.NetworkResult
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.usecase.GetPetsUseCase
-import com.example.petbreeds.domain.usecase.RefreshPetsUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers

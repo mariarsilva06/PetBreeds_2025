@@ -5,7 +5,6 @@ import com.example.model.Pet
 import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.FavoritePetsState
 import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import com.example.petbreeds.utils.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers

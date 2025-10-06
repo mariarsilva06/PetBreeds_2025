@@ -4,9 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.domain.usecase.GetPetDetailsUseCase
-import com.example.petbreeds.domain.usecase.GetPetImagesUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

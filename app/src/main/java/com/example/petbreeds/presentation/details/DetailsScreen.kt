@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.petbreeds.presentation.components.ImageCarousel
-import com.example.petbreeds.presentation.components.LoadingIndicator
+import com.example.ui.components.ImageCarousel
+import com.example.ui.components.LoadingIndicator
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

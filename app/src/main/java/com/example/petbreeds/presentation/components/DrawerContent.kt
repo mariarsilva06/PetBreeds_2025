@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.petbreeds.R
 import com.example.model.PetType
+import com.example.ui.components.ComingSoonDialog
 
 @Composable
 fun DrawerContent(
@@ -71,7 +72,7 @@ fun DrawerContent(
             }
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.Companion.weight(1f))
 
         // Version info at bottom
         VersionInfo()
@@ -151,7 +152,7 @@ private fun PetTypeSwitcher(
                     onPetTypeChanged = onPetTypeChanged,
                     painter = painterResource(id = R.drawable.cat7),
                     label = "Cats",
-                    modifier = Modifier.weight(6f)
+                    modifier = Modifier.Companion.weight(6f)
                 )
 
                 PetTypeButton(
@@ -160,7 +161,7 @@ private fun PetTypeSwitcher(
                     onPetTypeChanged = onPetTypeChanged,
                     painter = painterResource(id = R.drawable.dog7),
                     label = "Dogs",
-                    modifier = Modifier.weight(6f)
+                    modifier = Modifier.Companion.weight(6f)
                 )
             }
         }
@@ -247,7 +248,7 @@ private fun DrawerMenuItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.Companion.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
