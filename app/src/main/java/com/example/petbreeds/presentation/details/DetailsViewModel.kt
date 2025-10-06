@@ -4,19 +4,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.model.Pet
-import com.example.petbreeds.domain.usecase.GetPetDetailsUseCase
-import com.example.petbreeds.domain.usecase.GetPetImagesUseCase
-import com.example.petbreeds.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.util.Log
-import com.example.petbreeds.domain.usecase.GetFavoritePetsUseCase
+import com.example.domain.usecase.GetPetDetailsUseCase
+import com.example.domain.usecase.GetPetImagesUseCase
+import com.example.domain.usecase.ToggleFavoriteUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
+
     private val getPetDetailsUseCase: GetPetDetailsUseCase,
     private val getPetImagesUseCase: GetPetImagesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,

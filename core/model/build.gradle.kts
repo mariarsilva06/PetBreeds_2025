@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.petbreeds.core.model"
+    namespace = "com.example.model"
     compileSdk = 34
 
     defaultConfig {
