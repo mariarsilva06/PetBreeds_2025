@@ -1,6 +1,7 @@
 package com.example.petbreeds.presentation.favorites
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.favorites.FavoritesViewModel
 import com.example.model.Pet
 import com.example.model.PetType
 import com.example.petbreeds.domain.usecase.FavoritePetsState

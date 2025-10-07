@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.petbreeds"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.petbreeds"
@@ -86,21 +86,29 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
+    implementation(project(":feature:breeds"))
+    implementation(project(":feature:details"))
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:favorites"))
+    implementation(project(":core:preferences"))
+    implementation(project(":core:resources"))
+    implementation(project(":feature:splash"))
 
-
-
-    // Core Android - Latest versions
+    // Core Android
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
 
-    // Compose BOM - Latest version
-    implementation(platform("androidx.compose:compose-bom:2024.02.01"))
+    // Compose BOM
+    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
+
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
