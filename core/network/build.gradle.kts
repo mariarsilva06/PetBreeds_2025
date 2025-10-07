@@ -18,7 +18,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.example.petbreeds.core.network"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24

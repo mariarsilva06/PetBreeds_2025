@@ -2,6 +2,7 @@ package com.example.petbreeds.presentation.details
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.example.details.DetailsViewModel
 import com.example.model.Pet
 import com.example.model.PetType
 import io.mockk.*

@@ -12,6 +12,7 @@ lifecycle = "2.7.0"
 activity-compose = "1.8.2"
 compose-bom = "2024.02.01"
 navigation = "2.7.7"
+navigation-compose = "2.9.5"
 room = "2.6.1"
 datastore = "1.0.0"
 
@@ -43,6 +44,7 @@ databinding-adapters = "8.13.0"
 
 [libraries]
 # Kotlin
+androidx-navigation-compose-v295 = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 hilt-android-v2572 = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
