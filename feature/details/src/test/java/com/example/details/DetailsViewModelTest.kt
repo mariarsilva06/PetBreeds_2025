@@ -1,19 +1,21 @@
-package com.example.petbreeds.presentation.details
+package com.example.details
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.example.details.DetailsViewModel
+import com.example.domain.usecase.GetPetDetailsUseCase
+import com.example.domain.usecase.GetPetImagesUseCase
+import com.example.domain.usecase.ToggleFavoriteUseCase
 import com.example.model.Pet
 import com.example.model.PetType
-import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import io.mockk.*
 import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
+
+
 
 @ExperimentalCoroutinesApi
 class DetailsViewModelTest {
@@ -180,7 +182,7 @@ class DetailsViewModelTest {
 
         coEvery { getPetDetailsUseCase(testPetId) } returns mockPet
         coEvery { getPetImagesUseCase(testPetId, PetType.CAT) } coAnswers {
-            kotlinx.coroutines.delay(100) // Simulate loading
+            delay(100) // Simulate loading
             emptyList()
         }
 
@@ -215,6 +217,123 @@ class DetailsViewModelTest {
         assert(!detailsViewModel.isLoadingImages.value) {
             "Expected final loading state to be false"
         }
+    }
+
+    @Test
+    fun `GIVEN pet with no cached images WHEN API returns empty list THEN additionalImages is empty`() = runTest {
+        // Given
+        val mockPet = createMockPet(testPetId, "Persian", PetType.CAT, additionalImages = emptyList())
+
+        coEvery { getPetDetailsUseCase(testPetId) } returns mockPet
+        coEvery { getPetImagesUseCase(testPetId, PetType.CAT) } returns emptyList()
+
+        // When
+        detailsViewModel = DetailsViewModel(
+            getPetDetailsUseCase,
+            getPetImagesUseCase,
+            toggleFavoriteUseCase,
+            savedStateHandle
+        )
+
+        val job = launch { detailsViewModel.additionalImages.collect { } }
+        advanceUntilIdle()
+        job.cancel()
+
+        // Then
+        assert(detailsViewModel.additionalImages.value.isEmpty()) {
+            "Expected empty images list but got ${detailsViewModel.additionalImages.value}"
+        }
+        assert(!detailsViewModel.isLoadingImages.value)
+    }
+
+    @Test
+    fun `GIVEN no petId in SavedStateHandle WHEN viewmodel is initialized THEN throws exception`() = runTest {
+        // Given
+        every { savedStateHandle.get<String>("petId") } returns null
+
+        // When/Then
+        var exceptionThrown = false
+        try {
+            detailsViewModel = DetailsViewModel(
+                getPetDetailsUseCase,
+                getPetImagesUseCase,
+                toggleFavoriteUseCase,
+                savedStateHandle
+            )
+        } catch (e: IllegalStateException) {
+            exceptionThrown = true
+            // checkNotNull throws IllegalStateException with generic message
+            assert(e.message == "Required value was null.") {
+                "Expected standard checkNotNull message but got: ${e.message}"
+            }
+        }
+
+        assert(exceptionThrown) {
+            "Expected IllegalStateException to be thrown when petId is null"
+        }
+    }
+
+    @Test
+    fun `GIVEN multiple rapid toggle calls WHEN onToggleFavorite is called multiple times THEN all calls are processed`() = runTest {
+        // Given
+        val pet1 = createMockPet(testPetId, "Persian", PetType.CAT, isFavorite = false)
+        val pet2 = createMockPet(testPetId, "Persian", PetType.CAT, isFavorite = true)
+        val pet3 = createMockPet(testPetId, "Persian", PetType.CAT, isFavorite = false)
+
+        coEvery { getPetDetailsUseCase(testPetId) } returnsMany listOf(pet1, pet2, pet3)
+        coEvery { getPetImagesUseCase(testPetId, PetType.CAT) } returns emptyList()
+        coEvery { toggleFavoriteUseCase(testPetId) } just Runs
+
+        detailsViewModel = DetailsViewModel(
+            getPetDetailsUseCase,
+            getPetImagesUseCase,
+            toggleFavoriteUseCase,
+            savedStateHandle
+        )
+
+        val job = launch { detailsViewModel.pet.collect { } }
+        advanceUntilIdle()
+
+        // When - Toggle multiple times
+        detailsViewModel.onToggleFavorite()
+        advanceUntilIdle()
+        detailsViewModel.onToggleFavorite()
+        advanceUntilIdle()
+
+        job.cancel()
+
+        // Then
+        coVerify(exactly = 2) { toggleFavoriteUseCase(testPetId) }
+        coVerify(exactly = 3) { getPetDetailsUseCase(testPetId) } // Initial + 2 toggles
+    }
+
+    @Test
+    fun `GIVEN pet with cached images WHEN API returns new images THEN updates with new images`() = runTest {
+        // Given
+        val cachedImages = listOf("old1.jpg", "old2.jpg")
+        val newImages = listOf("new1.jpg", "new2.jpg", "new3.jpg")
+        val mockPet = createMockPet(testPetId, "Persian", PetType.CAT, additionalImages = cachedImages)
+
+        coEvery { getPetDetailsUseCase(testPetId) } returns mockPet
+        coEvery { getPetImagesUseCase(testPetId, PetType.CAT) } returns newImages
+
+        // When
+        detailsViewModel = DetailsViewModel(
+            getPetDetailsUseCase,
+            getPetImagesUseCase,
+            toggleFavoriteUseCase,
+            savedStateHandle
+        )
+
+        val imagesJob = launch { detailsViewModel.additionalImages.collect { } }
+        advanceUntilIdle()
+        imagesJob.cancel()
+
+        // Then - Should have new images from API, not cached
+        assert(detailsViewModel.additionalImages.value == newImages) {
+            "Expected new images from API but got ${detailsViewModel.additionalImages.value}"
+        }
+        coVerify { getPetImagesUseCase(testPetId, PetType.CAT) }
     }
 
     private fun createMockPet(

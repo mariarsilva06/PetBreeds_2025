@@ -1,6 +1,7 @@
-package com.example.petbreeds.domain.usecase
+package com.example.domain.usecase
 
-com.example.common.NetworkResult
+import com.example.common.NetworkResult
+
 import com.example.model.Pet
 import com.example.model.PetType
 import com.example.domain.repository.PetRepository

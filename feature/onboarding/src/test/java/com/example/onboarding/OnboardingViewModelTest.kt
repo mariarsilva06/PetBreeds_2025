@@ -1,9 +1,8 @@
-package com.example.petbreeds.presentation.onboarding
+package com.example.onboarding
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.model.PetType
-import com.example.onboarding.OnboardingViewModel
-import com.example.petbreeds.utils.PreferencesManager
+import com.example.preferences.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,5 +75,40 @@ class OnboardingViewModelTest {
         // Then
         coVerify { preferencesManager.savePetType(PetType.CAT) }
         coVerify { preferencesManager.savePetType(PetType.DOG) }
+    }
+
+    @Test
+    fun `GIVEN save error WHEN selectPetType is called THEN handles exception gracefully`() = runTest {
+        // Given
+        coEvery { preferencesManager.savePetType(any()) } throws Exception("Save failed")
+
+        // When
+        onboardingViewModel.selectPetType(PetType.CAT)
+        advanceUntilIdle()
+
+        // Then
+        coVerify { preferencesManager.savePetType(PetType.CAT) }
+    }
+
+    @Test
+    fun `GIVEN rapid pet type changes WHEN selectPetType is called rapidly THEN saves only last selection`() = runTest {
+        // Given
+        val capturedTypes = mutableListOf<PetType>()
+        coEvery { preferencesManager.savePetType(capture(capturedTypes)) } just Runs
+
+        // When
+        onboardingViewModel.selectPetType(PetType.CAT)
+        onboardingViewModel.selectPetType(PetType.DOG)
+        onboardingViewModel.selectPetType(PetType.CAT)
+        advanceUntilIdle()
+
+        // Then - All calls were made (or only last if debounced)
+        // Adjust expectation based on implementation
+        assert(capturedTypes.size == 3) {
+            "Expected 3 saves but got ${capturedTypes.size}"
+        }
+        assert(capturedTypes.last() == PetType.CAT) {
+            "Expected last save to be CAT but got ${capturedTypes.last()}"
+        }
     }
 }

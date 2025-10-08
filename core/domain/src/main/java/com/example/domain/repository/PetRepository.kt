@@ -12,4 +12,6 @@ interface PetRepository {
     suspend fun refreshPets(petType: PetType, page: Int = 0, query: String? = null): NetworkResult<Unit>
     suspend fun toggleFavorite(petId: String)
     suspend fun getPetDetails(petId: String): Pet?
+    suspend fun getPetImages(petId: String, petType: PetType): List<String>
+
 }

@@ -1,5 +1,6 @@
 package com.example.onboarding
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.model.PetType
@@ -15,7 +16,15 @@ class OnboardingViewModel @Inject constructor(
 
     fun selectPetType(petType: PetType) {
         viewModelScope.launch {
-            preferencesManager.savePetType(petType)
+            try {
+                preferencesManager.savePetType(petType)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save pet type: ${e.message}", e)
+            }
         }
+    }
+
+    companion object {
+        private const val TAG = "OnboardingViewModel"
     }
 }

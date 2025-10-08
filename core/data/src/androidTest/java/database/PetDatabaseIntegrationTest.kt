@@ -1,4 +1,4 @@
-package com.example.petbreeds.integration
+package database
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room

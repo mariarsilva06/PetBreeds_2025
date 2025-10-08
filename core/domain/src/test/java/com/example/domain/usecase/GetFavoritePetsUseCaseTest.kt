@@ -1,4 +1,4 @@
-package com.example.petbreeds.domain.usecase
+package com.example.domain.usecase
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.model.Pet
@@ -13,6 +13,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
 
 @ExperimentalCoroutinesApi
 class GetFavoritePetsUseCaseTest {
@@ -156,7 +157,7 @@ class GetFavoritePetsUseCaseTest {
         // Then
         val successResult = result as FavoritePetsState.Success
         val expectedAverage = 40f / 3f // 13.333...
-        assert(kotlin.math.abs(successResult.averageLifespan - expectedAverage) < 0.01f) {
+        assert(abs(successResult.averageLifespan - expectedAverage) < 0.01f) {
             "Expected average lifespan $expectedAverage but got ${successResult.averageLifespan}"
         }
     }
@@ -178,7 +179,7 @@ class GetFavoritePetsUseCaseTest {
         // Then
         val successResult = result as FavoritePetsState.Success
         val expectedAverage = 26f / 3f // 8.666...
-        assert(kotlin.math.abs(successResult.averageLifespan - expectedAverage) < 0.01f) {
+        assert(abs(successResult.averageLifespan - expectedAverage) < 0.01f) {
             "Expected average lifespan $expectedAverage but got ${successResult.averageLifespan}"
         }
     }

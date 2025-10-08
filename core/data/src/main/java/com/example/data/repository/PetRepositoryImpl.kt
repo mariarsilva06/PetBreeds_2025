@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import android.util.Log
 import com.example.common.NetworkResult
 import com.example.data.mapper.toCatEntities
 import com.example.data.mapper.toDogEntities
@@ -106,5 +107,42 @@ class PetRepositoryImpl @Inject constructor(
 
     override suspend fun getPetDetails(petId: String): Pet? {
         return petDao.getPetById(petId)?.toDomain()
+    }
+
+    override suspend fun getPetImages(petId: String, petType: PetType): List<String> {
+        return try {
+            Log.d("PetRepositoryImpl", "Fetching images for petId: $petId, petType: $petType")
+
+            val cachedPet = petDao.getPetById(petId)
+
+            if (cachedPet != null && cachedPet.additionalImages.isNotEmpty()) {
+                Log.d("PetRepositoryImpl", "Found cached images: ${cachedPet.additionalImages.size}")
+                return cachedPet.additionalImages
+            }
+
+            val images = when (petType) {
+                PetType.CAT -> {
+                    Log.d("PetRepositoryImpl", "Fetching cat images from API")
+                    catApiService.getBreedImages(petId, limit = 5)
+                }
+                PetType.DOG -> {
+                    Log.d("PetRepositoryImpl", "Fetching dog images from API")
+                    dogApiService.getBreedImages(petId, limit = 5)
+                }
+            }.map { it.url }
+
+            Log.d("PetRepositoryImpl", "Fetched ${images.size} images from API")
+
+            if (cachedPet != null) {
+                val updatedPet = cachedPet.copy(additionalImages = images)
+                petDao.insertPet(updatedPet)
+                Log.d("PetRepositoryImpl", "Updated cache with ${images.size} images")
+            }
+
+            images
+        } catch (e: Exception) {
+            Log.e("PetRepositoryImpl", "Error fetching images", e)
+            petDao.getPetById(petId)?.additionalImages ?: emptyList()
+        }
     }
 }

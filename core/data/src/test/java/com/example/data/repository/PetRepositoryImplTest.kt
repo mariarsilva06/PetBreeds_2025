@@ -1,19 +1,20 @@
-package com.example.petbreeds.data.repository
+package com.example.data.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.common.NetworkResult
 import com.example.database.dao.PetDao
 import com.example.database.entity.PetEntity
 import com.example.model.PetType
+import com.example.network.dto.CatBreedDto
+import com.example.network.dto.ImageDto
+import com.example.network.dto.ImageResponse
 import com.example.network.service.CatApiService
 import com.example.network.service.DogApiService
-import com.example.common.NetworkResult
-import com.example.network.dto.ImageDto
-import com.example.network.dto.CatBreedDto
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -87,7 +88,15 @@ class PetRepositoryImplTest {
     fun `GIVEN successful API response WHEN refreshPets is called for first page THEN replaces all pets in database`() = runTest {
         // Given
         val mockApiResponse = listOf(
-            CatBreedDto("1", "Persian", "Iran", "Calm", "Description", "10-15", ImageDto("image.jpg"))
+            CatBreedDto(
+                "1",
+                "Persian",
+                "Iran",
+                "Calm",
+                "Description",
+                "10-15",
+                ImageDto("image.jpg")
+            )
         )
         val mockFavorites = emptyList<PetEntity>()
 
@@ -109,7 +118,15 @@ class PetRepositoryImplTest {
         // Given
         val searchQuery = "Persian"
         val mockApiResponse = listOf(
-            CatBreedDto("1", "Persian", "Iran", "Calm", "Description", "10-15", ImageDto("image.jpg"))
+            CatBreedDto(
+                "1",
+                "Persian",
+                "Iran",
+                "Calm",
+                "Description",
+                "10-15",
+                ImageDto("image.jpg")
+            )
         )
         val mockFavorites = emptyList<PetEntity>()
 
@@ -192,7 +209,15 @@ class PetRepositoryImplTest {
     fun `GIVEN subsequent page request WHEN refreshPets is called THEN appends pets to existing data`() = runTest {
         // Given
         val mockApiResponse = listOf(
-            CatBreedDto("3", "Siamese", "Thailand", "Active", "Description", "12-18", ImageDto("image3.jpg"))
+            CatBreedDto(
+                "3",
+                "Siamese",
+                "Thailand",
+                "Active",
+                "Description",
+                "12-18",
+                ImageDto("image3.jpg")
+            )
         )
         val mockExistingPets = listOf(
             createMockPetEntity("1", "Persian", PetType.CAT, isFavorite = true)
@@ -211,11 +236,185 @@ class PetRepositoryImplTest {
         coVerify { petDao.appendPets(any(), PetType.CAT) }
     }
 
+    @Test
+    fun `GIVEN cached images exist WHEN getPetImages is called THEN returns cached images without API call`() = runTest {
+        // Given
+        val petId = "test-pet-id"
+        val cachedImages = listOf("cached1.jpg", "cached2.jpg", "cached3.jpg")
+        val mockPetEntity = createMockPetEntity(
+            petId,
+            "Persian",
+            PetType.CAT,
+            additionalImages = cachedImages
+        )
+
+        coEvery { petDao.getPetById(petId) } returns mockPetEntity
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.CAT)
+
+        // Then
+        assert(result == cachedImages) {
+            "Expected cached images $cachedImages but got $result"
+        }
+        coVerify { petDao.getPetById(petId) }
+        coVerify(exactly = 0) { catApiService.getBreedImages(any(), any()) }
+        coVerify(exactly = 0) { dogApiService.getBreedImages(any(), any()) }
+    }
+
+    @Test
+    fun `GIVEN no cached images for cat WHEN getPetImages is called THEN fetches from cat API and updates cache`() = runTest {
+        // Given
+        val petId = "test-cat-id"
+        val apiImages = listOf(
+            ImageResponse("1", "cat-image1.jpg", 400, 300),
+            ImageResponse("2", "cat-image2.jpg", 400, 300),
+            ImageResponse("3", "cat-image3.jpg", 400, 300)
+        )
+        val expectedUrls = listOf("cat-image1.jpg", "cat-image2.jpg", "cat-image3.jpg")
+        val mockPetEntity = createMockPetEntity(
+            petId,
+            "Persian",
+            PetType.CAT,
+            additionalImages = emptyList()
+        )
+
+        coEvery { petDao.getPetById(petId) } returns mockPetEntity
+        coEvery { catApiService.getBreedImages(petId, 5) } returns apiImages
+        coEvery { petDao.insertPet(any()) } just Runs
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.CAT)
+
+        // Then
+        assert(result == expectedUrls) {
+            "Expected $expectedUrls but got $result"
+        }
+        coVerify { petDao.getPetById(petId) }
+        coVerify { catApiService.getBreedImages(petId, 5) }
+        coVerify {
+            petDao.insertPet(
+                match {
+                    it.id == petId &&
+                            it.additionalImages == expectedUrls
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN no cached images for dog WHEN getPetImages is called THEN fetches from dog API and updates cache`() = runTest {
+        // Given
+        val petId = "test-dog-id"
+        val apiImages = listOf(
+            ImageResponse("1", "dog-image1.jpg", 400, 300),
+            ImageResponse("2", "dog-image2.jpg", 400, 300)
+        )
+        val expectedUrls = listOf("dog-image1.jpg", "dog-image2.jpg")
+        val mockPetEntity = createMockPetEntity(
+            petId,
+            "Golden Retriever",
+            PetType.DOG,
+            additionalImages = emptyList()
+        )
+
+        coEvery { petDao.getPetById(petId) } returns mockPetEntity
+        coEvery { dogApiService.getBreedImages(petId, 5) } returns apiImages
+        coEvery { petDao.insertPet(any()) } just Runs
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.DOG)
+
+        // Then
+        assert(result == expectedUrls) {
+            "Expected $expectedUrls but got $result"
+        }
+        coVerify { petDao.getPetById(petId) }
+        coVerify { dogApiService.getBreedImages(petId, 5) }
+        coVerify {
+            petDao.insertPet(
+                match {
+                    it.id == petId &&
+                            it.additionalImages == expectedUrls
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN API error without cached data WHEN getPetImages is called THEN returns empty list`() = runTest {
+        // Given
+        val petId = "test-pet-id"
+        val mockPetEntity = createMockPetEntity(
+            petId,
+            "Persian",
+            PetType.CAT,
+            additionalImages = emptyList()
+        )
+
+        coEvery { petDao.getPetById(petId) } returns mockPetEntity
+        coEvery { catApiService.getBreedImages(petId, 5) } throws Exception("Network error")
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.CAT)
+
+        // Then
+        assert(result.isEmpty()) {
+            "Expected empty list on error without cache but got $result"
+        }
+        coVerify { catApiService.getBreedImages(petId, 5) }
+    }
+
+    @Test
+    fun `GIVEN pet not found in database WHEN getPetImages is called THEN fetches from API without caching`() = runTest {
+        // Given
+        val petId = "non-existent-pet"
+        val apiImages = listOf(
+            ImageResponse("1", "image1.jpg", 400, 300),
+            ImageResponse("2", "image2.jpg", 400, 300)
+        )
+        val expectedUrls = listOf("image1.jpg", "image2.jpg")
+
+        coEvery { petDao.getPetById(petId) } returns null
+        coEvery { catApiService.getBreedImages(petId, 5) } returns apiImages
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.CAT)
+
+        // Then
+        assert(result == expectedUrls) {
+            "Expected $expectedUrls but got $result"
+        }
+        coVerify { petDao.getPetById(petId) }
+        coVerify { catApiService.getBreedImages(petId, 5) }
+        coVerify(exactly = 0) { petDao.insertPet(any()) }
+    }
+
+    @Test
+    fun `GIVEN pet not in database and API error WHEN getPetImages is called THEN returns empty list`() = runTest {
+        // Given
+        val petId = "non-existent-pet"
+
+        coEvery { petDao.getPetById(petId) } returns null
+        coEvery { catApiService.getBreedImages(petId, 5) } throws Exception("Network error")
+
+        // When
+        val result = petRepository.getPetImages(petId, PetType.CAT)
+
+        // Then
+        assert(result.isEmpty()) {
+            "Expected empty list when pet not found and API fails but got $result"
+        }
+        coVerify { petDao.getPetById(petId) }
+        coVerify { catApiService.getBreedImages(petId, 5) }
+    }
+
     private fun createMockPetEntity(
         id: String,
         name: String,
         petType: PetType,
-        isFavorite: Boolean = false
+        isFavorite: Boolean = false,
+        additionalImages: List<String> = emptyList()
     ): PetEntity {
         return PetEntity(
             id = id,
@@ -225,7 +424,7 @@ class PetRepositoryImplTest {
             description = "Test description",
             lifeSpan = "10 - 15",
             imageUrl = "https://test.com/image.jpg",
-            additionalImages = emptyList(),
+            additionalImages = additionalImages,
             isFavorite = isFavorite,
             petType = petType
         )

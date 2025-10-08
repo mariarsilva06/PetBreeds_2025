@@ -23,26 +23,25 @@ class GetFavoritePetsUseCase @Inject constructor(
             }
         }
     }
-
     private fun calculateAverageLifespan(pets: List<Pet>): Float {
         if (pets.isEmpty()) return 0f
-        
+
         val totalLifespan = pets.sumOf { pet ->
             val lifespan = pet.lifeSpan.replace(" years", "").trim()
             try {
                 // Handle ranges like "9 - 12" by taking the average
                 if (lifespan.contains("-")) {
-                    val parts = lifespan.split("-").map { it.trim().toInt() }
-                    (parts[0] + parts[1]) / 2
+                    val parts = lifespan.split("-").map { it.trim().toDouble() }
+                    (parts[0] + parts[1]) / 2.0
                 } else {
-                    lifespan.toInt()
+                    lifespan.toDouble()
                 }
             } catch (e: NumberFormatException) {
-                0
+                0.0
             }
         }
-        
-        return totalLifespan.toFloat() / pets.size
+
+        return (totalLifespan / pets.size).toFloat()
     }
 }
 
