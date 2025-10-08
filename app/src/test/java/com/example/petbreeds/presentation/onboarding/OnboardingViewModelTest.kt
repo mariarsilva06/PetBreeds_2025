@@ -3,7 +3,7 @@ package com.example.petbreeds.presentation.onboarding
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.model.PetType
 import com.example.onboarding.OnboardingViewModel
-import com.example.petbreeds.utils.PreferencesManager
+import com.example.preferences.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

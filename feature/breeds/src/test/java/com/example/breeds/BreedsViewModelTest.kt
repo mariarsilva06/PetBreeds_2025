@@ -1,21 +1,22 @@
-package com.example.petbreeds.presentation.breeds
+package com.example.breeds
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-
-com.example.common.NetworkResult
+import com.example.common.NetworkResult
+import com.example.domain.usecase.GetPetsUseCase
+import com.example.domain.usecase.RefreshPetsUseCase
+import com.example.domain.usecase.ToggleFavoriteUseCase
 import com.example.model.Pet
 import com.example.model.PetType
-import com.example.petbreeds.utils.PreferencesManager
+import com.example.preferences.PreferencesManager
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 
 @ExperimentalCoroutinesApi
 class BreedsViewModelTest {
@@ -387,7 +388,7 @@ class BreedsViewModelTest {
     fun `GIVEN loading more in progress WHEN loadNextPage is called THEN does not make additional request`() = runTest {
         // Given
         coEvery { refreshPetsUseCase(any(), any(), any()) } coAnswers {
-            kotlinx.coroutines.delay(1000) // Simulate long running operation
+            delay(1000) // Simulate long running operation
             NetworkResult.Success(Unit)
         }
 
@@ -409,6 +410,197 @@ class BreedsViewModelTest {
 
         // Then - Should only call once for pagination (plus once for initial load)
         coVerify(exactly = 2) { refreshPetsUseCase(any(), any(), any()) }
+    }
+
+    @Test
+    fun `GIVEN search query is active WHEN onRefresh is called THEN calls refresh use case with search query`() = runTest {
+        // Given
+        val searchQuery = "Persian"
+        coEvery { refreshPetsUseCase(PetType.CAT, 0, searchQuery) } returns NetworkResult.Success(Unit)
+
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val job = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        job.cancel()
+
+        breedsViewModel.onSearchQueryChanged(searchQuery)
+        advanceUntilIdle()
+
+        // When
+        breedsViewModel.onRefresh()
+        advanceUntilIdle()
+
+        // Then
+        coVerify { refreshPetsUseCase(PetType.CAT, 0, searchQuery) }
+    }
+
+    @Test
+    fun `GIVEN search query is active WHEN loadNextPage is called THEN does not paginate`() = runTest {
+        // Given
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val job = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        job.cancel()
+
+        // Set search query to block pagination
+        breedsViewModel.onSearchQueryChanged("Persian")
+        advanceUntilIdle()
+
+        // When
+        breedsViewModel.loadNextPage()
+        advanceUntilIdle()
+
+        // Then - Should only have initial load, no pagination
+        coVerify(exactly = 1) { refreshPetsUseCase(any(), any(), any()) }
+    }
+
+    @Test
+    fun `GIVEN lifespan filter is active WHEN loadNextPage is called THEN does not paginate`() = runTest {
+        // Given
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val job = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        job.cancel()
+
+        // Set lifespan filter to block pagination
+        breedsViewModel.onLifeSpanRangeChanged(5f..10f)
+        advanceUntilIdle()
+
+        // When
+        breedsViewModel.loadNextPage()
+        advanceUntilIdle()
+
+        // Then - Should only have initial load, no pagination
+        coVerify(exactly = 1) { refreshPetsUseCase(any(), any(), any()) }
+    }
+
+    @Test
+    fun `GIVEN pet type changes WHEN setPetType is called THEN triggers reload with new pet type`() = runTest {
+        // Given
+        val mockCatPets = listOf(createMockPet("1", "Persian", PetType.CAT))
+        val mockDogPets = listOf(createMockPet("2", "Labrador", PetType.DOG))
+
+        every { getPetsUseCase(PetType.CAT) } returns flowOf(NetworkResult.Success(mockCatPets))
+        every { getPetsUseCase(PetType.DOG) } returns flowOf(NetworkResult.Success(mockDogPets))
+
+        // Use real MutableStateFlow to simulate pet type changes
+        val petTypeFlow = MutableStateFlow(PetType.CAT)
+        every { preferencesManager.petTypeFlow } returns petTypeFlow
+
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val job = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+
+        // Verify initial state has cats
+        val initialState = breedsViewModel.petsState.value as BreedsUiState.Success
+        assert(initialState.pets.first().petType == PetType.CAT) {
+            "Expected initial pet type to be CAT but got ${initialState.pets.first().petType}"
+        }
+
+        // Clear previous invocations to count only new calls
+        clearMocks(refreshPetsUseCase, answers = false)
+        coEvery { refreshPetsUseCase(any(), any(), any()) } returns NetworkResult.Success(Unit)
+
+        // When - Change pet type
+        breedsViewModel.setPetType(PetType.DOG)
+        petTypeFlow.value = PetType.DOG // Emit new value to trigger collection
+        advanceUntilIdle()
+
+        job.cancel()
+
+        // Then
+        verify { preferencesManager.setPetType(PetType.DOG) }
+        coVerify { refreshPetsUseCase(PetType.DOG, 0, null) }
+    }
+
+    @Test
+    fun `GIVEN search and lifespan filters WHEN both are applied THEN filters by both criteria`() = runTest {
+        // Given
+        val mockPets = listOf(
+            createMockPet("1", "Persian", PetType.CAT, lifeSpan = "10 - 15"),
+            createMockPet("2", "Persian Longhair", PetType.CAT, lifeSpan = "20 - 25"),
+            createMockPet("3", "Maine Coon", PetType.CAT, lifeSpan = "12 - 18")
+        )
+        every { getPetsUseCase(PetType.CAT) } returns flowOf(NetworkResult.Success(mockPets))
+
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val initJob = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        initJob.cancel()
+
+        // When - Apply both filters
+        breedsViewModel.onSearchQueryChanged("Persian")
+        breedsViewModel.onLifeSpanRangeChanged(10f..15f)
+
+        val filterJob = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        filterJob.cancel()
+
+        // Then - Only "Persian" with lifespan 10-15 should match
+        val currentState = breedsViewModel.petsState.value as BreedsUiState.Success
+        assert(currentState.pets.size == 1) {
+            "Expected 1 pet matching both filters but got ${currentState.pets.size}"
+        }
+        assert(currentState.pets.first().name == "Persian") {
+            "Expected filtered pet 'Persian' but got '${currentState.pets.first().name}'"
+        }
+    }
+
+    @Test
+    fun `GIVEN pagination error WHEN loadNextPage is called THEN stops loading but maintains current page`() = runTest {
+        // Given
+        coEvery { refreshPetsUseCase(PetType.CAT, 1, null) } returns NetworkResult.Error("Pagination failed")
+
+        breedsViewModel = BreedsViewModel(
+            getPetsUseCase,
+            refreshPetsUseCase,
+            toggleFavoriteUseCase,
+            preferencesManager
+        )
+
+        val job = launch { breedsViewModel.petsState.collect { } }
+        advanceUntilIdle()
+        job.cancel()
+
+        // When
+        breedsViewModel.loadNextPage()
+        advanceUntilIdle()
+
+        // Then
+        assert(!breedsViewModel.isLoadingMore.value) {
+            "Expected loading more to be false after error"
+        }
+        coVerify { refreshPetsUseCase(PetType.CAT, 1, null) }
     }
 
     private fun createMockPet(

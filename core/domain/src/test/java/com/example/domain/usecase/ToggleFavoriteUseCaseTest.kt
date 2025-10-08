@@ -1,4 +1,4 @@
-package com.example.petbreeds.domain.usecase
+package com.example.domain.usecase
 
 import com.example.domain.repository.PetRepository
 import kotlinx.coroutines.test.runTest

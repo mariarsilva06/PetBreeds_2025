@@ -1,4 +1,4 @@
-package com.example.petbreeds.domain.usecase
+package com.example.domain.usecase
 
 import com.example.model.Pet
 import com.example.model.PetType
