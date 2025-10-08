@@ -1,13 +1,9 @@
-package com.example.petbreeds.data.mapper
+package com.example.data.mapper
 
-import com.example.data.mapper.toCatEntities
-import com.example.data.mapper.toDogEntities
-import com.example.data.mapper.toDomain
-import com.example.data.mapper.toEntity
-import com.example.network.dto.DogBreedDto
 import com.example.database.entity.PetEntity
 import com.example.model.PetType
 import com.example.network.dto.CatBreedDto
+import com.example.network.dto.DogBreedDto
 import com.example.network.dto.ImageDto
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
