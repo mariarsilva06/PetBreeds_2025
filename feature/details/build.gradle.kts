@@ -84,7 +84,7 @@ dependencies {
     // Architecture Components Testing
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 
-    // Turbine (opcional, mas muito útil para testar Flows)
+    // Turbine
     testImplementation("app.cash.turbine:turbine:1.0.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

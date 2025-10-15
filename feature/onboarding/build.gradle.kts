@@ -16,10 +16,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
-    defaultConfig {
-        minSdk = 24
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -88,7 +84,7 @@ dependencies {
     // Architecture Components Testing
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 
-    // Turbine (opcional, mas muito útil para testar Flows)
+    // Turbine
     testImplementation("app.cash.turbine:turbine:1.0.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -1,5 +1,6 @@
 package com.example.details
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -37,12 +39,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.ui.components.ImageCarousel
 import com.example.ui.components.LoadingIndicator
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -53,6 +57,8 @@ fun DetailsScreen(
     val pet by viewModel.pet.collectAsState()
     val additionalImages by viewModel.additionalImages.collectAsState()
     val isLoadingImages by viewModel.isLoadingImages.collectAsState()
+    val context = LocalContext.current
+
 
     Scaffold(
         topBar = {
@@ -67,6 +73,41 @@ fun DetailsScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            pet?.let { currentPet ->
+                                val shareText = buildString {
+                                    appendLine("🐾 ${currentPet.name}")
+                                    appendLine()
+                                    appendLine("📍 Origin: ${currentPet.origin}")
+                                    appendLine("⏱️ Lifespan: ${currentPet.lifeSpan} years")
+                                    appendLine()
+                                    appendLine("💭 Temperament:")
+                                    appendLine(currentPet.temperament)
+                                    appendLine()
+                                    appendLine("📝 About:")
+                                    appendLine(currentPet.description)
+                                    appendLine()
+                                    appendLine("Discover more pet breeds in Pet Breeds App!")
+                                }
+
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, shareText)
+                                    type = "text/plain"
+                                }
+
+                                val shareIntent = Intent.createChooser(sendIntent, "Share ${currentPet.name}")
+                                context.startActivity(shareIntent)
+                            }
+                        }
+                    ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share breed",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
                     pet?.let { currentPet ->
                         IconButton(onClick = viewModel::onToggleFavorite) {
                             Icon(

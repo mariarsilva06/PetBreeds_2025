@@ -26,6 +26,35 @@ class PreferencesManager @Inject constructor(
     private val PET_TYPE_KEY = stringPreferencesKey("pet_type")
     private val IS_FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")
 
+    private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+
+    // Theme Mode
+    suspend fun saveThemeMode(mode: ThemeMode) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[THEME_MODE_KEY] = mode.name
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            saveThemeMode(mode)
+        }
+    }
+
+    val themeModeFlow: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
+        preferences[THEME_MODE_KEY]?.let {
+            try {
+                ThemeMode.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                ThemeMode.SYSTEM
+            }
+        } ?: ThemeMode.SYSTEM
+    }
+
     suspend fun savePetType(petType: PetType) {
         try {
             context.dataStore.edit { preferences ->

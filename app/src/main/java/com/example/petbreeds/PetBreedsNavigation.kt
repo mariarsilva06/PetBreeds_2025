@@ -1,5 +1,6 @@
 package com.example.petbreeds
 
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,14 +11,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.petbreeds.feature.breeds.navigation.breedsScreen
+import com.example.breeds.BreedsScreen
 import com.example.details.DetailsScreen
 import com.example.favorites.FavoritesScreen
 import com.example.onboarding.OnboardingScreen
 import com.example.petbreeds.presentation.navigation.Routes
 import com.example.splash.SplashScreen
 import com.example.preferences.PreferencesManager
+import com.example.profile.ProfileScreen
 import kotlinx.coroutines.delay
+
 
 @Composable
 fun PetBreedsNavigation(
@@ -33,6 +36,7 @@ fun PetBreedsNavigation(
         startDestination = Routes.Splash.route, // Always start with splash
         modifier = modifier
     ) {
+
         composable(Routes.Splash.route) {
 
             LaunchedEffect(isFirstLaunch, petType) {
@@ -63,11 +67,18 @@ fun PetBreedsNavigation(
             )
         }
 
-        breedsScreen(
-            onNavigateToDetails = { petId ->
-                navController.navigate(Routes.Details.createRoute(petId))
-            }
-        )
+        composable(Routes.Breeds.route) {
+            BreedsScreen(
+                onNavigateToDetails = { petId ->
+                    navController.navigate(Routes.Details.createRoute(petId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Routes.Profile.route)
+                }
+            )
+        }
+
+
 
         composable(Routes.Favorites.route) {
             FavoritesScreen(
@@ -89,5 +100,15 @@ fun PetBreedsNavigation(
                 }
             )
         }
+
+        composable(Routes.Profile.route) {
+            ProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
     }
 }

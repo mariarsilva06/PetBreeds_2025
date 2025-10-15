@@ -3,6 +3,7 @@ package com.example.petbreeds.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,6 +17,7 @@ import com.example.petbreeds.PetBreedsNavigation
 import com.example.petbreeds.presentation.navigation.BottomNavItem
 import com.example.petbreeds.presentation.navigation.Routes
 import com.example.preferences.PreferencesManager
+import com.example.preferences.ThemeMode
 import com.example.ui.theme.PetBreedsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -36,6 +38,13 @@ class MainActivity : ComponentActivity() {
             val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = true)
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
+            val themeMode by preferencesManager.themeModeFlow.collectAsState(initial = ThemeMode.SYSTEM)
+
+            val darkTheme = when (themeMode) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
 
             // Handle navigation after splash based on first launch
             LaunchedEffect(isFirstLaunch, currentPetType) {
@@ -56,7 +65,10 @@ class MainActivity : ComponentActivity() {
             }
 
             // Use a default theme during loading, but don't load data
-            PetBreedsTheme(petType = currentPetType ?: PetType.CAT) {
+            PetBreedsTheme(
+                petType = currentPetType ?: PetType.CAT,
+                darkTheme = darkTheme
+            ) {
                 val showBottomBar = currentDestination?.hierarchy?.any { destination ->
                     destination.route == Routes.Breeds.route ||
                             destination.route == Routes.Favorites.route ||
