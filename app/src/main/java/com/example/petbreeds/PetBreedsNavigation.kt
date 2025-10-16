@@ -84,6 +84,9 @@ fun PetBreedsNavigation(
             FavoritesScreen(
                 onNavigateToDetails = { petId ->
                     navController.navigate(Routes.Details.createRoute(petId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Routes.Profile.route)
                 }
             )
         }
