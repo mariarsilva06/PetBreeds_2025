@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun FavoritesScreen(
     onNavigateToDetails: (String) -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val favoritesState by viewModel.favoritesState.collectAsState()
@@ -78,7 +79,8 @@ fun FavoritesScreen(
                     scope.launch {
                         drawerState.open()
                     }
-                }
+                },
+                onProfileClick = onNavigateToProfile
             )
             Column(
                 modifier = Modifier

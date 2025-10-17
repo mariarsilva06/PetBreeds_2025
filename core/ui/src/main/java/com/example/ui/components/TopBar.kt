@@ -22,6 +22,7 @@ fun TopBar(
     title: String,
     subtitle: String,
     onMenuClick: () -> Unit,
+    onProfileClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -46,14 +47,11 @@ fun TopBar(
             }
         },
         actions = {
-            IconButton(onClick = {
-                /* FUTURE IMPROV: MyAccount */
-            }) {
+            IconButton(onClick = onProfileClick) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Account"
                 )
-
             }
         },
         modifier = modifier

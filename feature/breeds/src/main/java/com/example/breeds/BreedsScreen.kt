@@ -19,6 +19,7 @@ import com.example.ui.components.EmptyState
 import com.example.ui.components.ErrorMessage
 import com.example.ui.components.FilterBottomSheet
 import com.example.ui.components.LoadingIndicator
+import com.example.ui.components.LoadingSkeletonList
 import com.example.ui.components.PetCard
 import com.example.ui.components.SearchBar
 import com.example.ui.components.TopBar
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BreedsScreen(
     onNavigateToDetails: (String) -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     viewModel: BreedsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.petsState.collectAsState()
@@ -106,7 +108,8 @@ fun BreedsScreen(
                             scope.launch {
                                 drawerState.open()
                             }
-                        }
+                        },
+                        onProfileClick = onNavigateToProfile
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -134,7 +137,7 @@ fun BreedsScreen(
 
                 val currentUiState = uiState
                 when (currentUiState) {
-                    is BreedsUiState.Loading -> LoadingIndicator()
+                    is BreedsUiState.Loading -> LoadingSkeletonList()
 
                     is BreedsUiState.Success -> {
                         if (currentUiState.pets.isEmpty() && !isRefreshing) {

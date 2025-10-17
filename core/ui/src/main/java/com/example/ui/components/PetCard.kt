@@ -63,16 +63,22 @@ fun PetCard(
                     maxLines = 1
                 )
                 Text(
-                    text = "${pet.name}, ${pet.lifeSpan} years",
+                    text = if (pet.lifeSpan.contains("years", ignoreCase = true)) {
+                        "${pet.name}, ${pet.lifeSpan}"
+                    } else {
+                        "${pet.name}, ${pet.lifeSpan} years"
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Text(
-                    text = pet.origin,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (!pet.origin.isNullOrBlank() && pet.origin != "Unknown") {
+                    Text(
+                        text = pet.origin,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
             IconButton(

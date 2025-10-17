@@ -90,6 +90,7 @@ dependencies {
     implementation(project(":feature:details"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:favorites"))
+    implementation(project(":feature:profile"))
     implementation(project(":core:preferences"))
     implementation(project(":core:resources"))
     implementation(project(":feature:splash"))

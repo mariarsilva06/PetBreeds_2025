@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.favorites"
+    namespace = "com.example.profile"
     compileSdk = 35
 
     defaultConfig {
@@ -14,10 +14,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    defaultConfig {
-        minSdk = 24
     }
 
     compileOptions {
@@ -47,6 +43,7 @@ android {
 }
 
 dependencies {
+    // Core modules
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
@@ -71,27 +68,17 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     ksp("com.google.dagger:hilt-compiler:2.50")
 
-    // Accompanist
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    // Unit Testing
     testImplementation("junit:junit:4.13.2")
-
-    // MockK - Mocking framework para Kotlin
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("io.mockk:mockk-android:1.13.8")
-
-    // Kotlin Coroutines Test
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
-    // Architecture Components Testing
     testImplementation("androidx.arch.core:core-testing:2.2.0")
-
-    // Turbine
     testImplementation("app.cash.turbine:turbine:1.0.0")
 
+    // Android Testing
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("io.mockk:mockk-android:1.13.8")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
-
 }

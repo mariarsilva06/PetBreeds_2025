@@ -41,6 +41,7 @@ turbine = "0.12.1"
 appcompat = "1.6.1"
 material = "1.10.0"
 databinding-adapters = "8.13.0"
+material3 = "1.4.0"
 
 [libraries]
 # Kotlin
@@ -101,6 +102,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-databinding-adapters = { group = "androidx.databinding", name = "databinding-adapters", version.ref = "databinding-adapters" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
