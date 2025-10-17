@@ -217,7 +217,12 @@ fun DetailsScreen(
                     }
 
                     if (currentPet.lifeSpan.isNotEmpty()) {
-                        InfoRow(label = "Life Span", value = "${currentPet.lifeSpan} years")
+                        val lifeSpanValue = if (currentPet.lifeSpan.contains("year", ignoreCase = true)) {
+                            currentPet.lifeSpan
+                        } else {
+                            "${currentPet.lifeSpan} years"
+                        }
+                        InfoRow(label = "Life Span", value = lifeSpanValue)
                     }
 
                     // Temperament Section
