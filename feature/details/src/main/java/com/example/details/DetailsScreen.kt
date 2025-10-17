@@ -1,6 +1,7 @@
 package com.example.details
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -144,22 +145,19 @@ fun DetailsScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    val allImages = buildList {
-                        // Add main image first (if exists)
-                        currentPet.imageUrl?.let { mainImage ->
-                            add(mainImage)
-                        }
-                        // Add additional images, but filter out duplicates
-                        additionalImages.forEach { additionalImage ->
-                            if (additionalImage != currentPet.imageUrl) {
-                                add(additionalImage)
-                            }
+                    val mainImageUrl = currentPet.imageUrl?.trim()
+                    val imagesToShow = buildList {
+                        mainImageUrl?.let { add(it) }
+                        if (additionalImages.size >= 2) {
+                            additionalImages
+                                .map { it.trim() }
+                                .filter { it != mainImageUrl }
+                                .forEach { add(it) }
                         }
                     }
-
-                    if (allImages.isNotEmpty()) {
+                    if (imagesToShow.isNotEmpty()) {
                         ImageCarousel(
-                            images = allImages,
+                            images = imagesToShow,
                             petName = currentPet.name,
                             modifier = Modifier.fillMaxWidth()
                         )
