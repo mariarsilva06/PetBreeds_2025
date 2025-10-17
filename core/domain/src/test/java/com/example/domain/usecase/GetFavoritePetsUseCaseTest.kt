@@ -55,8 +55,8 @@ class GetFavoritePetsUseCaseTest {
     fun `GIVEN favorite pets exist WHEN invoke is called THEN returns success state with correct data`() = runTest {
         // Given
         val favoritePets = listOf(
-            createMockPet("1", "Persian", lifeSpan = "10 - 14"),
-            createMockPet("2", "Maine Coon", lifeSpan = "12 - 16")
+            createMockPet("1", "Persian", lifeSpan = "10 - 14 years"),
+            createMockPet("2", "Maine Coon", lifeSpan = "12 - 16 years")
         )
         every { petRepository.getFavoritePets(PetType.CAT) } returns flowOf(favoritePets)
 
@@ -166,11 +166,11 @@ class GetFavoritePetsUseCaseTest {
     fun `GIVEN pets with invalid lifespan format WHEN invoke is called THEN ignores invalid values in calculation`() = runTest {
         // Given
         val favoritePets = listOf(
-            createMockPet("1", "Persian", lifeSpan = "12"), // Valid: 12
-            createMockPet("2", "Maine Coon", lifeSpan = "unknown"), // Invalid: 0
+            createMockPet("1", "Persian", lifeSpan = "12 - 14"), // Valid: 13
+            createMockPet("2", "Maine Coon", lifeSpan = "unknown"), // Invalid
             createMockPet("3", "Siamese", lifeSpan = "14") // Valid: 14
         )
-        // Average: (12 + 0 + 14) / 3 = 26/3 = 8.67...
+        // Average: (13 + 0 + 14) / 2 = 27/2 = 13.5
         every { petRepository.getFavoritePets(PetType.CAT) } returns flowOf(favoritePets)
 
         // When
@@ -178,7 +178,7 @@ class GetFavoritePetsUseCaseTest {
 
         // Then
         val successResult = result as FavoritePetsState.Success
-        val expectedAverage = 26f / 3f // 8.666...
+        val expectedAverage = 27f / 2f
         assert(abs(successResult.averageLifespan - expectedAverage) < 0.01f) {
             "Expected average lifespan $expectedAverage but got ${successResult.averageLifespan}"
         }
