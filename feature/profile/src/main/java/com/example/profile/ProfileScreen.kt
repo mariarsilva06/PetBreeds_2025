@@ -120,7 +120,7 @@ private fun ProfileHeader() {
                 text = "Pet Lover", // TODO: Make this editable
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.primary
             )
 
             Text(

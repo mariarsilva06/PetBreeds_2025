@@ -9,6 +9,7 @@ import com.example.model.PetType
 import com.example.preferences.PreferencesManager
 import com.example.preferences.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,11 +34,19 @@ class ProfileViewModel @Inject constructor(
             initialValue = ThemeMode.SYSTEM
         )
 
-    val favoritesCount: StateFlow<Int> = currentPetType
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val favoritesStateFlow: StateFlow<FavoritePetsState> = currentPetType
         .filterNotNull()
         .flatMapLatest { petType ->
             getFavoritePetsUseCase(petType)
         }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FavoritePetsState.Empty
+        )
+
+    val favoritesCount: StateFlow<Int> = favoritesStateFlow
         .map { state ->
             when (state) {
                 is FavoritePetsState.Success -> state.pets.size
@@ -50,14 +59,10 @@ class ProfileViewModel @Inject constructor(
             initialValue = 0
         )
 
-    val averageLifespan: StateFlow<Float> = currentPetType
-        .filterNotNull()
-        .flatMapLatest { petType ->
-            getFavoritePetsUseCase(petType)
-        }
+    val averageLifespan: StateFlow<Float> = favoritesStateFlow
         .map { state ->
             when (state) {
-                is FavoritePetsState.Success -> calculateAverageLifespan(state.pets)
+                is FavoritePetsState.Success -> state.averageLifespan
                 else -> 0f
             }
         }
@@ -87,26 +92,5 @@ class ProfileViewModel @Inject constructor(
             preferencesManager.saveThemeMode(mode)
         }
     }
-
-    private fun calculateAverageLifespan(pets: List<Pet>): Float {
-        if (pets.isEmpty()) return 0f
-
-        val totalLifespan = pets.sumOf { pet ->
-            val lifespan = pet.lifeSpan.replace(" years", "").trim()
-            try {
-                if (lifespan.contains("-")) {
-                    val parts = lifespan.split("-").map { it.trim().toInt() }
-                    (parts[0] + parts[1]) / 2
-                } else {
-                    lifespan.toInt()
-                }
-            } catch (e: NumberFormatException) {
-                0
-            }
-        }
-
-        return totalLifespan.toFloat() / pets.size
-    }
-
     // TODO: Implement streak counter (days in a row using the app)
 }
