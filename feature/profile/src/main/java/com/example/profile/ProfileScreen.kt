@@ -1,5 +1,6 @@
 package com.example.profile
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,11 @@ fun ProfileScreen(
     val currentThemeMode by viewModel.currentThemeMode.collectAsState()
     val favoritesCount by viewModel.favoritesCount.collectAsState()
     val averageLifespan by viewModel.averageLifespan.collectAsState()
+    val userName by viewModel.userName.collectAsState()
+    val userBio by viewModel.userBio.collectAsState()
+
+    var showEditNameDialog by remember { mutableStateOf(false) }
+    var showEditBioDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -53,8 +59,12 @@ fun ProfileScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            // TODO: Make ProfileHeader editable (photo, name, bio)
-            ProfileHeader()
+            ProfileHeader(
+                userName = userName,
+                userBio = userBio,
+                onEditNameClick = { showEditNameDialog = true },
+                onEditBioClick = { showEditBioDialog = true }
+            )
             Spacer(modifier = Modifier.height(24.dp))
 
             StatsSection(
@@ -76,13 +86,42 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+    // Edit Name Dialog
+    if (showEditNameDialog) {
+        EditTextDialog(
+            title = "Edit Name",
+            currentValue = userName,
+            placeholder = "Enter your name",
+            onDismiss = { showEditNameDialog = false },
+            onConfirm = { newName ->
+                viewModel.updateUserName(newName)
+                showEditNameDialog = false
+            }
+        )
+    }
+    // Edit Bio Dialog
+    if (showEditBioDialog) {
+        EditTextDialog(
+            title = "Edit Bio",
+            currentValue = userBio,
+            placeholder = "Tell us about yourself",
+            onDismiss = { showEditBioDialog = false },
+            onConfirm = { newBio ->
+                viewModel.updateUserBio(newBio)
+                showEditBioDialog = false
+            },
+            singleLine = false
+        )
+    }
 }
 
 @Composable
-private fun ProfileHeader() {
-    // TODO: Add click to edit profile photo
-    // TODO: Add click to edit name and bio
-    // TODO: Show user join date
+private fun ProfileHeader(
+    userName: String,
+    userBio: String,
+    onEditNameClick: () -> Unit,
+    onEditBioClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,6 +137,7 @@ private fun ProfileHeader() {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Profile Photo (TODO: Add photo change functionality)
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -111,27 +151,104 @@ private fun ProfileHeader() {
                     modifier = Modifier.size(60.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
-                // TODO: Add camera icon overlay for photo change
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Pet Lover", // TODO: Make this editable
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // Name with Edit Button
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                IconButton(
+                    onClick = onEditNameClick,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit name",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
 
-            Text(
-                text = "Exploring the world of pets", // TODO: Make this editable bio
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-            )
+            // Bio with Edit Button
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = userBio,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+                IconButton(
+                    onClick = onEditBioClick,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit bio",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }
 
+@Composable
+private fun EditTextDialog(
+    title: String,
+    currentValue: String,
+    placeholder: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    singleLine: Boolean = true
+) {
+    var textValue by remember { mutableStateOf(currentValue) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            OutlinedTextField(
+                value = textValue,
+                onValueChange = { textValue = it },
+                placeholder = { Text(placeholder) },
+                singleLine = singleLine,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = if (singleLine) 1 else 3
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (textValue.isNotBlank()) {
+                        onConfirm(textValue.trim())
+                    }
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@SuppressLint("DefaultLocale")
 @Composable
 private fun StatsSection(
     favoritesCount: Int,
@@ -170,8 +287,6 @@ private fun StatsSection(
                 subtitle = "years"
             )
         }
-        // TODO: Add row for total breeds viewed
-        // TODO: Add row for days streak using app
     }
 }
 
@@ -253,7 +368,6 @@ private fun PreferencesSection(
             shape = RoundedCornerShape(12.dp)
         ) {
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                // Pet Type Preference
                 PreferenceItem(
                     icon = Icons.Default.Pets,
                     title = "Pet Type",
@@ -266,7 +380,6 @@ private fun PreferencesSection(
                     color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                 )
 
-                // Theme Preference
                 PreferenceItem(
                     icon = Icons.Default.Brightness6,
                     title = "App Theme",
@@ -277,105 +390,124 @@ private fun PreferencesSection(
                     },
                     onClick = { showThemeDialog = true }
                 )
-
-                // TODO: Add notification preferences
             }
         }
     }
 
-    // Pet Type Dialog
     if (showPetTypeDialog) {
-        // TODO: Improve Dialog UI
-        AlertDialog(
-            onDismissRequest = { showPetTypeDialog = false },
-            title = { Text("Choose Pet Type") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Select your preferred pet type:")
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    FilterChip(
-                        selected = currentPetType == PetType.CAT,
-                        onClick = {
-                            onPetTypeChanged(PetType.CAT)
-                            showPetTypeDialog = false
-                        },
-                        label = { Text("Cat") },
-                        leadingIcon = if (currentPetType == PetType.CAT) {
-                            { Icon(Icons.Default.Check, contentDescription = null, Modifier.size(18.dp)) }
-                        } else null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    FilterChip(
-                        selected = currentPetType == PetType.DOG,
-                        onClick = {
-                            onPetTypeChanged(PetType.DOG)
-                            showPetTypeDialog = false
-                        },
-                        label = { Text("Dog") },
-                        leadingIcon = if (currentPetType == PetType.DOG) {
-                            { Icon(Icons.Default.Check, contentDescription = null, Modifier.size(18.dp)) }
-                        } else null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showPetTypeDialog = false }) {
-                    Text("Close")
-                }
+        PetTypeDialog(
+            currentPetType = currentPetType,
+            onDismiss = { showPetTypeDialog = false },
+            onSelect = { petType ->
+                onPetTypeChanged(petType)
+                showPetTypeDialog = false
             }
         )
     }
 
-    // Theme Mode Dialog
     if (showThemeDialog) {
-        // TODO: Improve Dialog UI
-        AlertDialog(
-            onDismissRequest = { showThemeDialog = false },
-            title = { Text("Choose Theme") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Select your preferred theme:")
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    ThemeMode.values().forEach { mode ->
-                        FilterChip(
-                            selected = currentThemeMode == mode,
-                            onClick = {
-                                onThemeModeChanged(mode)
-                                showThemeDialog = false
-                            },
-                            label = {
-                                Text(
-                                    when (mode) {
-                                        ThemeMode.LIGHT -> "Light Mode"
-                                        ThemeMode.DARK -> "Dark Mode"
-                                        ThemeMode.SYSTEM -> "System Default"
-                                    }
-                                )
-                            },
-                            leadingIcon = {
-                                val icon = when (mode) {
-                                    ThemeMode.LIGHT -> Icons.Default.LightMode
-                                    ThemeMode.DARK -> Icons.Default.DarkMode
-                                    ThemeMode.SYSTEM -> Icons.Default.Brightness4
-                                }
-                                Icon(icon, contentDescription = null, Modifier.size(18.dp))
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showThemeDialog = false }) {
-                    Text("Close")
-                }
+        ThemeModeDialog(
+            currentThemeMode = currentThemeMode,
+            onDismiss = { showThemeDialog = false },
+            onSelect = { mode ->
+                onThemeModeChanged(mode)
+                showThemeDialog = false
             }
         )
     }
+}
+
+@Composable
+private fun PetTypeDialog(
+    currentPetType: PetType?,
+    onDismiss: () -> Unit,
+    onSelect: (PetType) -> Unit
+) {
+    // TODO: Improve Dialog UI
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Choose Pet Type") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Select your preferred pet type:")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                FilterChip(
+                    selected = currentPetType == PetType.CAT,
+                    onClick = { onSelect(PetType.CAT) },
+                    label = { Text("Cat") },
+                    leadingIcon = if (currentPetType == PetType.CAT) {
+                        { Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }
+                    } else null,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                FilterChip(
+                    selected = currentPetType == PetType.DOG,
+                    onClick = { onSelect(PetType.DOG) },
+                    label = { Text("Dog") },
+                    leadingIcon = if (currentPetType == PetType.DOG) {
+                        { Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }
+                    } else null,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
+private fun ThemeModeDialog(
+    currentThemeMode: ThemeMode,
+    onDismiss: () -> Unit,
+    onSelect: (ThemeMode) -> Unit
+) {
+    // TODO: Improve Dialog UI
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Choose Theme") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Select your preferred theme:")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ThemeMode.entries.forEach { mode ->
+                    FilterChip(
+                        selected = currentThemeMode == mode,
+                        onClick = { onSelect(mode) },
+                        label = {
+                            Text(
+                                when (mode) {
+                                    ThemeMode.LIGHT -> "Light Mode"
+                                    ThemeMode.DARK -> "Dark Mode"
+                                    ThemeMode.SYSTEM -> "System Default"
+                                }
+                            )
+                        },
+                        leadingIcon = {
+                            val icon = when (mode) {
+                                ThemeMode.LIGHT -> Icons.Default.LightMode
+                                ThemeMode.DARK -> Icons.Default.DarkMode
+                                ThemeMode.SYSTEM -> Icons.Default.Brightness4
+                            }
+                            Icon(icon, null, Modifier.size(18.dp))
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
 }
 
 @Composable
@@ -425,7 +557,6 @@ private fun PreferenceItem(
 
 @Composable
 private fun AboutCard() {
-    // TODO: Add Rate App button
     Column(
         modifier = Modifier
             .fillMaxWidth()

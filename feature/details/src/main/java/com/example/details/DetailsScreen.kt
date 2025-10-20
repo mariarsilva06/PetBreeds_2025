@@ -280,6 +280,7 @@ fun DetailsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column {
+                                //TODO: Go to Favorites Screen on click
                                 Text(
                                     text = if (currentPet.isFavorite) "Added to Favorites" else "Add to Favorites",
                                     style = MaterialTheme.typography.titleMedium,

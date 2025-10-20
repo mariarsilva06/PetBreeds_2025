@@ -34,6 +34,27 @@ class ProfileViewModel @Inject constructor(
             initialValue = ThemeMode.SYSTEM
         )
 
+    val userName: StateFlow<String> = preferencesManager.userNameFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = "Pet Lover"
+        )
+
+    val userBio: StateFlow<String> = preferencesManager.userBioFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = "Exploring the world of pets"
+        )
+
+    val userPhotoUri: StateFlow<String?> = preferencesManager.userPhotoUriFlow
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        ) //todo
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private val favoritesStateFlow: StateFlow<FavoritePetsState> = currentPetType
         .filterNotNull()
@@ -76,7 +97,6 @@ class ProfileViewModel @Inject constructor(
     // TODO: Implement profile photo upload/change functionality
     // TODO: Add ability to edit user name and bio
     // TODO: Add email/phone verification
-    // TODO: Add achievement badges system (e.g., "Favorited 10 breeds", "Explorer")
     // TODO: Implement account deletion option with confirmation
     // TODO: Add feedback/bug report form
     // TODO: Implement app rating prompt
@@ -92,5 +112,23 @@ class ProfileViewModel @Inject constructor(
             preferencesManager.saveThemeMode(mode)
         }
     }
+    fun updateUserName(name: String) {
+        viewModelScope.launch {
+            preferencesManager.saveUserName(name)
+        }
+    }
+
+    fun updateUserBio(bio: String) {
+        viewModelScope.launch {
+            preferencesManager.saveUserBio(bio)
+        }
+    }
+
+    fun updateUserPhotoUri(uri: String?) {
+        viewModelScope.launch {
+            preferencesManager.saveUserPhotoUri(uri)
+        }
+    } //todo
+
     // TODO: Implement streak counter (days in a row using the app)
 }
