@@ -16,11 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.model.PetType
 import com.example.preferences.ThemeMode
+import com.example.profile.R.string
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,12 +43,12 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = { Text(stringResource(string.profile_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back"
+                            contentDescription = stringResource(string.navigate_back)
                         )
                     }
                 }
@@ -89,9 +91,9 @@ fun ProfileScreen(
     // Edit Name Dialog
     if (showEditNameDialog) {
         EditTextDialog(
-            title = "Edit Name",
+            title = stringResource(string.edit_name),
             currentValue = userName,
-            placeholder = "Enter your name",
+            placeholder = stringResource(string.enter_your_name),
             onDismiss = { showEditNameDialog = false },
             onConfirm = { newName ->
                 viewModel.updateUserName(newName)
@@ -102,9 +104,9 @@ fun ProfileScreen(
     // Edit Bio Dialog
     if (showEditBioDialog) {
         EditTextDialog(
-            title = "Edit Bio",
+            title = stringResource(string.edit_bio),
             currentValue = userBio,
-            placeholder = "Tell us about yourself",
+            placeholder = stringResource(string.tell_us_about_yourself),
             onDismiss = { showEditBioDialog = false },
             onConfirm = { newBio ->
                 viewModel.updateUserBio(newBio)
@@ -147,7 +149,7 @@ private fun ProfileHeader(
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
+                    contentDescription = stringResource(string.profile_title),
                     modifier = Modifier.size(60.dp),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
@@ -172,7 +174,7 @@ private fun ProfileHeader(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit name",
+                        contentDescription = stringResource(string.edit_name),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(18.dp)
                     )
@@ -195,7 +197,7 @@ private fun ProfileHeader(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit bio",
+                        contentDescription = stringResource(string.edit_bio),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                         modifier = Modifier.size(16.dp)
                     )
@@ -237,12 +239,12 @@ private fun EditTextDialog(
                     }
                 }
             ) {
-                Text("Save")
+                Text(stringResource(string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(string.cancel))
             }
         }
     )
@@ -261,7 +263,7 @@ private fun StatsSection(
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "Your Statistics",
+            text = stringResource(string.your_statistics),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -274,17 +276,17 @@ private fun StatsSection(
             StatCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Favorite,
-                title = "Favorites",
+                title = stringResource(string.favorites),
                 value = "$favoritesCount",
-                subtitle = "${currentPetType?.name?.lowercase() ?: "pet"} breeds"
+                stringResource(R.string.breeds_subtitle, currentPetType?.name?.lowercase() ?: "pet")
             )
 
             StatCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Schedule,
-                title = "Avg Lifespan",
+                title = stringResource(string.avg_lifespan),
                 value = if (averageLifespan > 0) String.format("%.1f", averageLifespan) else "--",
-                subtitle = "years"
+                subtitle = stringResource(string.years)
             )
         }
     }
@@ -354,7 +356,7 @@ private fun PreferencesSection(
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "Preferences",
+            text = stringResource(string.preferences),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -370,8 +372,8 @@ private fun PreferencesSection(
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 PreferenceItem(
                     icon = Icons.Default.Pets,
-                    title = "Pet Type",
-                    value = if (currentPetType == PetType.CAT) "Cat" else "Dog",
+                    title = stringResource(string.pet_type),
+                    value = if (currentPetType == PetType.CAT) stringResource(string.cat) else stringResource(string.dog),
                     onClick = { showPetTypeDialog = true }
                 )
 
@@ -382,11 +384,11 @@ private fun PreferencesSection(
 
                 PreferenceItem(
                     icon = Icons.Default.Brightness6,
-                    title = "App Theme",
+                    title = stringResource(string.app_theme),
                     value = when (currentThemeMode) {
-                        ThemeMode.LIGHT -> "Light"
-                        ThemeMode.DARK -> "Dark"
-                        ThemeMode.SYSTEM -> "System Default"
+                        ThemeMode.LIGHT -> stringResource(string.light)
+                        ThemeMode.DARK -> stringResource(string.dark)
+                        ThemeMode.SYSTEM -> stringResource(string.system_default)
                     },
                     onClick = { showThemeDialog = true }
                 )
@@ -426,16 +428,16 @@ private fun PetTypeDialog(
     // TODO: Improve Dialog UI
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Choose Pet Type") },
+        title = { Text(stringResource(string.choose_pet_type)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Select your preferred pet type:")
+                Text(stringResource(string.select_preferred_pet_type))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 FilterChip(
                     selected = currentPetType == PetType.CAT,
                     onClick = { onSelect(PetType.CAT) },
-                    label = { Text("Cat") },
+                    label = { Text(stringResource(string.cat)) },
                     leadingIcon = if (currentPetType == PetType.CAT) {
                         { Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }
                     } else null,
@@ -445,7 +447,7 @@ private fun PetTypeDialog(
                 FilterChip(
                     selected = currentPetType == PetType.DOG,
                     onClick = { onSelect(PetType.DOG) },
-                    label = { Text("Dog") },
+                    label = { Text(stringResource(string.dog)) },
                     leadingIcon = if (currentPetType == PetType.DOG) {
                         { Icon(Icons.Default.Check, null, Modifier.size(18.dp)) }
                     } else null,
@@ -455,7 +457,7 @@ private fun PetTypeDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(string.close))
             }
         }
     )
@@ -470,10 +472,10 @@ private fun ThemeModeDialog(
     // TODO: Improve Dialog UI
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Choose Theme") },
+        title = { Text(stringResource(string.choose_theme)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Select your preferred theme:")
+                Text(stringResource(string.select_preferred_theme))
                 Spacer(modifier = Modifier.height(8.dp))
 
                 ThemeMode.entries.forEach { mode ->
@@ -483,9 +485,9 @@ private fun ThemeModeDialog(
                         label = {
                             Text(
                                 when (mode) {
-                                    ThemeMode.LIGHT -> "Light Mode"
-                                    ThemeMode.DARK -> "Dark Mode"
-                                    ThemeMode.SYSTEM -> "System Default"
+                                    ThemeMode.LIGHT -> stringResource(string.light_mode)
+                                    ThemeMode.DARK -> stringResource(string.dark_mode)
+                                    ThemeMode.SYSTEM -> stringResource(string.system_default)
                                 }
                             )
                         },
@@ -504,7 +506,7 @@ private fun ThemeModeDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(string.close))
             }
         }
     )
@@ -548,7 +550,7 @@ private fun PreferenceItem(
             }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
-                contentDescription = "Edit",
+                contentDescription = stringResource(string.edit),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -563,7 +565,7 @@ private fun AboutCard() {
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = "About",
+            text = stringResource(string.about),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -582,14 +584,14 @@ private fun AboutCard() {
             ) {
                 AboutRow(
                     icon = Icons.Default.Info,
-                    label = "App Version",
-                    value = "1.0.2"
+                    label = stringResource(string.app_version_label),
+                    value = stringResource(string.app_version_value)
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                 AboutRow(
                     icon = Icons.Default.Code,
-                    label = "Developed with",
-                    value = "Jetpack Compose"
+                    label = stringResource(string.developed_with_label),
+                    value = stringResource(string.developed_with_value)
                 )
             }
         }

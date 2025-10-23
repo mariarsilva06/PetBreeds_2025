@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import com.example.resources.R
-
+import com.example.onboarding.R.string
 @Composable
 fun OnboardingScreen(
     onPetTypeSelected: () -> Unit,
@@ -118,7 +119,7 @@ fun OnboardingScreen(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.catdog2),
-                    contentDescription = "Pet Breeds App Logo",
+                    contentDescription = stringResource(string.pet_breeds_app_logo),
                     modifier = Modifier
                         .size(85.dp),
                     tint = MaterialTheme.colorScheme.primary
@@ -136,14 +137,14 @@ fun OnboardingScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Welcome to",
+                        text = stringResource(string.onboarding_welcome_title_part1),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
 
                     Text(
-                        text = "Pet Breeds",
+                        text = stringResource(string.onboarding_welcome_title_part2),
                         style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 36.sp
@@ -162,7 +163,7 @@ fun OnboardingScreen(
                 enter = fadeIn(animationSpec = tween(800, delayMillis = 400))
             ) {
                 Text(
-                    text = "Discover your perfect companion",
+                    text = stringResource(string.onboarding_welcome_subtitle),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -177,7 +178,7 @@ fun OnboardingScreen(
                 enter = fadeIn(animationSpec = tween(800, delayMillis = 600))
             ) {
                 Text(
-                    text = "Are you a...",
+                    text = stringResource(string.onboarding_are_you_a),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
@@ -203,7 +204,7 @@ fun OnboardingScreen(
                     Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
                             painter = painterResource(id = R.drawable.cat7),
-                            label = "Cat Person",
+                            label = stringResource(string.cat_person),
                             petType = PetType.CAT,
                             isSelected = selectedPetType == PetType.CAT,
                             onClick = { selectedPetType = PetType.CAT }
@@ -215,7 +216,7 @@ fun OnboardingScreen(
                     Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
                             painter = painterResource(id = R.drawable.dog7),
-                            label = "Dog Person",
+                            label = stringResource(string.dog_person),
                             petType = PetType.DOG,
                             isSelected = selectedPetType == PetType.DOG,
                             onClick = { selectedPetType = PetType.DOG }
@@ -223,10 +224,7 @@ fun OnboardingScreen(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(48.dp))
-
-
         }
     }
 }

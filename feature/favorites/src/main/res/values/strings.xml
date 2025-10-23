@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_breeds_title">Favorite Breeds</string>
+    <string name="exploring_cats_subtitle">Exploring Cats</string>
+    <string name="exploring_dogs_subtitle">Exploring Dogs</string>
+    <string name="average_lifespan">Average Lifespan</string>
+    <string name="based_on_favorite_breeds">Based on %1$d favorite breeds</string>
+    <string name="no_favorite_breeds_yet">No favorite %1$s breeds yet</string>
+    <string name="start_exploring_and_favoriting">Start exploring breeds and tap the heart icon to add them to your favorites</string>
+</resources>

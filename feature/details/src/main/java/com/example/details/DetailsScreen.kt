@@ -1,7 +1,7 @@
 package com.example.details
 
+import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,14 +41,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.ui.components.ImageCarousel
 import com.example.ui.components.LoadingIndicator
-
-
+import com.example.model.Pet
+import com.example.details.R.string
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DetailsScreen(
@@ -69,47 +70,23 @@ fun DetailsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back"
+                            contentDescription = stringResource(string.back_button_description)
                         )
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            pet?.let { currentPet ->
-                                val shareText = buildString {
-                                    appendLine("🐾 ${currentPet.name}")
-                                    appendLine()
-                                    appendLine("📍 Origin: ${currentPet.origin}")
-                                    appendLine("⏱️ Lifespan: ${currentPet.lifeSpan} years")
-                                    appendLine()
-                                    appendLine("💭 Temperament:")
-                                    appendLine(currentPet.temperament)
-                                    appendLine()
-                                    appendLine("📝 About:")
-                                    appendLine(currentPet.description)
-                                    appendLine()
-                                    appendLine("Discover more pet breeds in Pet Breeds App!")
-                                }
-
-                                val sendIntent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, shareText)
-                                    type = "text/plain"
-                                }
-
-                                val shareIntent = Intent.createChooser(sendIntent, "Share ${currentPet.name}")
-                                context.startActivity(shareIntent)
-                            }
-                        }
-                    ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Share breed",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
                     pet?.let { currentPet ->
+                        // Share button
+                        IconButton(onClick = {
+                            onShareClick(currentPet, context)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = stringResource(string.share_label)
+                            )
+                        }
+
+                        // Favorite button
                         IconButton(onClick = viewModel::onToggleFavorite) {
                             Icon(
                                 imageVector = if (currentPet.isFavorite) {
@@ -118,9 +95,9 @@ fun DetailsScreen(
                                     Icons.Outlined.FavoriteBorder
                                 },
                                 contentDescription = if (currentPet.isFavorite) {
-                                    "Remove from favorites"
+                                    stringResource(string.remove_from_favorites)
                                 } else {
-                                    "Add to favorites"
+                                    stringResource(string.add_to_favorites)
                                 },
                                 tint = if (currentPet.isFavorite) {
                                     MaterialTheme.colorScheme.error
@@ -133,7 +110,7 @@ fun DetailsScreen(
                 }
             )
         }
-    ) { paddingValues ->
+    ) {  paddingValues ->
         pet?.let { currentPet ->
             Column(
                 modifier = Modifier
@@ -149,10 +126,11 @@ fun DetailsScreen(
                     val imagesToShow = buildList {
                         mainImageUrl?.let { add(it) }
                         if (additionalImages.size >= 2) {
-                            additionalImages
-                                .map { it.trim() }
-                                .filter { it != mainImageUrl }
-                                .forEach { add(it) }
+                            addAll(
+                                additionalImages
+                                    .map { it.trim() }
+                                    .filter { it != mainImageUrl }
+                            )
                         }
                     }
                     if (imagesToShow.isNotEmpty()) {
@@ -176,14 +154,14 @@ fun DetailsScreen(
                                     CircularProgressIndicator()
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Loading more images...",
+                                        text = stringResource(string.loading_images),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             } else {
                                 Text(
-                                    text = "No images available",
+                                    text = stringResource(string.no_images_available),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -211,7 +189,7 @@ fun DetailsScreen(
                     if (currentPet.origin.isNotEmpty() &&
                         currentPet.origin.lowercase() != "unknown" &&
                         currentPet.origin != "Unknown") {
-                        InfoRow(label = "Origin", value = currentPet.origin)
+                        InfoRow(label = stringResource(string.origin_label), value = currentPet.origin)
                     }
 
                     if (currentPet.lifeSpan.isNotEmpty()) {
@@ -220,7 +198,7 @@ fun DetailsScreen(
                         } else {
                             "${currentPet.lifeSpan} years"
                         }
-                        InfoRow(label = "Life Span", value = lifeSpanValue)
+                        InfoRow(label = stringResource(string.lifespan_label), value = lifeSpanValue)
                     }
 
                     // Temperament Section
@@ -231,7 +209,7 @@ fun DetailsScreen(
                         )
 
                         Text(
-                            text = "Temperament",
+                            text = stringResource(string.temperament_label),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -247,7 +225,7 @@ fun DetailsScreen(
                         )
 
                         Text(
-                            text = "About this Breed",
+                            text = stringResource(string.description_label),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -282,7 +260,7 @@ fun DetailsScreen(
                             Column {
                                 //TODO: Go to Favorites Screen on click
                                 Text(
-                                    text = if (currentPet.isFavorite) "Added to Favorites" else "Add to Favorites",
+                                    text = if (currentPet.isFavorite) stringResource(string.added_to_favorites) else stringResource(string.add_to_favorites),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Medium,
                                     color = if (currentPet.isFavorite) {
@@ -293,9 +271,9 @@ fun DetailsScreen(
                                 )
                                 Text(
                                     text = if (currentPet.isFavorite) {
-                                        "This breed is in your favorites"
+                                        stringResource(string.breed_in_favorites)
                                     } else {
-                                        "Save this breed to your favorites"
+                                        stringResource(string.save_to_favorites)
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = if (currentPet.isFavorite) {
@@ -316,9 +294,9 @@ fun DetailsScreen(
                                         Icons.Outlined.FavoriteBorder
                                     },
                                     contentDescription = if (currentPet.isFavorite) {
-                                        "Remove from favorites"
+                                        stringResource(string.remove_from_favorites)
                                     } else {
-                                        "Add to favorites"
+                                        stringResource(string.add_to_favorites)
                                     },
                                     tint = if (currentPet.isFavorite) {
                                         MaterialTheme.colorScheme.error
@@ -338,6 +316,8 @@ fun DetailsScreen(
         } ?: LoadingIndicator()
     }
 }
+
+
 
 @Composable
 fun InfoRow(
@@ -397,4 +377,30 @@ fun TemperamentChips(
             )
         }
     }
+}
+
+fun onShareClick(pet: Pet, context: Context) {
+    val shareText = buildString {
+        appendLine(context.getString(string.share_pet_title, pet.name))
+        appendLine()
+        appendLine(context.getString(string.share_pet_origin, pet.origin))
+        appendLine(context.getString(string.share_pet_lifespan, pet.lifeSpan))
+        appendLine()
+        appendLine(context.getString(string.share_pet_temperament_title))
+        appendLine(pet.temperament)
+        appendLine()
+        appendLine(context.getString(string.share_pet_about_title))
+        appendLine(pet.description)
+        appendLine()
+        appendLine(context.getString(string.share_pet_discover))
+    }
+
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, shareText)
+        type = "text/plain"
+    }
+
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    context.startActivity(shareIntent)
 }

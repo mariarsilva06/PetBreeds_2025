@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import com.example.ui.components.DrawerContent
 import com.example.ui.components.PetCard
 import com.example.ui.components.TopBar
 import kotlinx.coroutines.launch
+import com.example.favorites.R.string
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,8 +75,8 @@ fun FavoritesScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             TopBar(
-                title = "Favorite Breeds",
-                subtitle = if (currentPetType == PetType.CAT) "Exploring Cats" else "Dogs",
+                title = stringResource(string.favorite_breeds_title),
+                subtitle = if (currentPetType == PetType.CAT) stringResource(string.exploring_cats_subtitle) else stringResource(string.exploring_dogs_subtitle),
                 onMenuClick = {
                     scope.launch {
                         drawerState.open()
@@ -107,13 +109,13 @@ fun FavoritesScreen(
                             ) {
                                 Column {
                                     Text(
-                                        text = "Average Lifespan",
+                                        text = stringResource(string.average_lifespan),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
-                                    Text(
-                                        text = "Based on ${currentFavoritesState.pets.size} favorite breeds",
+                                   Text(
+                                        text = stringResource(string.based_on_favorite_breeds, currentFavoritesState.pets.size),
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(
                                             alpha = 0.9f
@@ -205,7 +207,7 @@ fun FavoritesScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "No favorite $petType breeds yet",
+                text = stringResource(string.no_favorite_breeds_yet, petType),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
@@ -213,7 +215,7 @@ fun FavoritesScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Start exploring breeds and tap the heart icon to add them to your favorites",
+                text = stringResource(string.start_exploring_and_favoriting),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

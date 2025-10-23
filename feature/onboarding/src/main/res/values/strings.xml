@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pet_breeds_app_logo">"Pet Breeds App Logo"</string>
+    <string name="onboarding_welcome_title_part1">Welcome to</string>
+    <string name="onboarding_welcome_title_part2">Pet Breeds</string>
+    <string name="onboarding_welcome_subtitle">Discover your perfect companion</string>
+    <string name="cat_person">Cat Person</string>
+    <string name="dog_person">Dog Person</string>
+    <string name="onboarding_are_you_a">Are you a…</string>
+</resources>

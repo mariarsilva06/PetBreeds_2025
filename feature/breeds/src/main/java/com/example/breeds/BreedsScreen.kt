@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.model.PetType
@@ -28,6 +29,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import com.example.breeds.R.string
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,8 +104,8 @@ fun BreedsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TopBar(
-                        title = "Pet Breeds",
-                        subtitle = if (currentPetType == PetType.CAT) "Exploring Cats" else "Dogs",
+                        title = stringResource(string.pet_breeds_title),
+                        subtitle = if (currentPetType == PetType.CAT) stringResource(string.exploring_pet_breeds_cat) else stringResource(string.exploring_pet_breeds_dog),
                         onMenuClick = {
                             scope.launch {
                                 drawerState.open()
@@ -124,11 +126,14 @@ fun BreedsScreen(
                         SearchBar(
                             query = searchQuery,
                             onQueryChange = viewModel::onSearchQueryChanged,
-                            placeholder = "Search ${currentPetType?.name?.lowercase() ?: "pet"} breeds...",
+                            placeholder = stringResource(
+                                string.search_pet_breeds_placeholder,
+                                currentPetType?.name?.lowercase() ?: "pet"
+                            ),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)
                         )
                         IconButton(onClick = { showFilters = true }, modifier = Modifier.padding(start = 8.dp)) {
-                            Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                            Icon(Icons.Default.FilterList, contentDescription = stringResource(string.filter_content_description))
                         }
                     }
                 }
@@ -143,9 +148,10 @@ fun BreedsScreen(
                         if (currentUiState.pets.isEmpty() && !isRefreshing) {
                             EmptyState(
                                 message = if (searchQuery.isEmpty()) {
-                                    "No breeds available"
+                                    stringResource(string.no_breeds_available)
                                 } else {
-                                    "No breeds found for \"$searchQuery\""
+                                    stringResource(string.no_breeds_found_for, searchQuery)
+
                                 }
                             )
                         } else {
