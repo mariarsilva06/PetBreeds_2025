@@ -30,7 +30,7 @@ class GetFavoritePetsUseCase @Inject constructor(
             try {
                 if (lifespan.contains("-")) {
                     val parts = lifespan.split("-").map { it.trim().toDouble() }
-                    if (parts.size == 2) (parts[0] + parts[1]) / 2.0 else null
+                    if (parts.size == 2) parts.average() else null
                 } else {
                     lifespan.toDoubleOrNull()
                 }
@@ -38,12 +38,10 @@ class GetFavoritePetsUseCase @Inject constructor(
                 null
             }
         }
-
         if (validLifespans.isEmpty()) return 0f
-        return (validLifespans.sum() / validLifespans.size).toFloat()
+        return validLifespans.average().toFloat()}
     }
 
-}
 sealed interface FavoritePetsState {
     object Empty : FavoritePetsState
     data class Success(
