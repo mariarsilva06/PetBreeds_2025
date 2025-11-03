@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+
 class GetFavoritePetsUseCase @Inject constructor(
     private val repository: PetRepository
 ) {
@@ -24,26 +25,22 @@ class GetFavoritePetsUseCase @Inject constructor(
         }
     }
     private fun calculateAverageLifespan(pets: List<Pet>): Float {
-        if (pets.isEmpty()) return 0f
-
-        val totalLifespan = pets.sumOf { pet ->
+        val validLifespans = pets.mapNotNull { pet ->
             val lifespan = pet.lifeSpan.replace(" years", "").trim()
             try {
-                // Handle ranges like "9 - 12" by taking the average
                 if (lifespan.contains("-")) {
                     val parts = lifespan.split("-").map { it.trim().toDouble() }
-                    (parts[0] + parts[1]) / 2.0
+                    if (parts.size == 2) parts.average() else null
                 } else {
-                    lifespan.toDouble()
+                    lifespan.toDoubleOrNull()
                 }
-            } catch (e: NumberFormatException) {
-                0.0
+            } catch (e: Exception) {
+                null
             }
         }
-
-        return (totalLifespan / pets.size).toFloat()
+        if (validLifespans.isEmpty()) return 0f
+        return validLifespans.average().toFloat()}
     }
-}
 
 sealed interface FavoritePetsState {
     object Empty : FavoritePetsState

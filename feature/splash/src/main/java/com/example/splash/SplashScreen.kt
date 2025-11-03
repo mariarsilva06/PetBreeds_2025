@@ -26,11 +26,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import com.example.resources.R
+import com.example.splash.R.string
+
 
 @Composable
 fun SplashScreen(
@@ -81,7 +84,7 @@ fun SplashScreen(
             // App Icon/Logo
             Icon(
                 painter = painterResource(id = R.drawable.catdog2),
-                contentDescription = "Pet Breeds Logo",
+                contentDescription = stringResource(string.pet_breeds_logo_description),
                 modifier = Modifier.size(120.dp),
                 tint = Color.White
             )
@@ -90,7 +93,7 @@ fun SplashScreen(
 
             // App Name
             Text(
-                text = "Pet Breeds",
+                text = stringResource(string.pet_breeds_title),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -100,7 +103,7 @@ fun SplashScreen(
 
             // Tagline
             Text(
-                text = "Discover your perfect companion",
+                text = stringResource(string.splash_tagline),
                 fontSize = 16.sp,
                 color = Color.White.copy(alpha = 0.9f)
             )

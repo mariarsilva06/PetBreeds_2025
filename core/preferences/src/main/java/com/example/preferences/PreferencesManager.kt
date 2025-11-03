@@ -25,6 +25,37 @@ class PreferencesManager @Inject constructor(
 ) {
     private val PET_TYPE_KEY = stringPreferencesKey("pet_type")
     private val IS_FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")
+    private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+    private val USER_NAME_KEY = stringPreferencesKey("user_name")
+    private val USER_BIO_KEY = stringPreferencesKey("user_bio")
+    private val USER_PHOTO_URI_KEY = stringPreferencesKey("user_photo_uri")
+
+    // Theme Mode
+    suspend fun saveThemeMode(mode: ThemeMode) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[THEME_MODE_KEY] = mode.name
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            saveThemeMode(mode)
+        }
+    }
+
+    val themeModeFlow: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
+        preferences[THEME_MODE_KEY]?.let {
+            try {
+                ThemeMode.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                ThemeMode.SYSTEM
+            }
+        } ?: ThemeMode.SYSTEM
+    }
 
     suspend fun savePetType(petType: PetType) {
         try {
@@ -60,6 +91,52 @@ class PreferencesManager @Inject constructor(
 
     val isFirstLaunchFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IS_FIRST_LAUNCH_KEY] ?: true // Default to true for first launch
+    }
+
+    suspend fun saveUserName(name: String) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[USER_NAME_KEY] = name
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val userNameFlow: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[USER_NAME_KEY] ?: "Pet Lover"
+    }
+
+    suspend fun saveUserBio(bio: String) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[USER_BIO_KEY] = bio
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val userBioFlow: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[USER_BIO_KEY] ?: "Exploring the world of pets"
+    }
+
+    suspend fun saveUserPhotoUri(uri: String?) {
+        try {
+            context.dataStore.edit { preferences ->
+                if (uri != null) {
+                    preferences[USER_PHOTO_URI_KEY] = uri
+                } else {
+                    preferences.remove(USER_PHOTO_URI_KEY)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val userPhotoUriFlow: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[USER_PHOTO_URI_KEY]
     }
 
 }

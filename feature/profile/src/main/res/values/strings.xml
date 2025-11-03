@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="edit_name">Edit Name</string>
+    <string name="edit_bio">Edit Bio</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="tell_us_about_yourself">Tell us about yourself</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="profile_icon_content_description">Profile</string>
+    <string name="edit_name_content_description">Edit name</string>
+    <string name="edit_bio_content_description">Edit bio</string>
+
+    <!-- Stats Section -->
+    <string name="your_statistics">Your Statistics</string>
+    <string name="favorites">Favorites</string>
+    <string name="breeds_subtitle">%1$s breeds</string>
+    <string name="avg_lifespan">Average Lifespan</string>
+    <string name="years">years</string>
+
+    <!-- Preferences Section -->
+    <string name="preferences">Preferences</string>
+    <string name="pet_type">Pet Type</string>
+    <string name="cat">Cat</string>
+    <string name="dog">Dog</string>
+    <string name="app_theme">App Theme</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="system_default">System Default</string>
+    <string name="choose_pet_type">Choose Pet Type</string>
+    <string name="choose_theme">Choose Theme</string>
+    <string name="select_preferred_pet_type">Select your preferred pet type:</string>
+    <string name="select_preferred_theme">Select your preferred theme:</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="close">Close</string>
+    <string name="edit">Edit</string>
+
+    <!-- About Section -->
+    <string name="about">About</string>
+    <string name="app_version_label">App Version</string>
+    <string name="app_version_value">1.0.2</string>
+    <string name="developed_with_label">Developed with</string>
+    <string name="developed_with_value">Jetpack Compose</string>
+</resources>
