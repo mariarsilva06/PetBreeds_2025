@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    // Share Feature
+    <string name="app_name">PetBreeds</string>
+    <string name="share_pet_title">🐾 %s</string>
+    <string name="share_pet_origin">📍 Origin: %s</string>
+    <string name="share_pet_lifespan">⏱️ Lifespan: %s years</string>
+    <string name="share_pet_temperament_title">💭 Temperament:</string>
+    <string name="share_pet_about_title">📝 About:</string>
+    <string name="share_pet_discover">Discover more pet breeds in Pet Breeds App!</string>
+
+    // Favorite buttons
+    <string name="favorite_added">Breed added to favorites</string>
+    <string name="favorite_removed">Breed removed from favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="breed_in_favorites">This breed is in your favorite</string>
+    <string name="save_to_favorites">Save this breed to your favorites</string>
+
+    // Image Section
+    <string name="loading_images">Loading more images...</string>
+    <string name="no_images_available">No images available</string>
+
+    <string name="loading">Loading...</string>
+
+    //Labels
+    <string name="origin_label">Origin</string>
+    <string name="lifespan_label">Lifespan</string>
+    <string name="temperament_label">Temperament</string>
+    <string name="description_label">About this Breed</string>
+    <string name="share_label">Share</string>
+    <string name="back_button_description">Navigate back</string>
+
+
+</resources>

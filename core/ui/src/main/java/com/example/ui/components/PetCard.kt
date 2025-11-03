@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.model.Pet
+import com.example.model.PetType
 
 @Composable
 fun PetCard(
@@ -55,7 +56,6 @@ fun PetCard(
                 modifier = Modifier.Companion
                     .weight(1f)
                     .padding(vertical = 12.dp)
-                // REMOVED: .clickable { onCardClick() } from here
             ) {
                 Text(
                     text = pet.name,
@@ -63,7 +63,7 @@ fun PetCard(
                     maxLines = 1
                 )
                 Text(
-                    text = if (pet.lifeSpan.contains("years", ignoreCase = true)) {
+                    text = if (pet.petType == PetType.DOG) {
                         "${pet.name}, ${pet.lifeSpan}"
                     } else {
                         "${pet.name}, ${pet.lifeSpan} years"
@@ -71,7 +71,7 @@ fun PetCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                if (!pet.origin.isNullOrBlank() && pet.origin != "Unknown") {
+                if (pet.origin.isNotBlank() && pet.origin != "Unknown") {
                     Text(
                         text = pet.origin,
                         style = MaterialTheme.typography.bodySmall,
