@@ -7,10 +7,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,12 +22,9 @@ import com.example.ui.components.EmptyState
 import com.example.ui.components.ErrorMessage
 import com.example.ui.components.FilterBottomSheet
 import com.example.ui.components.LoadingIndicator
-import com.example.ui.components.LoadingSkeletonList
 import com.example.ui.components.PetCard
 import com.example.ui.components.SearchBar
 import com.example.ui.components.TopBar
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -35,7 +34,7 @@ import com.example.breeds.R.string
 @Composable
 fun BreedsScreen(
     onNavigateToDetails: (String) -> Unit,
-    onNavigateToProfile: () -> Unit = {},
+    onNavigateToProfile: () -> Unit,
     viewModel: BreedsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.petsState.collectAsState()
@@ -44,9 +43,25 @@ fun BreedsScreen(
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val currentPetType by viewModel.currentPetType.collectAsState()
     val listState = rememberLazyListState()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
     var showFilters by remember { mutableStateOf(false) }
     val lifeSpanRange by viewModel.lifeSpanRange.collectAsState()
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    if (isRefreshing) {
+        LaunchedEffect(Unit) {
+            pullToRefreshState.startRefresh()
+        }
+    } else {
+        LaunchedEffect(Unit) {
+            pullToRefreshState.endRefresh()
+        }
+    }
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(Unit) {
+            viewModel.onRefresh()
+        }
+    }
 
     // Drawer state
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -93,9 +108,10 @@ fun BreedsScreen(
             }
         }
     ) {
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = viewModel::onRefresh
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(pullToRefreshState.nestedScrollConnection)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -105,13 +121,14 @@ fun BreedsScreen(
                 ) {
                     TopBar(
                         title = stringResource(string.pet_breeds_title),
-                        subtitle = if (currentPetType == PetType.CAT) stringResource(string.exploring_pet_breeds_cat) else stringResource(string.exploring_pet_breeds_dog),
+                        subtitle = if (currentPetType == PetType.CAT) stringResource(string.exploring_cat) else stringResource(string.exploring_dog),
                         onMenuClick = {
                             scope.launch {
                                 drawerState.open()
                             }
                         },
                         onProfileClick = onNavigateToProfile
+
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -126,10 +143,7 @@ fun BreedsScreen(
                         SearchBar(
                             query = searchQuery,
                             onQueryChange = viewModel::onSearchQueryChanged,
-                            placeholder = stringResource(
-                                string.search_pet_breeds_placeholder,
-                                currentPetType?.name?.lowercase() ?: "pet"
-                            ),
+                            placeholder = stringResource(string.search_pet_breeds_placeholder, currentPetType?.name?.lowercase() ?: "pet"),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)
                         )
                         IconButton(onClick = { showFilters = true }, modifier = Modifier.padding(start = 8.dp)) {
@@ -140,9 +154,8 @@ fun BreedsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val currentUiState = uiState
-                when (currentUiState) {
-                    is BreedsUiState.Loading -> LoadingSkeletonList()
+                when (val currentUiState = uiState) {
+                    is BreedsUiState.Loading -> LoadingIndicator()
 
                     is BreedsUiState.Success -> {
                         if (currentUiState.pets.isEmpty() && !isRefreshing) {
@@ -151,14 +164,14 @@ fun BreedsScreen(
                                     stringResource(string.no_breeds_available)
                                 } else {
                                     stringResource(string.no_breeds_found_for, searchQuery)
-
                                 }
                             )
                         } else {
                             LazyColumn(
                                 state = listState,
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                                contentPadding = PaddingValues(end = 16.dp, start = 16.dp, bottom = 16.dp)
+                                contentPadding = PaddingValues(end = 16.dp, start = 16.dp, bottom = 16.dp),
+                                modifier = Modifier.fillMaxSize()
                             ) {
                                 items(
                                     items = currentUiState.pets,
@@ -195,6 +208,10 @@ fun BreedsScreen(
                     }
                 }
             }
+            PullToRefreshContainer(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 

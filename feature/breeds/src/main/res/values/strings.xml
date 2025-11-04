@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pet_breeds_title">Pet Breeds</string>
-    <string name="exploring_pet_breeds_cat">Exploring Cats</string>
-    <string name="exploring_pet_breeds_dog">Exploring Dogs</string>
+    <string name="exploring_cat">Exploring Cats</string>
+    <string name="exploring_dog">Exploring Dogs</string>
     <string name="search_pet_breeds_placeholder">Search %1$s breeds…</string>
     <string name="filter_content_description">Filter</string>
     <string name="no_breeds_available">No breeds available</string>
