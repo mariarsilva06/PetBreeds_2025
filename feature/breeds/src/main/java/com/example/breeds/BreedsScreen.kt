@@ -47,18 +47,16 @@ fun BreedsScreen(
     val lifeSpanRange by viewModel.lifeSpanRange.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
 
-    if (isRefreshing) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
             pullToRefreshState.startRefresh()
-        }
-    } else {
-        LaunchedEffect(Unit) {
+        } else {
             pullToRefreshState.endRefresh()
         }
     }
 
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(Unit) {
+    LaunchedEffect(pullToRefreshState.isRefreshing) {
+        if (pullToRefreshState.isRefreshing) {
             viewModel.onRefresh()
         }
     }
