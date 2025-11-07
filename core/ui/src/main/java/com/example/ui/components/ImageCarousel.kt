@@ -63,7 +63,7 @@ fun ImageCarousel(
                 // Page indicators
                 if (images.size > 1) {
                     Row(
-                        Modifier.Companion
+                        Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -85,9 +85,9 @@ fun ImageCarousel(
                 }
 
                 // Click hint overlay for first time users
-                if (pagerState.currentPage == 0 && images.size > 0) {
+                if (pagerState.currentPage == 0 && images.isNotEmpty()) {
                     Card(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),
                         colors = CardDefaults.cardColors(
@@ -106,7 +106,7 @@ fun ImageCarousel(
                 // Image counter in top-left
                 if (images.size > 1) {
                     Card(
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp),
                         colors = CardDefaults.cardColors(
