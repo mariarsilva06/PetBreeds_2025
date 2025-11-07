@@ -1,8 +1,8 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -27,12 +27,12 @@ dependencies {
     implementation(project(":core:model"))
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.androidx.datastore)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    ksp("com.google.dagger:hilt-compiler:2.50")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    implementation(libs.coroutines.android)
 }
