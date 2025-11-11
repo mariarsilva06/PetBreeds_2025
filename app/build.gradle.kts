@@ -1,11 +1,8 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 
@@ -58,13 +55,7 @@ android {
 
     packaging {
         resources {
-            pickFirsts += setOf(
-                "META-INF/LICENSE.md",
-                "META-INF/LICENSE-notice.md",
-                "META-INF/NOTICE.md",
-                "META-INF/NOTICE",
-                "META-INF/LICENSE"
-            )
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
@@ -79,103 +70,51 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
+    //Core modules
     implementation(project(":core:common"))
-    implementation(project(":core:network"))
+    implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
-    implementation(project(":core:data"))
+    implementation(project(":core:model"))
+    implementation(project(":core:network"))
+    implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
+
+    //Feature modules
     implementation(project(":feature:breeds"))
+    implementation(project(":feature:favorites"))
     implementation(project(":feature:details"))
     implementation(project(":feature:onboarding"))
-    implementation(project(":feature:favorites"))
-    implementation(project(":feature:profile"))
-    implementation(project(":core:preferences"))
-    implementation(project(":core:resources"))
     implementation(project(":feature:splash"))
+    implementation(project(":feature:profile"))
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.icons)
+    implementation(libs.androidx.compose.ui)
 
     // Core Android
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-
-    // Compose BOM
-    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
-
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
-
+    implementation(libs.androidx.activity.compose)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose)
 
     // Hilt - Latest version
-    implementation("com.google.dagger:hilt-android:2.50")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    //implementation(libs.androidx.junit.ktx)
-    ksp("com.google.dagger:hilt-compiler:2.50")
-
-    // Networking - Latest versions
-//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-//    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-//    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-
-    // Image Loading
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    implementation(libs.coroutines.android)
 
-    // Room Database - Latest version
-//    implementation("androidx.room:room-runtime:2.6.1")
-//    implementation("androidx.room:room-ktx:2.6.1")
-//    ksp("androidx.room:room-compiler:2.6.1")
+    // Android Testing
+    androidTestImplementation(libs.hilt.android)
+    kspAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.compose.ui)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 
-    // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
-
-    // Swipe Refresh
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
-
-    // Unit Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:4.6.1")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("com.google.truth:truth:1.1.3")
-    testImplementation("androidx.room:room-testing:2.6.1")
-    testImplementation("io.mockk:mockk:1.13.5")
-    testImplementation("app.cash.turbine:turbine:0.12.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
-    testImplementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0")
-    testImplementation("com.google.dagger:hilt-android-testing:2.50")
-    kspTest("com.google.dagger:hilt-compiler:2.50")
-
-    // Android Testing (Instrumentation)
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.01"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
-    androidTestImplementation("androidx.test:runner:1.5.2")
-    androidTestImplementation("androidx.test:rules:1.5.0")
-    androidTestImplementation("com.google.truth:truth:1.1.3")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
-    androidTestImplementation("io.mockk:mockk-android:1.13.5")
-    androidTestImplementation("androidx.room:room-testing:2.6.1")
-    androidTestImplementation("androidx.datastore:datastore-preferences:1.0.0")
-    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
-    androidTestImplementation("com.google.dagger:hilt-android-testing:2.50")
-    kspAndroidTest("com.google.dagger:hilt-compiler:2.50")
-
-    // Compose Testing
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    // Debug
+    debugImplementation(libs.androidx.compose.ui)
+    debugImplementation(libs.androidx.compose.ui)
 }

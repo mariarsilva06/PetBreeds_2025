@@ -1,20 +1,32 @@
 [versions]
 # Build
 agp = "8.13.0"
+core = "1.7.0"
+gson-version = "2.10.1"
 hilt-android = "2.57.2"
-kotlin = "1.9.22"
+hilt-compiler = "2.57.2"
+kotlinx-coroutines-test = "1.7.3"
 ksp = "1.9.22-1.0.17"
-
+kotlin = "1.9.22"
 
 # AndroidX
 core-ktx = "1.12.0"
 lifecycle = "2.7.0"
 activity-compose = "1.8.2"
+
+# Compose
 compose-bom = "2024.02.01"
-navigation = "2.7.7"
-navigation-compose = "2.9.5"
-room = "2.6.1"
+
+# DataStore
 datastore = "1.0.0"
+
+# Navigation
+mockk-android = "1.13.8"
+mockk-version = "1.13.8"
+navigation = "2.7.7"
+
+# Room
+room = "2.6.1"
 
 # DI
 hilt = "2.50"
@@ -36,20 +48,33 @@ androidx-junit = "1.1.5"
 espresso = "3.5.1"
 mockito = "4.6.1"
 mockk = "1.13.5"
+room-compiler = "2.8.3"
+room-ktx = "2.8.3"
+room-runtime = "2.8.3"
+rules = "1.7.0"
 truth = "1.1.3"
+truth-version = "1.1.5"
 turbine = "0.12.1"
-appcompat = "1.6.1"
-material = "1.10.0"
-databinding-adapters = "8.13.0"
-material3 = "1.4.0"
+
+gson = "2.13.2"
 
 [libraries]
 # Kotlin
-androidx-navigation-compose-v295 = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-core = { module = "androidx.test:core", version.ref = "core" }
+androidx-room-compiler-v283 = { module = "androidx.room:room-compiler", version.ref = "room-compiler" }
+androidx-room-ktx-v283 = { module = "androidx.room:room-ktx", version.ref = "room-ktx" }
+androidx-room-runtime-v283 = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
+androidx-rules-v170 = { module = "androidx.test:rules", version.ref = "rules" }
+core-ktx = { module = "androidx.test:core-ktx", version.ref = "core" }
+gson-v2101 = { module = "com.google.code.gson:gson", version.ref = "gson-version" }
 hilt-android-v2572 = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
+hilt-compiler-v2572 = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-compiler" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+
+# Coroutines
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 # AndroidX Core
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
@@ -64,12 +89,19 @@ androidx-compose-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-compose-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-icons = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+
+# Navigation
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigation" }
 
 # Room
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
 # DataStore
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
@@ -78,8 +110,13 @@ androidx-datastore = { module = "androidx.datastore:datastore-preferences", vers
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 
 # Network
+kotlinx-coroutines-test-v173 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+mockk-android-v1138 = { module = "io.mockk:mockk-android", version.ref = "mockk-android" }
+mockk-v1138 = { module = "io.mockk:mockk", version.ref = "mockk-version" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
@@ -91,22 +128,28 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
+androidx-test-rules = { module = "androidx.test:rules", version = "1.5.0" }
+androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "6.1.0" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version = "5.3.0" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
+truth-v115 = { module = "com.google.truth:truth", version.ref = "truth-version" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
-# Gradle plugins (para usar no build-logic)
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-databinding-adapters = { group = "androidx.databinding", name = "databinding-adapters", version.ref = "databinding-adapters" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+#update in future
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
+material = { module = "com.google.android.material:material", version = "1.11.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

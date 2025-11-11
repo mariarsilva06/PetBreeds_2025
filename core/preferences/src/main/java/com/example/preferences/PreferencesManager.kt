@@ -16,12 +16,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.common.di.ApplicationScope
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pet_preferences")
 
 @Singleton
 class PreferencesManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    @ApplicationScope private val coroutineScope: CoroutineScope
+
 ) {
     private val PET_TYPE_KEY = stringPreferencesKey("pet_type")
     private val IS_FIRST_LAUNCH_KEY = booleanPreferencesKey("is_first_launch")
@@ -38,12 +41,6 @@ class PreferencesManager @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    fun setThemeMode(mode: ThemeMode) {
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-            saveThemeMode(mode)
         }
     }
 
@@ -79,10 +76,7 @@ class PreferencesManager @Inject constructor(
     }
 
     fun setPetType(petType: PetType) {
-        // Launch in background
-        CoroutineScope(Dispatchers.IO).launch {
-            savePetType(petType)
-        }
+        coroutineScope.launch { savePetType(petType) }
     }
 
     val petTypeFlow: Flow<PetType?> = context.dataStore.data.map { preferences ->

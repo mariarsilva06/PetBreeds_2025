@@ -28,7 +28,7 @@ fun PetBreedsNavigation(
     preferencesManager: PreferencesManager,
     modifier: Modifier = Modifier
 ) {
-    val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = true)
+    val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = null)
     val petType by preferencesManager.petTypeFlow.collectAsState(initial = null)
 
     NavHost(
@@ -38,22 +38,22 @@ fun PetBreedsNavigation(
     ) {
 
         composable(Routes.Splash.route) {
-
-            LaunchedEffect(isFirstLaunch, petType) {
-                delay(2000)
-                if (isFirstLaunch || petType == null) {
-                    navController.navigate(Routes.Onboarding.route) {
-                        popUpTo(Routes.Splash.route) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(Routes.Breeds.route) {
-                        popUpTo(Routes.Splash.route) { inclusive = true }
-                    }
-                }
-            }
+            val isLoaded = isFirstLaunch != null
 
             SplashScreen(
-                onSplashFinished = { }
+                onSplashFinished = {
+                    if (isLoaded) {
+                        if (isFirstLaunch == true || petType == null) {
+                            navController.navigate(Routes.Onboarding.route) {
+                                popUpTo(Routes.Splash.route) { inclusive = true }
+                            }
+                        }
+                    } else {
+                        navController.navigate(Routes.Breeds.route) {
+                            popUpTo(Routes.Splash.route) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
 

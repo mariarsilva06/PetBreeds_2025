@@ -37,7 +37,7 @@ import com.example.splash.R.string
 
 @Composable
 fun SplashScreen(
-    onSplashFinished: () -> Unit
+    onSplashFinished: (() -> Unit)? = null
 ) {
     var startAnimation by remember { mutableStateOf(false) }
 
@@ -60,7 +60,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = true) {
         startAnimation = true
         delay(2000)
-        onSplashFinished()
+        onSplashFinished?.invoke()
     }
 
     Box(

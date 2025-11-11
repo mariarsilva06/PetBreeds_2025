@@ -8,7 +8,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.example.database.entity.PetEntity
 import com.example.database.dao.PetDao
 import com.example.database.PetDatabase
 
