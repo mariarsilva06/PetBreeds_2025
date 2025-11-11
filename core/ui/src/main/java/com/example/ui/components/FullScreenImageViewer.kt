@@ -6,11 +6,16 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Close
@@ -34,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FullScreenImageViewer(
     images: List<String>,
@@ -41,10 +47,14 @@ fun FullScreenImageViewer(
     petName: String = "Pet",
     onDismiss: () -> Unit
 ) {
-    var currentImageIndex by remember { mutableIntStateOf(initialIndex.coerceIn(0, images.size - 1)) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var isDownloading by remember { mutableStateOf(false) }
+
+    val pagerState = rememberPagerState(
+        initialPage = initialIndex.coerceIn(0, images.size - 1),
+        pageCount = { images.size }
+    )
 
     if (images.isEmpty()) {
         onDismiss()
@@ -64,17 +74,22 @@ fun FullScreenImageViewer(
                 .background(Color.Black)
         ) {
             // Main Image
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(images[currentImageIndex])
-                    .crossfade(true)
-                    .build(),
-                contentDescription = "$petName image ${currentImageIndex + 1}",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { /* Prevent click-through */ },
-                contentScale = ContentScale.Fit
-            )
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(images[page])
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "$petName image ${page + 1}",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { },
+                    contentScale = ContentScale.Fit
+                )
+            }
 
             // Top Bar with Close and Download
             Row(
@@ -111,7 +126,7 @@ fun FullScreenImageViewer(
                             .clip(CircleShape)
                     ) {
                         Text(
-                            text = "${currentImageIndex + 1} / ${images.size}",
+                            text = "${pagerState.currentPage + 1} / ${images.size}",
                             color = Color.White,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -126,8 +141,8 @@ fun FullScreenImageViewer(
                             scope.launch {
                                 downloadImage(
                                     context = context,
-                                    imageUrl = images[currentImageIndex],
-                                    fileName = "${petName}_${currentImageIndex + 1}",
+                                    imageUrl = images[pagerState.currentPage],
+                                    fileName = "${petName}_${pagerState.currentPage + 1}",
                                     onStart = { isDownloading = true },
                                     onComplete = { isDownloading = false }
                                 )
@@ -159,10 +174,10 @@ fun FullScreenImageViewer(
             // Navigation Arrows (only show if more than 1 image)
             if (images.size > 1) {
                 // Previous Arrow
-                if (currentImageIndex > 0) {
+                if (pagerState.currentPage > 0) {
                     IconButton(
-                        onClick = { currentImageIndex-- },
-                        modifier = Modifier.Companion
+                        onClick = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
+                        modifier = Modifier
                             .align(Alignment.CenterStart)
                             .padding(16.dp)
                             .size(56.dp)
@@ -170,7 +185,7 @@ fun FullScreenImageViewer(
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBackIos,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                             contentDescription = "Previous image",
                             tint = Color.White,
                             modifier = Modifier.size(28.dp)
@@ -179,9 +194,11 @@ fun FullScreenImageViewer(
                 }
 
                 // Next Arrow
-                if (currentImageIndex < images.size - 1) {
+                if (pagerState.currentPage < images.size - 1) {
                     IconButton(
-                        onClick = { currentImageIndex++ },
+                        onClick = { scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        } },
                         modifier = Modifier.Companion
                             .align(Alignment.CenterEnd)
                             .padding(16.dp)
@@ -190,7 +207,7 @@ fun FullScreenImageViewer(
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowForwardIos,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                             contentDescription = "Next image",
                             tint = Color.White,
                             modifier = Modifier.size(28.dp)
@@ -201,7 +218,7 @@ fun FullScreenImageViewer(
 
             // Bottom Info Bar
             Card(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -239,6 +256,10 @@ private suspend fun downloadImage(
     onStart: () -> Unit,
     onComplete: () -> Unit
 ) {
+    withContext(Dispatchers.Main) {
+        onStart()
+    }
+
     withContext(Dispatchers.IO) {
         try {
             onStart()
@@ -255,7 +276,6 @@ private suspend fun downloadImage(
             if (drawable is BitmapDrawable) {
                 val bitmap = drawable.bitmap
 
-                // Save to MediaStore (Android 10+)
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, "${fileName}_${System.currentTimeMillis()}.jpg")
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
@@ -269,20 +289,10 @@ private suspend fun downloadImage(
                     resolver.openOutputStream(uri)?.use { outputStream ->
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
                     }
-
-                    // Show success message on main thread
-                    withContext(Dispatchers.Main) {
-                        // You could show a Toast here if you want
-                        // Toast.makeText(context, "Image saved to gallery", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
         } catch (e: Exception) {
-            // Handle error
-            withContext(Dispatchers.Main) {
-                // You could show an error Toast here if you want
-                // Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show()
-            }
+            e.printStackTrace()
         } finally {
             withContext(Dispatchers.Main) {
                 onComplete()
