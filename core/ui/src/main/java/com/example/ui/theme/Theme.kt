@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.example.model.PetType
 
-
 private val CatLightColorScheme = lightColorScheme(
     primary = CatPrimary,
     onPrimary = White,
@@ -43,19 +42,19 @@ private val CatDarkColorScheme = darkColorScheme(
     onPrimaryContainer = White,
     secondary = CatSecondary,
     onSecondary = White,
-    secondaryContainer = Color(0xFF2A2A3E),
+    secondaryContainer = CatDarkSecondaryContainer,
     onSecondaryContainer = CatSecondary,
     tertiary = CatSecondary,
     onTertiary = White,
-    background = Color(0xFF0F0F23),
+    background = CatDarkBackground,
     onBackground = White,
-    surface = Color(0xFF1A1A2E),
+    surface = CatDarkSurface,
     onSurface = White,
-    surfaceVariant = Color(0xFF2A2A3E),
-    onSurfaceVariant = Color(0xFFB0B0B0),
-    surfaceContainer = Color(0xFF2A2A3E),
-    surfaceContainerHighest = Color(0xFF3A3A4E),
-    outline = Color(0xFF5A5A6E),
+    surfaceVariant = CatDarkSurfaceVariant,
+    onSurfaceVariant = CatDarkOnSurfaceVariant,
+    surfaceContainer = CatDarkSurfaceVariant,
+    surfaceContainerHighest = CatDarkSurfaceContainerHighest,
+    outline = CatDarkOutline,
     error = ErrorRed,
     onError = White
 )
@@ -91,19 +90,19 @@ private val DogDarkColorScheme = darkColorScheme(
     onPrimaryContainer = White,
     secondary = DogSecondary,
     onSecondary = White,
-    secondaryContainer = Color(0xFF1A2E2E),
+    secondaryContainer = DogDarkSecondaryContainer,
     onSecondaryContainer = DogSecondary,
     tertiary = DogSecondary,
     onTertiary = White,
-    background = Color(0xFF0A1F1F),
+    background = DogDarkBackground,
     onBackground = White,
-    surface = Color(0xFF152A2A),
+    surface = DogDarkSurface,
     onSurface = White,
-    surfaceVariant = Color(0xFF1A2E2E),
-    onSurfaceVariant = Color(0xFFB0B0B0),
-    surfaceContainer = Color(0xFF1A2E2E),
-    surfaceContainerHighest = Color(0xFF2A3E3E),
-    outline = Color(0xFF4A5E5E),
+    surfaceVariant = DogDarkSurfaceVariant,
+    onSurfaceVariant = DogDarkOnSurfaceVariant,
+    surfaceContainer = DogDarkSurfaceVariant,
+    surfaceContainerHighest = DogDarkSurfaceContainerHighest,
+    outline = DogDarkOutline,
     error = ErrorRed,
     onError = White
 )
@@ -132,8 +131,10 @@ fun PetBreedsTheme(
         SideEffect {
             try {
                 val window = (view.context as Activity).window
-                window.statusBarColor = colorScheme.primary.toArgb()
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+                val insetsController = WindowCompat.getInsetsController(window, view)
+
+                insetsController.isAppearanceLightStatusBars = !darkTheme
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
