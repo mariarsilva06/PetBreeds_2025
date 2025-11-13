@@ -61,7 +61,7 @@ fun FilterBottomSheet(
                         onRangeChange(tempRange)
                         onDismiss()
                     },
-                    modifier = Modifier.Companion.weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text("Reset")
                 }
@@ -71,7 +71,7 @@ fun FilterBottomSheet(
                         onRangeChange(tempRange)
                         onDismiss()
                     },
-                    modifier = Modifier.Companion.weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text("Apply")
                 }

@@ -22,9 +22,9 @@ import kotlin.run
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageCarousel(
+    modifier: Modifier = Modifier,
     images: List<String>,
     petName: String = "Pet",
-    modifier: Modifier = Modifier,
     onImageClick: ((Int) -> Unit)? = null
 ) {
     if (images.isEmpty()) return
