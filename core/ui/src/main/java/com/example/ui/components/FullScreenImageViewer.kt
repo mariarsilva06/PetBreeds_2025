@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
@@ -37,7 +35,6 @@ import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -199,7 +196,7 @@ fun FullScreenImageViewer(
                         onClick = { scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } },
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(16.dp)
                             .size(56.dp)

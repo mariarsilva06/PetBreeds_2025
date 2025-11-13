@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
     onMenuClick: () -> Unit,
-    onProfileClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onProfileClick: () -> Unit = {}
 ) {
     TopAppBar(
         title = {

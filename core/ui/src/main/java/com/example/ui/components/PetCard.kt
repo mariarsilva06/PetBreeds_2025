@@ -19,10 +19,10 @@ import com.example.model.PetType
 
 @Composable
 fun PetCard(
+    modifier: Modifier = Modifier,
     pet: Pet,
     onCardClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onFavoriteClick: () -> Unit
 ) {
     Card(
         modifier = modifier
@@ -53,7 +53,7 @@ fun PetCard(
             Spacer(modifier = Modifier.width(15.dp))
 
             Column(
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 12.dp)
             ) {
