@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.model.PetType
-import com.example.ui.components.DrawerContent
+import com.example.ui.components.drawer.DrawerContent
 import com.example.ui.components.EmptyState
 import com.example.ui.components.ErrorMessage
 import com.example.ui.components.FilterBottomSheet

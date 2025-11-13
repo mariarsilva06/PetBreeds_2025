@@ -317,68 +317,6 @@ fun DetailsScreen(
     }
 }
 
-
-
-@Composable
-fun InfoRow(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun TemperamentChips(
-    temperament: String,
-    modifier: Modifier = Modifier
-) {
-    val temperaments = temperament.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        temperaments.forEach { trait ->
-            AssistChip(
-                onClick = {  },
-                label = {
-                    Text(
-                        text = trait,
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-    }
-}
-
 fun onShareClick(pet: Pet, context: Context) {
     val shareText = buildString {
         appendLine(context.getString(string.share_pet_title, pet.name))
