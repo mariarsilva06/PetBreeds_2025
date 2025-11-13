@@ -46,12 +46,6 @@ dependencies {
     implementation(project(":core:preferences"))
     implementation(project(":core:resources"))
 
-    // Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.icons)
-
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
