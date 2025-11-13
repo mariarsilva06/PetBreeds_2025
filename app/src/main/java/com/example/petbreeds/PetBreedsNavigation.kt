@@ -2,7 +2,6 @@ package com.example.petbreeds
 
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -11,15 +10,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.breeds.BreedsScreen
+import com.example.feature.breeds.BreedsScreen
 import com.example.details.DetailsScreen
-import com.example.favorites.FavoritesScreen
-import com.example.onboarding.OnboardingScreen
+import com.example.feature.favorites.FavoritesScreen
+import com.example.feature.onboarding.OnboardingScreen
 import com.example.petbreeds.presentation.navigation.Routes
-import com.example.splash.SplashScreen
+import com.example.feature.splash.SplashScreen
 import com.example.preferences.PreferencesManager
-import com.example.profile.ProfileScreen
-import kotlinx.coroutines.delay
+import com.example.feature.profile.ProfileScreen
 
 
 @Composable
