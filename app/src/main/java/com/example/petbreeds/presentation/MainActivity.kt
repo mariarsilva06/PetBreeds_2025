@@ -13,7 +13,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.model.PetType
-import com.example.petbreeds.PetBreedsNavigation
+import com.example.petbreeds.presentation.navigation.PetBreedsNavigation
 import com.example.petbreeds.presentation.navigation.BottomNavItem
 import com.example.petbreeds.presentation.navigation.Routes
 import com.example.preferences.PreferencesManager

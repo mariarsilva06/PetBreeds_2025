@@ -1,4 +1,4 @@
-package com.example.petbreeds
+package com.example.petbreeds.presentation.navigation
 
 
 import androidx.compose.runtime.Composable
@@ -14,7 +14,6 @@ import com.example.feature.breeds.BreedsScreen
 import com.example.details.DetailsScreen
 import com.example.feature.favorites.FavoritesScreen
 import com.example.feature.onboarding.OnboardingScreen
-import com.example.petbreeds.presentation.navigation.Routes
 import com.example.feature.splash.SplashScreen
 import com.example.preferences.PreferencesManager
 import com.example.feature.profile.ProfileScreen
