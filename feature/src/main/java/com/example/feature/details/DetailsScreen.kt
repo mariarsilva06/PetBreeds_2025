@@ -1,4 +1,4 @@
-package com.example.details
+package com.example.feature.details
 
 import android.content.Context
 import android.content.Intent
@@ -46,11 +46,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.feature.R.string
+import com.example.model.Pet
 import com.example.ui.components.ImageCarousel
 import com.example.ui.components.LoadingIndicator
-import com.example.model.Pet
-import com.example.feature.R.string
-import com.example.feature.details.DetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -63,7 +62,6 @@ fun DetailsScreen(
     val isLoadingImages by viewModel.isLoadingImages.collectAsState()
     val context = LocalContext.current
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,7 +70,7 @@ fun DetailsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(string.back_button_description)
+                            contentDescription = stringResource(string.back_button_description),
                         )
                     }
                 },
@@ -84,88 +82,94 @@ fun DetailsScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = stringResource(string.share_label)
+                                contentDescription = stringResource(string.share_label),
                             )
                         }
 
                         // Favorite button
                         IconButton(onClick = viewModel::onToggleFavorite) {
                             Icon(
-                                imageVector = if (currentPet.isFavorite) {
-                                    Icons.Filled.Favorite
-                                } else {
-                                    Icons.Outlined.FavoriteBorder
-                                },
-                                contentDescription = if (currentPet.isFavorite) {
-                                    stringResource(string.remove_from_favorites)
-                                } else {
-                                    stringResource(string.add_to_favorites)
-                                },
-                                tint = if (currentPet.isFavorite) {
-                                    MaterialTheme.colorScheme.error
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                }
+                                imageVector =
+                                    if (currentPet.isFavorite) {
+                                        Icons.Filled.Favorite
+                                    } else {
+                                        Icons.Outlined.FavoriteBorder
+                                    },
+                                contentDescription =
+                                    if (currentPet.isFavorite) {
+                                        stringResource(string.remove_from_favorites)
+                                    } else {
+                                        stringResource(string.add_to_favorites)
+                                    },
+                                tint =
+                                    if (currentPet.isFavorite) {
+                                        MaterialTheme.colorScheme.error
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
                             )
                         }
                     }
-                }
+                },
             )
-        }
-    ) {  paddingValues ->
+        },
+    ) { paddingValues ->
         pet?.let { currentPet ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 // Image Section
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     val mainImageUrl = currentPet.imageUrl?.trim()
-                    val imagesToShow = buildList {
-                        mainImageUrl?.let { add(it) }
-                        if (additionalImages.size >= 2) {
-                            addAll(
-                                additionalImages
-                                    .map { it.trim() }
-                                    .filter { it != mainImageUrl }
-                            )
+                    val imagesToShow =
+                        buildList {
+                            mainImageUrl?.let { add(it) }
+                            if (additionalImages.size >= 2) {
+                                addAll(
+                                    additionalImages
+                                        .map { it.trim() }
+                                        .filter { it != mainImageUrl },
+                                )
+                            }
                         }
-                    }
                     if (imagesToShow.isNotEmpty()) {
                         ImageCarousel(
                             images = imagesToShow,
                             petName = currentPet.name,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     } else {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(300.dp)
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center,
                         ) {
                             if (isLoadingImages) {
                                 Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                    horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
                                     CircularProgressIndicator()
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = stringResource(string.loading_images),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             } else {
                                 Text(
                                     text = stringResource(string.no_images_available),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -174,32 +178,35 @@ fun DetailsScreen(
 
                 // Content Section
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     // Breed Name
                     Text(
                         text = currentPet.name,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
 
                     // Basic Info with clean layout
                     if (currentPet.origin.isNotEmpty() &&
                         currentPet.origin.lowercase() != "unknown" &&
-                        currentPet.origin != "Unknown") {
+                        currentPet.origin != "Unknown"
+                    ) {
                         InfoRow(label = stringResource(string.origin_label), value = currentPet.origin)
                     }
 
                     if (currentPet.lifeSpan.isNotEmpty()) {
-                        val lifeSpanValue = if (currentPet.lifeSpan.contains("year", ignoreCase = true)) {
-                            currentPet.lifeSpan
-                        } else {
-                            "${currentPet.lifeSpan} years"
-                        }
+                        val lifeSpanValue =
+                            if (currentPet.lifeSpan.contains("year", ignoreCase = true)) {
+                                currentPet.lifeSpan
+                            } else {
+                                "${currentPet.lifeSpan} years"
+                            }
                         InfoRow(label = stringResource(string.lifespan_label), value = lifeSpanValue)
                     }
 
@@ -207,14 +214,14 @@ fun DetailsScreen(
                     if (currentPet.temperament.isNotEmpty()) {
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                         )
 
                         Text(
                             text = stringResource(string.temperament_label),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         TemperamentChips(temperament = currentPet.temperament)
                     }
@@ -223,89 +230,105 @@ fun DetailsScreen(
                     if (currentPet.description.isNotEmpty()) {
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                         )
 
                         Text(
                             text = stringResource(string.description_label),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                         Text(
                             text = currentPet.description,
                             style = MaterialTheme.typography.bodyLarge,
                             lineHeight = 24.sp,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
 
                     // Favorite Action Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (currentPet.isFavorite) {
-                                MaterialTheme.colorScheme.errorContainer
-                            } else {
-                                MaterialTheme.colorScheme.primaryContainer
-                            }
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor =
+                                    if (currentPet.isFavorite) {
+                                        MaterialTheme.colorScheme.errorContainer
+                                    } else {
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    },
+                            ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column {
-                                //TODO: Go to Favorites Screen on click
+                                // TODO: Go to Favorites Screen on click
                                 Text(
-                                    text = if (currentPet.isFavorite) stringResource(string.added_to_favorites) else stringResource(string.add_to_favorites),
+                                    text =
+                                        if (currentPet.isFavorite) {
+                                            stringResource(
+                                                string.added_to_favorites,
+                                            )
+                                        } else {
+                                            stringResource(string.add_to_favorites)
+                                        },
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Medium,
-                                    color = if (currentPet.isFavorite) {
-                                        MaterialTheme.colorScheme.onErrorContainer
-                                    } else {
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    }
+                                    color =
+                                        if (currentPet.isFavorite) {
+                                            MaterialTheme.colorScheme.onErrorContainer
+                                        } else {
+                                            MaterialTheme.colorScheme.onPrimaryContainer
+                                        },
                                 )
                                 Text(
-                                    text = if (currentPet.isFavorite) {
-                                        stringResource(string.breed_in_favorites)
-                                    } else {
-                                        stringResource(string.save_to_favorites)
-                                    },
+                                    text =
+                                        if (currentPet.isFavorite) {
+                                            stringResource(string.breed_in_favorites)
+                                        } else {
+                                            stringResource(string.save_to_favorites)
+                                        },
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = if (currentPet.isFavorite) {
-                                        MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
-                                    } else {
-                                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                                    }
+                                    color =
+                                        if (currentPet.isFavorite) {
+                                            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                                        } else {
+                                            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                        },
                                 )
                             }
 
                             IconButton(
-                                onClick = viewModel::onToggleFavorite
+                                onClick = viewModel::onToggleFavorite,
                             ) {
                                 Icon(
-                                    imageVector = if (currentPet.isFavorite) {
-                                        Icons.Filled.Favorite
-                                    } else {
-                                        Icons.Outlined.FavoriteBorder
-                                    },
-                                    contentDescription = if (currentPet.isFavorite) {
-                                        stringResource(string.remove_from_favorites)
-                                    } else {
-                                        stringResource(string.add_to_favorites)
-                                    },
-                                    tint = if (currentPet.isFavorite) {
-                                        MaterialTheme.colorScheme.error
-                                    } else {
-                                        MaterialTheme.colorScheme.primary
-                                    },
-                                    modifier = Modifier.size(32.dp)
+                                    imageVector =
+                                        if (currentPet.isFavorite) {
+                                            Icons.Filled.Favorite
+                                        } else {
+                                            Icons.Outlined.FavoriteBorder
+                                        },
+                                    contentDescription =
+                                        if (currentPet.isFavorite) {
+                                            stringResource(string.remove_from_favorites)
+                                        } else {
+                                            stringResource(string.add_to_favorites)
+                                        },
+                                    tint =
+                                        if (currentPet.isFavorite) {
+                                            MaterialTheme.colorScheme.error
+                                        } else {
+                                            MaterialTheme.colorScheme.primary
+                                        },
+                                    modifier = Modifier.size(32.dp),
                                 )
                             }
                         }
@@ -319,33 +342,32 @@ fun DetailsScreen(
     }
 }
 
-
-
 @Composable
 fun InfoRow(
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -354,54 +376,60 @@ fun InfoRow(
 @Composable
 fun TemperamentChips(
     temperament: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val temperaments = temperament.split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         temperaments.forEach { trait ->
             AssistChip(
-                onClick = {  },
+                onClick = { },
                 label = {
                     Text(
                         text = trait,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 },
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.primary
-                )
+                colors =
+                    AssistChipDefaults.assistChipColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        labelColor = MaterialTheme.colorScheme.primary,
+                    ),
             )
         }
     }
 }
 
-fun onShareClick(pet: Pet, context: Context) {
-    val shareText = buildString {
-        appendLine(context.getString(string.share_pet_title, pet.name))
-        appendLine()
-        appendLine(context.getString(string.share_pet_origin, pet.origin))
-        appendLine(context.getString(string.share_pet_lifespan, pet.lifeSpan))
-        appendLine()
-        appendLine(context.getString(string.share_pet_temperament_title))
-        appendLine(pet.temperament)
-        appendLine()
-        appendLine(context.getString(string.share_pet_about_title))
-        appendLine(pet.description)
-        appendLine()
-        appendLine(context.getString(string.share_pet_discover))
-    }
+fun onShareClick(
+    pet: Pet,
+    context: Context,
+) {
+    val shareText =
+        buildString {
+            appendLine(context.getString(string.share_pet_title, pet.name))
+            appendLine()
+            appendLine(context.getString(string.share_pet_origin, pet.origin))
+            appendLine(context.getString(string.share_pet_lifespan, pet.lifeSpan))
+            appendLine()
+            appendLine(context.getString(string.share_pet_temperament_title))
+            appendLine(pet.temperament)
+            appendLine()
+            appendLine(context.getString(string.share_pet_about_title))
+            appendLine(pet.description)
+            appendLine()
+            appendLine(context.getString(string.share_pet_discover))
+        }
 
-    val sendIntent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_TEXT, shareText)
-        type = "text/plain"
-    }
+    val sendIntent =
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
 
     val shareIntent = Intent.createChooser(sendIntent, null)
     context.startActivity(shareIntent)

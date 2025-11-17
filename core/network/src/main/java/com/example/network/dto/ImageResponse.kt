@@ -10,5 +10,5 @@ data class ImageResponse(
     @SerializedName("width")
     val width: Int,
     @SerializedName("height")
-    val height: Int
+    val height: Int,
 )

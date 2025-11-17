@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 fun LoadingIndicator(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }

@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
-
 
 android {
     namespace = "com.example.petbreeds"
@@ -28,7 +28,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         debug {
@@ -70,7 +70,7 @@ android {
 }
 
 dependencies {
-    //Core modules
+    // Core modules
     implementation(project(":core:common"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
@@ -80,7 +80,7 @@ dependencies {
     implementation(project(":core:preferences"))
     implementation(project(":core:ui"))
 
-    //Feature modules
+    // Feature modules
     implementation(project(":feature"))
 
     // Compose

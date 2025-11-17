@@ -1,23 +1,47 @@
 package com.example.feature.breeds
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.breeds.BreedsUiState
-import com.example.breeds.BreedsViewModel
+import com.example.feature.R.string
 import com.example.model.PetType
 import com.example.ui.components.DrawerContent
 import com.example.ui.components.EmptyState
@@ -30,14 +54,13 @@ import com.example.ui.components.TopBar
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import com.example.feature.R.string
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedsScreen(
     onNavigateToDetails: (String) -> Unit,
     onNavigateToProfile: () -> Unit,
-    viewModel: BreedsViewModel = hiltViewModel()
+    viewModel: BreedsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.petsState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -68,19 +91,22 @@ fun BreedsScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .distinctUntilChanged()
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo
+                .lastOrNull()
+                ?.index
+        }.distinctUntilChanged()
             .filter { lastVisibleItemIndex ->
                 val currentState = uiState
                 currentState is BreedsUiState.Success &&
-                        lastVisibleItemIndex != null &&
-                        lastVisibleItemIndex >= currentState.pets.size - 3 &&
-                        !isLoadingMore &&
-                        !isRefreshing &&
-                        searchQuery.isEmpty() &&
-                        lifeSpanRange.start == 0f && lifeSpanRange.endInclusive == 30f
-            }
-            .collect {
+                    lastVisibleItemIndex != null &&
+                    lastVisibleItemIndex >= currentState.pets.size - 3 &&
+                    !isLoadingMore &&
+                    !isRefreshing &&
+                    searchQuery.isEmpty() &&
+                    lifeSpanRange.start == 0f &&
+                    lifeSpanRange.endInclusive == 30f
+            }.collect {
                 viewModel.loadNextPage()
             }
     }
@@ -89,7 +115,7 @@ fun BreedsScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(320.dp)
+                modifier = Modifier.width(320.dp),
             ) {
                 DrawerContent(
                     currentPetType = currentPetType ?: PetType.CAT,
@@ -103,48 +129,56 @@ fun BreedsScreen(
                         scope.launch {
                             drawerState.close()
                         }
-                    }
+                    },
                 )
             }
-        }
+        },
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(pullToRefreshState.nestedScrollConnection)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .nestedScroll(pullToRefreshState.nestedScrollConnection),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     TopBar(
                         title = stringResource(string.pet_breeds_title),
-                        subtitle = if (currentPetType == PetType.CAT) stringResource(string.exploring_cat) else stringResource(string.exploring_dog),
+                        subtitle =
+                            if (currentPetType ==
+                                PetType.CAT
+                            ) {
+                                stringResource(string.exploring_cat)
+                            } else {
+                                stringResource(string.exploring_dog)
+                            },
                         onMenuClick = {
                             scope.launch {
                                 drawerState.open()
                             }
                         },
-                        onProfileClick = onNavigateToProfile
-
+                        onProfileClick = onNavigateToProfile,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         SearchBar(
                             query = searchQuery,
                             onQueryChange = viewModel::onSearchQueryChanged,
                             placeholder = stringResource(string.search_pet_breeds_placeholder, currentPetType?.name?.lowercase() ?: "pet"),
-                            modifier = Modifier.weight(1f).padding(end = 8.dp)
+                            modifier = Modifier.weight(1f).padding(end = 8.dp),
                         )
                         IconButton(onClick = { showFilters = true }, modifier = Modifier.padding(start = 8.dp)) {
                             Icon(Icons.Default.FilterList, contentDescription = stringResource(string.filter_content_description))
@@ -160,37 +194,39 @@ fun BreedsScreen(
                     is BreedsUiState.Success -> {
                         if (currentUiState.pets.isEmpty() && !isRefreshing) {
                             EmptyState(
-                                message = if (searchQuery.isEmpty()) {
-                                    stringResource(string.no_breeds_available)
-                                } else {
-                                    stringResource(string.no_breeds_found_for, searchQuery)
-                                }
+                                message =
+                                    if (searchQuery.isEmpty()) {
+                                        stringResource(string.no_breeds_available)
+                                    } else {
+                                        stringResource(string.no_breeds_found_for, searchQuery)
+                                    },
                             )
                         } else {
                             LazyColumn(
                                 state = listState,
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 contentPadding = PaddingValues(end = 16.dp, start = 16.dp, bottom = 16.dp),
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
                             ) {
                                 items(
                                     items = currentUiState.pets,
-                                    key = { it.id }
+                                    key = { it.id },
                                 ) { pet ->
                                     PetCard(
                                         pet = pet,
                                         onCardClick = { onNavigateToDetails(pet.id) },
-                                        onFavoriteClick = { viewModel.onToggleFavorite(pet.id) }
+                                        onFavoriteClick = { viewModel.onToggleFavorite(pet.id) },
                                     )
                                 }
 
                                 if (isLoadingMore) {
                                     item {
                                         Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
-                                            contentAlignment = Alignment.Center
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(16.dp),
+                                            contentAlignment = Alignment.Center,
                                         ) {
                                             CircularProgressIndicator()
                                         }
@@ -203,14 +239,14 @@ fun BreedsScreen(
                     is BreedsUiState.Error -> {
                         ErrorMessage(
                             message = currentUiState.message,
-                            onRetry = viewModel::onRefresh
+                            onRetry = viewModel::onRefresh,
                         )
                     }
                 }
             }
             PullToRefreshContainer(
                 state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
             )
         }
     }
@@ -219,7 +255,7 @@ fun BreedsScreen(
         FilterBottomSheet(
             currentRange = lifeSpanRange,
             onRangeChange = viewModel::onLifeSpanRangeChanged,
-            onDismiss = { showFilters = false }
+            onDismiss = { showFilters = false },
         )
     }
 }

@@ -52,17 +52,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.feature.R.string
 import com.example.model.PetType
+import com.example.resources.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import com.example.resources.R
-import com.example.feature.R.string
 
 @Composable
 fun OnboardingScreen(
     onPetTypeSelected: () -> Unit,
-    viewModel: OnboardingViewModel = hiltViewModel()
+    viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
     var animationStarted by remember { mutableStateOf(false) }
     var selectedPetType by remember { mutableStateOf<PetType?>(null) }
@@ -92,39 +92,44 @@ fun OnboardingScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.surface
-                    )
-                )
-            )
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    brush =
+                        Brush.verticalGradient(
+                            colors =
+                                listOf(
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    MaterialTheme.colorScheme.background,
+                                    MaterialTheme.colorScheme.surface,
+                                ),
+                        ),
+                ),
     ) {
         // Background decoration circles
         BackgroundDecorations()
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             // App Logo with animation
             AnimatedVisibility(
                 visible = animationStarted,
-                enter = fadeIn(animationSpec = tween(800)) + scaleIn(animationSpec = tween(800))
+                enter = fadeIn(animationSpec = tween(800)) + scaleIn(animationSpec = tween(800)),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.catdog2),
                     contentDescription = stringResource(string.pet_breeds_app_logo),
-                    modifier = Modifier
-                        .size(85.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier =
+                        Modifier
+                            .size(85.dp),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
 
@@ -132,27 +137,29 @@ fun OnboardingScreen(
 
             AnimatedVisibility(
                 visible = animationStarted,
-                enter = fadeIn(animationSpec = tween(800, delayMillis = 200)) +
-                        slideInVertically(animationSpec = tween(800, delayMillis = 200))
+                enter =
+                    fadeIn(animationSpec = tween(800, delayMillis = 200)) +
+                        slideInVertically(animationSpec = tween(800, delayMillis = 200)),
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = stringResource(string.onboarding_welcome_title_part1),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
 
                     Text(
                         text = stringResource(string.onboarding_welcome_title_part2),
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 36.sp
-                        ),
+                        style =
+                            MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 36.sp,
+                            ),
                         color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -162,13 +169,13 @@ fun OnboardingScreen(
             // Subtitle with animation
             AnimatedVisibility(
                 visible = animationStarted,
-                enter = fadeIn(animationSpec = tween(800, delayMillis = 400))
+                enter = fadeIn(animationSpec = tween(800, delayMillis = 400)),
             ) {
                 Text(
                     text = stringResource(string.onboarding_welcome_subtitle),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -177,15 +184,16 @@ fun OnboardingScreen(
             // Question text
             AnimatedVisibility(
                 visible = animationStarted,
-                enter = fadeIn(animationSpec = tween(800, delayMillis = 600))
+                enter = fadeIn(animationSpec = tween(800, delayMillis = 600)),
             ) {
                 Text(
                     text = stringResource(string.onboarding_are_you_a),
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.SemiBold
-                    ),
+                    style =
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.SemiBold,
+                        ),
                     color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -194,14 +202,16 @@ fun OnboardingScreen(
             // Pet type selection cards
             AnimatedVisibility(
                 visible = animationStarted,
-                enter = fadeIn(animationSpec = tween(800, delayMillis = 800)) +
-                        slideInVertically(animationSpec = tween(800, delayMillis = 800))
+                enter =
+                    fadeIn(animationSpec = tween(800, delayMillis = 800)) +
+                        slideInVertically(animationSpec = tween(800, delayMillis = 800)),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
                         TypeCard(
@@ -209,7 +219,7 @@ fun OnboardingScreen(
                             label = stringResource(string.cat_person),
                             petType = PetType.CAT,
                             isSelected = selectedPetType == PetType.CAT,
-                            onClick = { selectedPetType = PetType.CAT }
+                            onClick = { selectedPetType = PetType.CAT },
                         )
                     }
                     // Add some space between the cards
@@ -221,7 +231,7 @@ fun OnboardingScreen(
                             label = stringResource(string.dog_person),
                             petType = PetType.DOG,
                             isSelected = selectedPetType == PetType.DOG,
-                            onClick = { selectedPetType = PetType.DOG }
+                            onClick = { selectedPetType = PetType.DOG },
                         )
                     }
                 }
@@ -237,84 +247,96 @@ fun TypeCard(
     label: String,
     petType: PetType,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val scale by animateFloatAsState(
         targetValue = if (isSelected) 1.1f else 1f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "card_scale"
+        animationSpec =
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow,
+            ),
+        label = "card_scale",
     )
 
     val elevation by animateDpAsState(
         targetValue = if (isSelected) 16.dp else 8.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "card_elevation"
+        animationSpec =
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow,
+            ),
+        label = "card_elevation",
     )
 
     Card(
-        modifier = Modifier
-            .widthIn(min = 140.dp, max = 160.dp)
-            .aspectRatio(1f)
-            .scale(scale)
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .widthIn(min = 140.dp, max = 160.dp)
+                .aspectRatio(1f)
+                .scale(scale)
+                .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = elevation),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.primaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+            ),
+        border =
+            if (isSelected) {
+                BorderStroke(
+                    2.dp,
+                    MaterialTheme.colorScheme.primary,
+                )
             } else {
-                MaterialTheme.colorScheme.surface
-            }
-        ),
-        border = if (isSelected) {
-            BorderStroke(
-                2.dp,
-                MaterialTheme.colorScheme.primary
-            )
-        } else null
+                null
+            },
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             val emojiScale by animateFloatAsState(
                 targetValue = if (isSelected) 1.2f else 1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                ),
-                label = "emoji_scale"
+                animationSpec =
+                    spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
+                label = "emoji_scale",
             )
 
             Icon(
                 painter = painter,
                 contentDescription = label,
                 modifier = Modifier.size(48.dp).scale(emojiScale),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
                 textAlign = TextAlign.Center,
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
+                color =
+                    if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -326,19 +348,20 @@ fun TypeCard(
                 Card(
                     modifier = Modifier.size(24.dp),
                     shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = "✓",
                             color = Color.White,
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -353,37 +376,43 @@ fun BackgroundDecorations() {
     Box(modifier = Modifier.fillMaxSize()) {
         // Top left circle
         Card(
-            modifier = Modifier
-                .size(100.dp)
-                .offset((-30).dp, 50.dp),
+            modifier =
+                Modifier
+                    .size(100.dp)
+                    .offset((-30).dp, 50.dp),
             shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                ),
         ) {}
 
         // Top right circle
         Card(
-            modifier = Modifier
-                .size(60.dp)
-                .offset(20.dp, 120.dp)
-                .align(Alignment.TopEnd),
+            modifier =
+                Modifier
+                    .size(60.dp)
+                    .offset(20.dp, 120.dp)
+                    .align(Alignment.TopEnd),
             shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                ),
         ) {}
 
         // Bottom left circle
         Card(
-            modifier = Modifier
-                .size(80.dp)
-                .offset((-20).dp, (-40).dp)
-                .align(Alignment.BottomStart),
+            modifier =
+                Modifier
+                    .size(80.dp)
+                    .offset((-20).dp, (-40).dp)
+                    .align(Alignment.BottomStart),
             shape = CircleShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
+                ),
         ) {}
     }
 }

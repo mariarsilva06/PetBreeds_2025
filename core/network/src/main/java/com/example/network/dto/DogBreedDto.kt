@@ -16,6 +16,5 @@ data class DogBreedDto(
     @SerializedName("life_span")
     val lifeSpan: String?,
     @SerializedName("image")
-    val image: ImageDto?
+    val image: ImageDto?,
 )
-

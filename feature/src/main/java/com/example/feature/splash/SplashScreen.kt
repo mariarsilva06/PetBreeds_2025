@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,32 +30,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
-import com.example.resources.R
 import com.example.feature.R.string
-
+import com.example.resources.R
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(
-    onSplashFinished: (() -> Unit)? = null
-) {
+fun SplashScreen(onSplashFinished: (() -> Unit)? = null) {
     var startAnimation by remember { mutableStateOf(false) }
 
-    val alphaAnimation = animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 1000,
-            easing = FastOutSlowInEasing
-        ), label = ""
-    )
+    val alphaAnimation =
+        animateFloatAsState(
+            targetValue = if (startAnimation) 1f else 0f,
+            animationSpec =
+                tween(
+                    durationMillis = 1000,
+                    easing = FastOutSlowInEasing,
+                ),
+            label = "",
+        )
 
-    val scaleAnimation = animateFloatAsState(
-        targetValue = if (startAnimation) 1f else 0.3f,
-        animationSpec = tween(
-            durationMillis = 1000,
-            easing = FastOutSlowInEasing
-        ), label = ""
-    )
+    val scaleAnimation =
+        animateFloatAsState(
+            targetValue = if (startAnimation) 1f else 0.3f,
+            animationSpec =
+                tween(
+                    durationMillis = 1000,
+                    easing = FastOutSlowInEasing,
+                ),
+            label = "",
+        )
 
     LaunchedEffect(key1 = true) {
         startAnimation = true
@@ -64,29 +67,34 @@ fun SplashScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF4A4AFF),
-                        Color(0xFF00BFA6)
-                    )
-                )            ),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    brush =
+                        Brush.verticalGradient(
+                            colors =
+                                listOf(
+                                    Color(0xFF4A4AFF),
+                                    Color(0xFF00BFA6),
+                                ),
+                        ),
+                ),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .alpha(alphaAnimation.value)
-                .scale(scaleAnimation.value)
+            modifier =
+                Modifier
+                    .alpha(alphaAnimation.value)
+                    .scale(scaleAnimation.value),
         ) {
             // App Icon/Logo
             Icon(
                 painter = painterResource(id = R.drawable.catdog2),
                 contentDescription = stringResource(string.pet_breeds_logo_description),
                 modifier = Modifier.size(120.dp),
-                tint = Color.White
+                tint = Color.White,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -96,7 +104,7 @@ fun SplashScreen(
                 text = stringResource(string.pet_breeds_title),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -105,7 +113,7 @@ fun SplashScreen(
             Text(
                 text = stringResource(string.splash_tagline),
                 fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.9f)
+                color = Color.White.copy(alpha = 0.9f),
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -114,7 +122,7 @@ fun SplashScreen(
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
                 color = Color.White,
-                strokeWidth = 2.dp
+                strokeWidth = 2.dp,
             )
         }
     }

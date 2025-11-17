@@ -9,7 +9,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 
 class ToggleFavoriteUseCaseTest {
-
     @Mock
     private lateinit var repository: PetRepository
 
@@ -22,14 +21,15 @@ class ToggleFavoriteUseCaseTest {
     }
 
     @Test
-    fun `should delegate to repository`() = runTest {
-        // Given
-        val petId = "test_pet_id"
+    fun `should delegate to repository`() =
+        runTest {
+            // Given
+            val petId = "test_pet_id"
 
-        // When
-        useCase(petId)
+            // When
+            useCase(petId)
 
-        // Then
-        verify(repository).toggleFavorite(petId)
-    }
+            // Then
+            verify(repository).toggleFavorite(petId)
+        }
 }

@@ -8,16 +8,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class BottomNavItem(
     val route: String,
     val icon: ImageVector,
-    val label: String
+    val label: String,
 ) {
     object Breeds : BottomNavItem(
         route = Routes.Breeds.route,
         icon = Icons.Default.Pets,
-        label = "Breeds"
+        label = "Breeds",
     )
+
     object Favorites : BottomNavItem(
         route = Routes.Favorites.route,
         icon = Icons.Default.Favorite,
-        label = "Favorites"
+        label = "Favorites",
     )
 }
