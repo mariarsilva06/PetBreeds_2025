@@ -1,11 +1,12 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
 
 // API keys - local.properties
@@ -25,12 +26,12 @@ android {
         buildConfigField(
             "String",
             "CAT_API_KEY",
-            "\"${localProperties.getProperty("CAT_API_KEY", "")}\""
+            "\"${localProperties.getProperty("CAT_API_KEY", "")}\"",
         )
         buildConfigField(
             "String",
             "DOG_API_KEY",
-            "\"${localProperties.getProperty("DOG_API_KEY", "")}\""
+            "\"${localProperties.getProperty("DOG_API_KEY", "")}\"",
         )
     }
 

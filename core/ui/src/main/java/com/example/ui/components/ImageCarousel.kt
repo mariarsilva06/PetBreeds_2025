@@ -3,13 +3,29 @@ package com.example.ui.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +41,7 @@ fun ImageCarousel(
     images: List<String>,
     petName: String = "Pet",
     modifier: Modifier = Modifier,
-    onImageClick: ((Int) -> Unit)? = null
+    onImageClick: ((Int) -> Unit)? = null,
 ) {
     if (images.isEmpty()) return
 
@@ -35,28 +51,30 @@ fun ImageCarousel(
 
     Column(modifier = modifier) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp),
-            shape = RoundedCornerShape(0.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+            shape = RoundedCornerShape(0.dp),
         ) {
             Box {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) { page ->
                     AsyncImage(
                         model = images[page],
                         contentDescription = "$petName image ${page + 1}",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable {
-                                selectedImageIndex = page
-                                onImageClick?.invoke(page) ?: run {
-                                    showFullScreenViewer = true
-                                }
-                            },
-                        contentScale = ContentScale.Crop
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    selectedImageIndex = page
+                                    onImageClick?.invoke(page) ?: run {
+                                        showFullScreenViewer = true
+                                    }
+                                },
+                        contentScale = ContentScale.Crop,
                     )
                 }
 
@@ -66,19 +84,21 @@ fun ImageCarousel(
                         Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         repeat(images.size) { iteration ->
-                            val color = if (pagerState.currentPage == iteration) {
-                                Color.White
-                            } else {
-                                Color.White.copy(alpha = 0.5f)
-                            }
+                            val color =
+                                if (pagerState.currentPage == iteration) {
+                                    Color.White
+                                } else {
+                                    Color.White.copy(alpha = 0.5f)
+                                }
                             Box(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(8.dp)
+                                modifier =
+                                    Modifier
+                                        .clip(CircleShape)
+                                        .background(color)
+                                        .size(8.dp),
                             )
                         }
                     }
@@ -87,18 +107,20 @@ fun ImageCarousel(
                 // Click hint overlay for first time users
                 if (pagerState.currentPage == 0 && images.isNotEmpty()) {
                     Card(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Black.copy(alpha = 0.6f)
-                        )
+                        modifier =
+                            Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(12.dp),
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = Color.Black.copy(alpha = 0.6f),
+                            ),
                     ) {
                         Text(
                             text = "Tap to expand",
                             color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
                 }
@@ -106,18 +128,20 @@ fun ImageCarousel(
                 // Image counter in top-left
                 if (images.size > 1) {
                     Card(
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Black.copy(alpha = 0.6f)
-                        )
+                        modifier =
+                            Modifier
+                                .align(Alignment.TopStart)
+                                .padding(12.dp),
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = Color.Black.copy(alpha = 0.6f),
+                            ),
                     ) {
                         Text(
                             text = "${pagerState.currentPage + 1}/${images.size}",
                             color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
                 }
@@ -131,7 +155,7 @@ fun ImageCarousel(
             images = images,
             initialIndex = selectedImageIndex,
             petName = petName,
-            onDismiss = { showFullScreenViewer = false }
+            onDismiss = { showFullScreenViewer = false },
         )
     }
 }

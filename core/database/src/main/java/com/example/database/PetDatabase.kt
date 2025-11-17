@@ -9,7 +9,7 @@ import com.example.database.entity.PetEntity
 @Database(
     entities = [PetEntity::class],
     version = 2,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class PetDatabase : RoomDatabase() {

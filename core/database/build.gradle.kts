@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -38,6 +39,6 @@ dependencies {
     // Coroutines
     implementation(libs.coroutines.android)
 
-    //Converters
+    // Converters
     implementation(libs.gson)
 }

@@ -10,21 +10,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor(
-    private val preferencesManager: PreferencesManager
-) : ViewModel() {
-
-    fun selectPetType(petType: PetType) {
-        viewModelScope.launch {
-            try {
-                preferencesManager.savePetType(petType)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to save pet type: ${e.message}", e)
+class OnboardingViewModel
+    @Inject
+    constructor(
+        private val preferencesManager: PreferencesManager,
+    ) : ViewModel() {
+        fun selectPetType(petType: PetType) {
+            viewModelScope.launch {
+                try {
+                    preferencesManager.savePetType(petType)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to save pet type: ${e.message}", e)
+                }
             }
         }
-    }
 
-    companion object {
-        private const val TAG = "OnboardingViewModel"
+        companion object {
+            private const val TAG = "OnboardingViewModel"
+        }
     }
-}

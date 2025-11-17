@@ -1,9 +1,9 @@
 package com.example.network.di
 
+import com.example.common.Constants
 import com.example.network.interceptor.AuthInterceptor
 import com.example.network.service.CatApiService
 import com.example.network.service.DogApiService
-import com.example.common.Constants
 import com.example.petbreeds.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -20,86 +20,77 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Provides
     @Singleton
-    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level =
+                if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
         }
-    }
 
     @Provides
     @Singleton
     @Named("catOkHttpClient")
-    fun provideCatOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
+    fun provideCatOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient
+            .Builder()
             .addInterceptor(AuthInterceptor(BuildConfig.CAT_API_KEY))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
-    }
 
     @Provides
     @Singleton
     @Named("dogOkHttpClient")
-    fun provideDogOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
+    fun provideDogOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient
+            .Builder()
             .addInterceptor(AuthInterceptor(BuildConfig.DOG_API_KEY))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
-    }
 
     @Provides
     @Singleton
     @Named("catRetrofit")
     fun provideCatRetrofit(
-        @Named("catOkHttpClient") okHttpClient: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
+        @Named("catOkHttpClient") okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
             .baseUrl(Constants.CAT_API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
 
     @Provides
     @Singleton
     @Named("dogRetrofit")
     fun provideDogRetrofit(
-        @Named("dogOkHttpClient") okHttpClient: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
+        @Named("dogOkHttpClient") okHttpClient: OkHttpClient,
+    ): Retrofit =
+        Retrofit
+            .Builder()
             .baseUrl(Constants.DOG_API_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
 
     @Provides
     @Singleton
     fun provideCatApiService(
-        @Named("catRetrofit") retrofit: Retrofit
-    ): CatApiService {
-        return retrofit.create(CatApiService::class.java)
-    }
+        @Named("catRetrofit") retrofit: Retrofit,
+    ): CatApiService = retrofit.create(CatApiService::class.java)
 
     @Provides
     @Singleton
     fun provideDogApiService(
-        @Named("dogRetrofit") retrofit: Retrofit
-    ): DogApiService {
-        return retrofit.create(DogApiService::class.java)
-    }
+        @Named("dogRetrofit") retrofit: Retrofit,
+    ): DogApiService = retrofit.create(DogApiService::class.java)
 }

@@ -27,7 +27,10 @@ interface PetDao {
     suspend fun insertPet(pet: PetEntity)
 
     @Query("UPDATE pets SET isFavorite = :isFavorite WHERE id = :petId")
-    suspend fun updateFavoriteStatus(petId: String, isFavorite: Boolean)
+    suspend fun updateFavoriteStatus(
+        petId: String,
+        isFavorite: Boolean,
+    )
 
     @Query("DELETE FROM pets WHERE petType = :petType")
     suspend fun deleteAllPetsByType(petType: PetType)
@@ -39,13 +42,19 @@ interface PetDao {
     suspend fun getPetIdsByType(petType: PetType): List<String>
 
     @Transaction
-    suspend fun refreshPetsForFirstPage(pets: List<PetEntity>, petType: PetType) {
+    suspend fun refreshPetsForFirstPage(
+        pets: List<PetEntity>,
+        petType: PetType,
+    ) {
         deleteAllPetsByType(petType)
         insertPets(pets)
     }
 
     @Transaction
-    suspend fun appendPets(pets: List<PetEntity>, petType: PetType) {
+    suspend fun appendPets(
+        pets: List<PetEntity>,
+        petType: PetType,
+    ) {
         // Get existing IDs to avoid duplicates
         val existingIds = getPetIdsByType(petType).toSet()
         val newPets = pets.filter { !existingIds.contains(it.id) }

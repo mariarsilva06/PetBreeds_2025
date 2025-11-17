@@ -11,10 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
-
     @Binds
     @Singleton
-    abstract fun bindPetRepository(
-        petRepositoryImpl: PetRepositoryImpl
-    ): PetRepository
+    abstract fun bindPetRepository(petRepositoryImpl: PetRepositoryImpl): PetRepository
 }
