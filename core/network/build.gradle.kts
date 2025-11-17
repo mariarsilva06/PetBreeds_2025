@@ -49,11 +49,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:common"))
-    implementation(project(":core:model"))
+    api(project(":core:common"))
+    api(project(":core:model"))
 
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
+    api(libs.retrofit)
+    api(libs.retrofit.gson)
+
     implementation(libs.okhttp.logging)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

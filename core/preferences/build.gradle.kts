@@ -24,11 +24,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
+    api(project(":core:model"))
     implementation(project(":core:common"))
 
     // DataStore
-    implementation(libs.androidx.datastore)
+    api(libs.androidx.datastore)
 
     // Hilt
     implementation(libs.hilt.android)
