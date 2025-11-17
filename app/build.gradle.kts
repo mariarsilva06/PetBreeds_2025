@@ -82,12 +82,6 @@ dependencies {
 
     //Feature modules
     implementation(project(":feature"))
-//    implementation(project(":feature:breeds"))
-//    implementation(project(":feature:favorites"))
-//    implementation(project(":feature:details"))
-//    implementation(project(":feature:onboarding"))
-//    implementation(project(":feature:splash"))
-//    implementation(project(":feature:profile"))
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
