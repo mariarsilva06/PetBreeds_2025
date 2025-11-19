@@ -15,7 +15,7 @@ sealed class Routes(
         fun createRoute(petId: String) = "details/$petId"
     }
 
-    object Splash : Routes("splash")
+    // object Splash : Routes("splash")
 
     object Profile : Routes("profile")
 }
