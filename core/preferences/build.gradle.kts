@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -24,11 +25,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
+    api(project(":core:model"))
     implementation(project(":core:common"))
 
     // DataStore
-    implementation(libs.androidx.datastore)
+    api(libs.androidx.datastore)
 
     // Hilt
     implementation(libs.hilt.android)

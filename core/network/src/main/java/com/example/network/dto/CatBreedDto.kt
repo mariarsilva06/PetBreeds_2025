@@ -16,10 +16,10 @@ data class CatBreedDto(
     @SerializedName("life_span")
     val lifeSpan: String?,
     @SerializedName("image")
-    val image: ImageDto?
+    val image: ImageDto?,
 )
 
 data class ImageDto(
     @SerializedName("url")
-    val url: String
+    val url: String,
 )

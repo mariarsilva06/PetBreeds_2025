@@ -1,11 +1,12 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
 
 // API keys - local.properties
@@ -25,12 +26,12 @@ android {
         buildConfigField(
             "String",
             "CAT_API_KEY",
-            "\"${localProperties.getProperty("CAT_API_KEY", "")}\""
+            "\"${localProperties.getProperty("CAT_API_KEY", "")}\"",
         )
         buildConfigField(
             "String",
             "DOG_API_KEY",
-            "\"${localProperties.getProperty("DOG_API_KEY", "")}\""
+            "\"${localProperties.getProperty("DOG_API_KEY", "")}\"",
         )
     }
 
@@ -49,11 +50,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:common"))
-    implementation(project(":core:model"))
+    api(project(":core:common"))
+    api(project(":core:model"))
 
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
+    api(libs.retrofit)
+    api(libs.retrofit.gson)
+
     implementation(libs.okhttp.logging)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

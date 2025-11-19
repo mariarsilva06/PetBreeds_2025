@@ -5,16 +5,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.model.PetType
-import com.example.petbreeds.PetBreedsNavigation
 import com.example.petbreeds.presentation.navigation.BottomNavItem
+import com.example.petbreeds.presentation.navigation.PetBreedsNavigation
 import com.example.petbreeds.presentation.navigation.Routes
 import com.example.preferences.PreferencesManager
 import com.example.preferences.ThemeMode
@@ -24,7 +31,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject
     lateinit var preferencesManager: PreferencesManager
 
@@ -40,11 +46,12 @@ class MainActivity : ComponentActivity() {
             val currentDestination = navBackStackEntry?.destination
             val themeMode by preferencesManager.themeModeFlow.collectAsState(initial = ThemeMode.SYSTEM)
 
-            val darkTheme = when (themeMode) {
-                ThemeMode.LIGHT -> false
-                ThemeMode.DARK -> true
-                ThemeMode.SYSTEM -> isSystemInDarkTheme()
-            }
+            val darkTheme =
+                when (themeMode) {
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.DARK -> true
+                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                }
 
             // Handle navigation after splash based on first launch
             LaunchedEffect(isFirstLaunch, currentPetType) {
@@ -67,22 +74,24 @@ class MainActivity : ComponentActivity() {
             // Use a default theme during loading, but don't load data
             PetBreedsTheme(
                 petType = currentPetType ?: PetType.CAT,
-                darkTheme = darkTheme
+                darkTheme = darkTheme,
             ) {
-                val showBottomBar = currentDestination?.hierarchy?.any { destination ->
-                    destination.route == Routes.Breeds.route ||
+                val showBottomBar =
+                    currentDestination?.hierarchy?.any { destination ->
+                        destination.route == Routes.Breeds.route ||
                             destination.route == Routes.Favorites.route ||
                             destination.route == Routes.Settings.route
-                } == true
+                    } == true
 
                 Scaffold(
                     bottomBar = {
                         if (showBottomBar) {
                             NavigationBar {
-                                val items = listOf(
-                                    BottomNavItem.Breeds,
-                                    BottomNavItem.Favorites,
-                                )
+                                val items =
+                                    listOf(
+                                        BottomNavItem.Breeds,
+                                        BottomNavItem.Favorites,
+                                    )
 
                                 items.forEach { item ->
                                     NavigationBarItem(
@@ -97,17 +106,17 @@ class MainActivity : ComponentActivity() {
                                                 launchSingleTop = true
                                                 restoreState = true
                                             }
-                                        }
+                                        },
                                     )
                                 }
                             }
                         }
-                    }
+                    },
                 ) { innerPadding ->
                     PetBreedsNavigation(
                         navController = navController,
                         preferencesManager = preferencesManager,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
                     )
                 }
             }

@@ -9,18 +9,17 @@ interface CatApiService {
     @GET("breeds")
     suspend fun getBreeds(
         @Query("limit") limit: Int = 20,
-        @Query("page") page: Int = 0
+        @Query("page") page: Int = 0,
     ): List<CatBreedDto>
 
     @GET("breeds/search")
     suspend fun searchBreeds(
-        @Query("q") query: String
+        @Query("q") query: String,
     ): List<CatBreedDto>
 
     @GET("images/search")
     suspend fun getBreedImages(
         @Query("breed_id") breedId: String,
-        @Query("limit") limit: Int = 5
+        @Query("limit") limit: Int = 5,
     ): List<ImageResponse>
-
 }

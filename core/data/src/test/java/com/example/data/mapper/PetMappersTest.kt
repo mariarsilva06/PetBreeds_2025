@@ -9,19 +9,19 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class PetMappersTest {
-
     @Test
     fun `CatBreedDto should map to PetEntity correctly`() {
         // Given
-        val catBreedDto = CatBreedDto(
-            id = "1",
-            name = "Persian",
-            origin = "Iran",
-            temperament = "Calm, Gentle",
-            description = "A long-haired breed of cat",
-            lifeSpan = "12 - 17",
-            image = ImageDto("http://example.com/persian.jpg")
-        )
+        val catBreedDto =
+            CatBreedDto(
+                id = "1",
+                name = "Persian",
+                origin = "Iran",
+                temperament = "Calm, Gentle",
+                description = "A long-haired breed of cat",
+                lifeSpan = "12 - 17",
+                image = ImageDto("http://example.com/persian.jpg"),
+            )
         val additionalImages = listOf("http://example.com/persian2.jpg")
 
         // When
@@ -43,15 +43,16 @@ class PetMappersTest {
     @Test
     fun `CatBreedDto with null values should map to PetEntity with defaults`() {
         // Given
-        val catBreedDto = CatBreedDto(
-            id = "1",
-            name = "Persian",
-            origin = null,
-            temperament = null,
-            description = null,
-            lifeSpan = null,
-            image = null
-        )
+        val catBreedDto =
+            CatBreedDto(
+                id = "1",
+                name = "Persian",
+                origin = null,
+                temperament = null,
+                description = null,
+                lifeSpan = null,
+                image = null,
+            )
 
         // When
         val result = catBreedDto.toEntity()
@@ -72,15 +73,16 @@ class PetMappersTest {
     @Test
     fun `DogBreedDto should map to PetEntity correctly`() {
         // Given
-        val dogBreedDto = DogBreedDto(
-            id = "2",
-            name = "Labrador",
-            origin = "Canada",
-            temperament = "Friendly, Active",
-            description = "A popular family dog",
-            lifeSpan = "10 - 12",
-            image = ImageDto("http://example.com/labrador.jpg")
-        )
+        val dogBreedDto =
+            DogBreedDto(
+                id = "2",
+                name = "Labrador",
+                origin = "Canada",
+                temperament = "Friendly, Active",
+                description = "A popular family dog",
+                lifeSpan = "10 - 12",
+                image = ImageDto("http://example.com/labrador.jpg"),
+            )
         val additionalImages = listOf("http://example.com/labrador2.jpg")
 
         // When
@@ -102,15 +104,16 @@ class PetMappersTest {
     @Test
     fun `DogBreedDto with null values should map to PetEntity with defaults`() {
         // Given
-        val dogBreedDto = DogBreedDto(
-            id = "2",
-            name = "Labrador",
-            origin = null,
-            temperament = null,
-            description = null,
-            lifeSpan = null,
-            image = null
-        )
+        val dogBreedDto =
+            DogBreedDto(
+                id = "2",
+                name = "Labrador",
+                origin = null,
+                temperament = null,
+                description = null,
+                lifeSpan = null,
+                image = null,
+            )
 
         // When
         val result = dogBreedDto.toEntity()
@@ -131,18 +134,19 @@ class PetMappersTest {
     @Test
     fun `PetEntity should map to Pet domain model correctly`() {
         // Given
-        val petEntity = PetEntity(
-            id = "1",
-            name = "Persian",
-            origin = "Iran",
-            temperament = "Calm, Gentle",
-            description = "A long-haired breed of cat",
-            lifeSpan = "12 - 17",
-            imageUrl = "http://example.com/persian.jpg",
-            additionalImages = listOf("http://example.com/persian2.jpg"),
-            isFavorite = true,
-            petType = PetType.CAT
-        )
+        val petEntity =
+            PetEntity(
+                id = "1",
+                name = "Persian",
+                origin = "Iran",
+                temperament = "Calm, Gentle",
+                description = "A long-haired breed of cat",
+                lifeSpan = "12 - 17",
+                imageUrl = "http://example.com/persian.jpg",
+                additionalImages = listOf("http://example.com/persian2.jpg"),
+                isFavorite = true,
+                petType = PetType.CAT,
+            )
 
         // When
         val result = petEntity.toDomain()
@@ -163,28 +167,29 @@ class PetMappersTest {
     @Test
     fun `List of PetEntity should map to List of Pet correctly`() {
         // Given
-        val petEntities = listOf(
-            PetEntity(
-                id = "1",
-                name = "Persian",
-                origin = "Iran",
-                temperament = "Calm",
-                description = "Long-haired breed",
-                lifeSpan = "12 - 17",
-                imageUrl = "http://example.com/persian.jpg",
-                petType = PetType.CAT
-            ),
-            PetEntity(
-                id = "2",
-                name = "Labrador",
-                origin = "Canada",
-                temperament = "Friendly",
-                description = "Family dog",
-                lifeSpan = "10 - 12",
-                imageUrl = "http://example.com/labrador.jpg",
-                petType = PetType.DOG
+        val petEntities =
+            listOf(
+                PetEntity(
+                    id = "1",
+                    name = "Persian",
+                    origin = "Iran",
+                    temperament = "Calm",
+                    description = "Long-haired breed",
+                    lifeSpan = "12 - 17",
+                    imageUrl = "http://example.com/persian.jpg",
+                    petType = PetType.CAT,
+                ),
+                PetEntity(
+                    id = "2",
+                    name = "Labrador",
+                    origin = "Canada",
+                    temperament = "Friendly",
+                    description = "Family dog",
+                    lifeSpan = "10 - 12",
+                    imageUrl = "http://example.com/labrador.jpg",
+                    petType = PetType.DOG,
+                ),
             )
-        )
 
         // When
         val result = petEntities.toDomain()
@@ -200,26 +205,27 @@ class PetMappersTest {
     @Test
     fun `List of CatBreedDto should map to List of PetEntity correctly`() {
         // Given
-        val catBreedDtos = listOf(
-            CatBreedDto(
-                id = "1",
-                name = "Persian",
-                origin = "Iran",
-                temperament = "Calm",
-                description = "Long-haired breed",
-                lifeSpan = "12 - 17",
-                image = ImageDto("http://example.com/persian.jpg")
-            ),
-            CatBreedDto(
-                id = "2",
-                name = "Siamese",
-                origin = "Thailand",
-                temperament = "Active",
-                description = "Short-haired breed",
-                lifeSpan = "10 - 15",
-                image = ImageDto("http://example.com/siamese.jpg")
+        val catBreedDtos =
+            listOf(
+                CatBreedDto(
+                    id = "1",
+                    name = "Persian",
+                    origin = "Iran",
+                    temperament = "Calm",
+                    description = "Long-haired breed",
+                    lifeSpan = "12 - 17",
+                    image = ImageDto("http://example.com/persian.jpg"),
+                ),
+                CatBreedDto(
+                    id = "2",
+                    name = "Siamese",
+                    origin = "Thailand",
+                    temperament = "Active",
+                    description = "Short-haired breed",
+                    lifeSpan = "10 - 15",
+                    image = ImageDto("http://example.com/siamese.jpg"),
+                ),
             )
-        )
 
         // When
         val result = catBreedDtos.toCatEntities()
@@ -235,26 +241,27 @@ class PetMappersTest {
     @Test
     fun `List of DogBreedDto should map to List of PetEntity correctly`() {
         // Given
-        val dogBreedDtos = listOf(
-            DogBreedDto(
-                id = "1",
-                name = "Labrador",
-                origin = "Canada",
-                temperament = "Friendly",
-                description = "Family dog",
-                lifeSpan = "10 - 12",
-                image = ImageDto("http://example.com/labrador.jpg")
-            ),
-            DogBreedDto(
-                id = "2",
-                name = "Golden Retriever",
-                origin = "Scotland",
-                temperament = "Intelligent",
-                description = "Popular breed",
-                lifeSpan = "10 - 12",
-                image = ImageDto("http://example.com/golden.jpg")
+        val dogBreedDtos =
+            listOf(
+                DogBreedDto(
+                    id = "1",
+                    name = "Labrador",
+                    origin = "Canada",
+                    temperament = "Friendly",
+                    description = "Family dog",
+                    lifeSpan = "10 - 12",
+                    image = ImageDto("http://example.com/labrador.jpg"),
+                ),
+                DogBreedDto(
+                    id = "2",
+                    name = "Golden Retriever",
+                    origin = "Scotland",
+                    temperament = "Intelligent",
+                    description = "Popular breed",
+                    lifeSpan = "10 - 12",
+                    image = ImageDto("http://example.com/golden.jpg"),
+                ),
             )
-        )
 
         // When
         val result = dogBreedDtos.toDogEntities()

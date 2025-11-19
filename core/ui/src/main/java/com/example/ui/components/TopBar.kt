@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
@@ -23,18 +22,18 @@ fun TopBar(
     subtitle: String,
     onMenuClick: () -> Unit,
     onProfileClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         title = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(title, style = MaterialTheme.typography.titleLarge)
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         },
@@ -42,7 +41,7 @@ fun TopBar(
             IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = "Open Menu"
+                    contentDescription = "Open Menu",
                 )
             }
         },
@@ -50,10 +49,10 @@ fun TopBar(
             IconButton(onClick = onProfileClick) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Account"
+                    contentDescription = "Account",
                 )
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
