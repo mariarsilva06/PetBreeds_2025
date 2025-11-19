@@ -138,8 +138,10 @@ fun PetBreedsTheme(
         SideEffect {
             try {
                 val window = (view.context as Activity).window
-                window.statusBarColor = colorScheme.primary.toArgb()
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+                val insetsController = WindowCompat.getInsetsController(window, view)
+
+                insetsController.isAppearanceLightStatusBars = !darkTheme
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
