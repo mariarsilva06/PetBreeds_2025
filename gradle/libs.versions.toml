@@ -1,6 +1,6 @@
 [versions]
 # Build
-agp = "8.13.0"
+agp = "8.13.1"
 core = "1.7.0"
 gson-version = "2.10.1"
 hilt-android = "2.57.2"
@@ -57,6 +57,8 @@ truth-version = "1.1.5"
 turbine = "0.12.1"
 
 gson = "2.13.2"
+
+coreSplashscreen = "1.2.0"
 
 #Ktlint
 ktlint = "14.0.1"
@@ -148,6 +150,8 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 #update in future
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 material = { module = "com.google.android.material:material", version = "1.11.0" }
+
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
