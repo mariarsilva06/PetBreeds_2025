@@ -1,4 +1,4 @@
-package com.example.breeds
+package com.example.feature.breeds
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -12,166 +12,206 @@ import com.example.model.PetType
 import com.example.preferences.PreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.filter
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
-class BreedsViewModel @Inject constructor(
-    private val getPetsUseCase: GetPetsUseCase,
-    private val refreshPetsUseCase: RefreshPetsUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val preferencesManager: PreferencesManager
-) : ViewModel() {
+class BreedsViewModel
+    @Inject
+    constructor(
+        private val getPetsUseCase: GetPetsUseCase,
+        private val refreshPetsUseCase: RefreshPetsUseCase,
+        private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+        private val preferencesManager: PreferencesManager,
+    ) : ViewModel() {
+        private val _searchQuery = MutableStateFlow("")
+        val searchQuery = _searchQuery.asStateFlow()
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery = _searchQuery.asStateFlow()
+        private val _isRefreshing = MutableStateFlow(false)
+        val isRefreshing = _isRefreshing.asStateFlow()
 
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
+        private val _currentPage = MutableStateFlow(0)
+        private val _isLoadingMore = MutableStateFlow(false)
 
-    private val _currentPage = MutableStateFlow(0)
-    private val _isLoadingMore = MutableStateFlow(false)
+        private val _lifeSpanRange = MutableStateFlow(0f..30f)
+        val lifeSpanRange = _lifeSpanRange.asStateFlow()
 
-    private val _lifeSpanRange = MutableStateFlow(0f..30f)
-    val lifeSpanRange = _lifeSpanRange.asStateFlow()
+        val isLoadingMore = _isLoadingMore.asStateFlow()
 
-    val isLoadingMore = _isLoadingMore.asStateFlow()
+        private val _isSearching = MutableStateFlow(false)
+        val isSearching = _isSearching.asStateFlow()
 
-    val currentPetType = preferencesManager.petTypeFlow.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null // Changed from PetType.CAT to null
-    )
+        val currentPetType =
+                preferencesManager.petTypeFlow.stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = null,
+                )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val petsState = combine(
-        currentPetType.filterNotNull(),
-        _searchQuery,
-        _lifeSpanRange
-    ) { petType, searchQuery, range ->
-        Triple(petType, searchQuery, range)
-    }.flatMapLatest { (petType, searchQuery, lifeSpanRange) ->
-        getPetsUseCase(petType).map { result ->
-            when (result) {
-                is NetworkResult.Success -> {
-                    val filteredPets = filterPets(result.data ?: emptyList(), searchQuery, lifeSpanRange)
-                    BreedsUiState.Success(filteredPets)
-                }
-                is NetworkResult.Error -> {
-                    BreedsUiState.Error(result.message ?: "Unknown error")
-                }
-                is NetworkResult.Loading -> {
-                    BreedsUiState.Loading
-                }
-            }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = BreedsUiState.Loading
-    )
-
-    fun onSearchQueryChanged(query: String) {
-        _searchQuery.value = query
-    }
-
-    fun onToggleFavorite(petId: String) {
-        viewModelScope.launch {
-            toggleFavoriteUseCase(petId)
-        }
-    }
-
-    fun onRefresh() {
-        viewModelScope.launch {
-            currentPetType.value?.let { petType ->
-                _isRefreshing.value = true
-                _currentPage.value = 0
-                refreshPetsUseCase(petType, 0, _searchQuery.value.takeIf { it.isNotBlank() })
-                _isRefreshing.value = false
-            }
-        }
-    }
-
-    // Initial load when pet type changes - only if pet type is set
-    init {
-        viewModelScope.launch {
-            try {
-                currentPetType.filterNotNull().collect { petType ->
-                    _currentPage.value = 0
-                    refreshPetsUseCase(petType, 0)
-                }
-            } catch (e: Exception) {
-                // Handle initialization errors
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun loadNextPage() {
-        viewModelScope.launch {
-            currentPetType.value?.let { petType ->
-                if (!_isLoadingMore.value &&
-                    _searchQuery.value.isEmpty() &&
-                    _lifeSpanRange.value.start == 0f &&
-                    _lifeSpanRange.value.endInclusive == 30f) {
-                    _isLoadingMore.value = true
-                    val nextPage = _currentPage.value + 1
-
-                    try {
-                        val result = refreshPetsUseCase(petType, nextPage, null)
-                        if (result is NetworkResult.Success) {
-                            _currentPage.value = nextPage
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val petsState =
+            combine(
+                currentPetType.filterNotNull(),
+                _lifeSpanRange,
+            ) { petType, range ->
+                Pair(petType, range)
+            }.flatMapLatest { (petType, lifeSpanRange) ->
+                getPetsUseCase(petType).map { result ->
+                    when (result) {
+                        is NetworkResult.Success -> {
+                            val filteredPets = filterPetsByLifeSpan(result.data ?: emptyList(), lifeSpanRange)
+                            BreedsUiState.Success(filteredPets)
                         }
-                    } catch (e: Exception) {
-                        // Handle error silently for pagination
-                        Log.e("BreedsViewModel", "Error loading next page", e)
-                    } finally {
-                        _isLoadingMore.value = false
+                        is NetworkResult.Error -> {
+                            BreedsUiState.Error(result.message ?: "Unknown error")
+                        }
+                        is NetworkResult.Loading -> {
+                            BreedsUiState.Loading
+                        }
+                    }
+                }
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = BreedsUiState.Loading,
+            )
+
+            fun onSearchQueryChanged(query: String) {
+                _searchQuery.value = query
+            }
+
+            fun onToggleFavorite(petId: String) {
+                viewModelScope.launch {
+                    toggleFavoriteUseCase(petId)
+                }
+            }
+
+            fun onRefresh() {
+                viewModelScope.launch {
+                    currentPetType.value?.let { petType ->
+                        _isRefreshing.value = true
+                        _currentPage.value = 0
+                        val query = _searchQuery.value.takeIf { it.isNotBlank() }
+                        refreshPetsUseCase(petType, 0, query)
+                        _isRefreshing.value = false
                     }
                 }
             }
-        }
+
+            // Initial load when pet type changes - only if pet type is set
+            init {
+                viewModelScope.launch {
+                    try {
+                        currentPetType.filterNotNull().collect { petType ->
+                            _currentPage.value = 0
+                            refreshPetsUseCase(petType, 0)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                viewModelScope.launch {
+                    _searchQuery
+                        .debounce(500) // wait after user stops typing
+                        .collect { query ->
+                            currentPetType.value?.let { petType ->
+                                if (query.isNotBlank()) {
+                                    _isSearching.value = true
+                                    _currentPage.value = 0
+                                    try {
+                                        refreshPetsUseCase(petType, 0, query)
+                                    } finally {
+                                        _isSearching.value = false
+                                    }
+                                } else {
+                                    // If query empty reload first page without search
+                                    _currentPage.value = 0
+                                    refreshPetsUseCase(petType, 0)
+                                }
+                            }
+                        }
+                }
+            }
+
+            fun loadNextPage() {
+                viewModelScope.launch {
+                    currentPetType.value?.let { petType ->
+                        if (!_isLoadingMore.value &&
+                            _searchQuery.value.isEmpty() &&
+                            _lifeSpanRange.value.start == 0f &&
+                            _lifeSpanRange.value.endInclusive == 30f
+                        ) {
+                            _isLoadingMore.value = true
+                            val nextPage = _currentPage.value + 1
+
+                            try {
+                                val result = refreshPetsUseCase(petType, nextPage, null)
+                                if (result is NetworkResult.Success) {
+                                    _currentPage.value = nextPage
+                                }
+                            } catch (e: Exception) {
+                                // Handle error silently for pagination
+                                Log.e("BreedsViewModel", "Error loading next page", e)
+                            } finally {
+                                _isLoadingMore.value = false
+                            }
+                        }
+                    }
+                }
+            }
+
+            private fun filterPetsByLifeSpan(
+                pets: List<Pet>,
+                lifeSpanRange: ClosedFloatingPointRange<Float>,
+            ): List<Pet> =
+                pets.filter { pet ->
+                    val lifeSpanValue = extractLifeSpan(pet.lifeSpan)
+                    val matchesLifeSpan = lifeSpanValue?.let { it in lifeSpanRange } ?: true
+                    matchesLifeSpan
+                }
+
+            fun onLifeSpanRangeChanged(range: ClosedFloatingPointRange<Float>) {
+                _lifeSpanRange.value = range
+            }
+
+            fun setPetType(petType: PetType) {
+                preferencesManager.setPetType(petType)
+            }
+
+            private fun extractLifeSpan(lifeSpan: String): Float? {
+                // Extract numbers from strings like "10 - 12 years" or "10 years"
+                val regex = Regex("(\\d+)")
+                val numbers = regex.findAll(lifeSpan).mapNotNull { it.value.toFloatOrNull() }.toList()
+                return if (numbers.isNotEmpty()) {
+                    numbers.average().toFloat()
+                } else {
+                    null
+                }
+            }
+
     }
 
-    private fun filterPets(
-        pets: List<Pet>,
-        query: String,
-        lifeSpanRange: ClosedFloatingPointRange<Float>
-    ): List<Pet> {
-        return pets.filter { pet ->
-            val matchesQuery = query.isEmpty() || pet.name.contains(query, ignoreCase = true)
+    sealed interface BreedsUiState {
+        object Loading : BreedsUiState
 
-            val lifeSpanValue = extractLifeSpan(pet.lifeSpan)
-            val matchesLifeSpan = lifeSpanValue?.let { it in lifeSpanRange } ?: true
+        data class Success(
+            val pets: List<Pet>,
+        ) : BreedsUiState
 
-            matchesQuery && matchesLifeSpan
-        }
+        data class Error(
+            val message: String,
+        ) : BreedsUiState
     }
-
-    fun onLifeSpanRangeChanged(range: ClosedFloatingPointRange<Float>) {
-        _lifeSpanRange.value = range
-    }
-
-    fun setPetType(petType: PetType) {
-        preferencesManager.setPetType(petType)
-    }
-
-    private fun extractLifeSpan(lifeSpan: String): Float? {
-        // Extract numbers from strings like "10 - 12 years" or "10 years"
-        val regex = Regex("(\\d+)")
-        val numbers = regex.findAll(lifeSpan).mapNotNull { it.value.toFloatOrNull() }.toList()
-        return if (numbers.isNotEmpty()) {
-            numbers.average().toFloat()
-        } else {
-            null
-        }
-    }
-}
-
-sealed interface BreedsUiState {
-    object Loading : BreedsUiState
-    data class Success(val pets: List<Pet>) : BreedsUiState
-    data class Error(val message: String) : BreedsUiState
-}
