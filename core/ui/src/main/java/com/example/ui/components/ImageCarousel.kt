@@ -30,8 +30,8 @@ fun ImageCarousel(
     if (images.isEmpty()) return
 
     val pagerState = rememberPagerState(pageCount = { images.size })
-    var showFullScreenViewer by remember { mutableStateOf(false) }
-    var selectedImageIndex by remember { mutableIntStateOf(0) }
+    val showFullScreenViewer = remember { mutableStateOf(false) }
+    val selectedImageIndex = remember { mutableIntStateOf(0) }
 
     Column(modifier = modifier) {
         Card(
@@ -51,9 +51,9 @@ fun ImageCarousel(
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
-                                selectedImageIndex = page
+                                selectedImageIndex.value = page
                                 onImageClick?.invoke(page) ?: run {
-                                    showFullScreenViewer = true
+                                    showFullScreenViewer.value = true
                                 }
                             },
                         contentScale = ContentScale.Crop
@@ -126,12 +126,12 @@ fun ImageCarousel(
     }
 
     // Full Screen Image Viewer
-    if (showFullScreenViewer) {
+    if (showFullScreenViewer.value) {
         FullScreenImageViewer(
             images = images,
-            initialIndex = selectedImageIndex,
+            initialIndex = selectedImageIndex.value,
             petName = petName,
-            onDismiss = { showFullScreenViewer = false }
+            onDismiss = { showFullScreenViewer.value = false }
         )
     }
 }
