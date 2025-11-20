@@ -91,6 +91,9 @@ dependencies {
 
     // Core Android
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+
 
     // Navigation
     implementation(libs.androidx.navigation.compose)

@@ -14,7 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,6 +31,9 @@ import com.example.preferences.PreferencesManager
 import com.example.preferences.ThemeMode
 import com.example.ui.theme.PetBreedsTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,7 +43,13 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
+        var keepSplashScreen = true
+        splashScreen.setKeepOnScreenCondition { keepSplashScreen }
 
         setContent {
             val navController = rememberNavController()
@@ -45,6 +58,7 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             val themeMode by preferencesManager.themeModeFlow.collectAsState(initial = ThemeMode.SYSTEM)
+            var navigationReady by remember { mutableStateOf(false) }
 
             val darkTheme =
                 when (themeMode) {
@@ -53,21 +67,17 @@ class MainActivity : ComponentActivity() {
                     ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 }
 
-            // Handle navigation after splash based on first launch
-            LaunchedEffect(isFirstLaunch, currentPetType) {
-                try {
-                    val currentRoute = navController.currentDestination?.route
-                    if (currentRoute == Routes.Breeds.route) {
-                        // If it's first launch OR no pet type is set, show onboarding
-                        if (isFirstLaunch || currentPetType == null) {
-                            navController.navigate(Routes.Onboarding.route) {
-                                popUpTo(Routes.Breeds.route) { inclusive = true }
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Handle navigation errors gracefully
-                    e.printStackTrace()
+            LaunchedEffect(navController.currentBackStackEntryAsState().value) {
+                val route = navController.currentBackStackEntry?.destination?.route
+                if (route == Routes.Breeds.route || route == Routes.Favorites.route || route == Routes.Settings.route) {
+                    navigationReady = true
+                }
+            }
+
+            // Only dismiss splash when both are ready
+            LaunchedEffect(currentPetType, navigationReady) {
+                if (currentPetType != null && navigationReady) {
+                    keepSplashScreen = false
                 }
             }
 
