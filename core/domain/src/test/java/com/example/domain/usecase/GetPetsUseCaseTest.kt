@@ -1,6 +1,8 @@
 package com.example.domain.usecase
 
 import com.example.common.NetworkResult
+import com.example.domain.common.BaseUseCaseTest
+import com.example.domain.common.TestData
 
 import com.example.model.Pet
 import com.example.model.PetType
@@ -16,29 +18,18 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class GetPetsUseCaseTest {
+class GetPetsUseCaseTest : BaseUseCaseTest(){
 
     @Mock
     private lateinit var repository: PetRepository
 
     private lateinit var useCase: GetPetsUseCase
 
-    private val mockPets = listOf(
-        Pet(
-            id = "1",
-            name = "Persian",
-            origin = "Iran",
-            temperament = "Calm",
-            description = "Long-haired breed",
-            lifeSpan = "12 - 17",
-            imageUrl = "http://example.com/persian.jpg",
-            petType = PetType.CAT
-        )
-    )
+    private val mockPets = listOf(TestData.createMockPersianCat())
 
     @Before
-    fun setup() {
-        MockitoAnnotations.openMocks(this)
+    override fun setUp() {
+        super.setUp()
         useCase = GetPetsUseCase(repository)
     }
 

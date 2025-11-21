@@ -1,6 +1,7 @@
 package com.example.domain.usecase
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.domain.common.TestData
 import com.example.domain.repository.PetRepository
 import com.example.model.PetType
 import io.mockk.*
@@ -35,8 +36,8 @@ class GetPetImagesUseCaseTest {
     @Test
     fun `GIVEN repository returns images WHEN invoke is called THEN returns those images`() = runTest {
         // Given
-        val petId = "test-pet-id"
-        val expectedImages = listOf("image1.jpg", "image2.jpg", "image3.jpg")
+        val petId = TestData.TEST_PET_ID
+        val expectedImages = listOf(TestData.IMAGE_URL_1, TestData.IMAGE_URL_2, TestData.IMAGE_URL_3)
         coEvery { petRepository.getPetImages(petId, PetType.CAT) } returns expectedImages
 
         // When
@@ -52,7 +53,7 @@ class GetPetImagesUseCaseTest {
     @Test
     fun `GIVEN repository returns empty list WHEN invoke is called THEN returns empty list`() = runTest {
         // Given
-        val petId = "test-pet-id"
+        val petId = TestData.TEST_PET_ID
         coEvery { petRepository.getPetImages(petId, PetType.DOG) } returns emptyList()
 
         // When
@@ -68,8 +69,8 @@ class GetPetImagesUseCaseTest {
     @Test
     fun `GIVEN repository throws exception WHEN invoke is called THEN returns empty list`() = runTest {
         // Given
-        val petId = "test-pet-id"
-        val exception = Exception("Network error")
+        val petId = TestData.TEST_PET_ID
+        val exception = Exception(TestData.ERROR_NETWORK)
         coEvery { petRepository.getPetImages(petId, PetType.CAT) } throws exception
 
         // When
@@ -85,10 +86,10 @@ class GetPetImagesUseCaseTest {
     @Test
     fun `GIVEN different pet types WHEN invoke is called THEN calls repository with correct pet type`() = runTest {
         // Given
-        val catPetId = "cat-id"
-        val dogPetId = "dog-id"
-        val catImages = listOf("cat1.jpg", "cat2.jpg")
-        val dogImages = listOf("dog1.jpg", "dog2.jpg")
+        val catPetId = TestData.CAT_PET_ID
+        val dogPetId = TestData.DOG_PET_ID
+        val catImages = listOf(TestData.IMAGE_URL_CAT_1, TestData.IMAGE_URL_CAT_2)
+        val dogImages = listOf(TestData.IMAGE_URL_DOG_1, TestData.IMAGE_URL_DOG_2)
 
         coEvery { petRepository.getPetImages(catPetId, PetType.CAT) } returns catImages
         coEvery { petRepository.getPetImages(dogPetId, PetType.DOG) } returns dogImages

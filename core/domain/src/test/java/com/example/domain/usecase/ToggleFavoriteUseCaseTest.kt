@@ -1,5 +1,6 @@
 package com.example.domain.usecase
 
+import com.example.domain.common.TestData
 import com.example.domain.repository.PetRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -24,7 +25,7 @@ class ToggleFavoriteUseCaseTest {
     @Test
     fun `should delegate to repository`() = runTest {
         // Given
-        val petId = "test_pet_id"
+        val petId = TestData.TEST_PET_ID
 
         // When
         useCase(petId)
