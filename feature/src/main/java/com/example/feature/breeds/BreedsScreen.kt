@@ -16,8 +16,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.breeds.BreedsUiState
-import com.example.breeds.BreedsViewModel
 import com.example.model.PetType
 import com.example.ui.components.DrawerContent
 import com.example.ui.components.EmptyState
@@ -45,7 +43,7 @@ fun BreedsScreen(
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val currentPetType by viewModel.currentPetType.collectAsState()
     val listState = rememberLazyListState()
-    var showFilters by remember { mutableStateOf(false) }
+    val showFilters = remember { mutableStateOf(false) }
     val lifeSpanRange by viewModel.lifeSpanRange.collectAsState()
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -146,7 +144,7 @@ fun BreedsScreen(
                             placeholder = stringResource(string.search_pet_breeds_placeholder, currentPetType?.name?.lowercase() ?: "pet"),
                             modifier = Modifier.weight(1f).padding(end = 8.dp)
                         )
-                        IconButton(onClick = { showFilters = true }, modifier = Modifier.padding(start = 8.dp)) {
+                        IconButton(onClick = { showFilters.value = true }, modifier = Modifier.padding(start = 8.dp)) {
                             Icon(Icons.Default.FilterList, contentDescription = stringResource(string.filter_content_description))
                         }
                     }
@@ -215,11 +213,11 @@ fun BreedsScreen(
         }
     }
 
-    if (showFilters) {
+    if (showFilters.value) {
         FilterBottomSheet(
             currentRange = lifeSpanRange,
             onRangeChange = viewModel::onLifeSpanRangeChanged,
-            onDismiss = { showFilters = false }
+            onDismiss = { showFilters.value = false }
         )
     }
 }

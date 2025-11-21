@@ -207,7 +207,6 @@ fun OnboardingScreen(
                         TypeCard(
                             painter = painterResource(id = R.drawable.cat7),
                             label = stringResource(string.cat_person),
-                            petType = PetType.CAT,
                             isSelected = selectedPetType == PetType.CAT,
                             onClick = { selectedPetType = PetType.CAT }
                         )
@@ -219,7 +218,6 @@ fun OnboardingScreen(
                         TypeCard(
                             painter = painterResource(id = R.drawable.dog7),
                             label = stringResource(string.dog_person),
-                            petType = PetType.DOG,
                             isSelected = selectedPetType == PetType.DOG,
                             onClick = { selectedPetType = PetType.DOG }
                         )
@@ -235,7 +233,6 @@ fun OnboardingScreen(
 fun TypeCard(
     painter: Painter,
     label: String,
-    petType: PetType,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {

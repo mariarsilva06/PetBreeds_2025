@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.feature.breeds.BreedsScreen
-import com.example.details.DetailsScreen
+import com.example.feature.details.DetailsScreen
 import com.example.feature.favorites.FavoritesScreen
 import com.example.feature.onboarding.OnboardingScreen
 import com.example.feature.splash.SplashScreen

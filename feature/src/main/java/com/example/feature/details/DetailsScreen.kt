@@ -1,4 +1,4 @@
-package com.example.details
+package com.example.feature.details
 
 import android.content.Context
 import android.content.Intent
@@ -50,7 +50,6 @@ import com.example.ui.components.ImageCarousel
 import com.example.ui.components.LoadingIndicator
 import com.example.model.Pet
 import com.example.feature.R.string
-import com.example.feature.details.DetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
