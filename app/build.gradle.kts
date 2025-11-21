@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
 }
 
 
@@ -49,17 +50,12 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
-    // Test configuration
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -108,6 +104,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.compose.ui)
     androidTestImplementation(platform(libs.androidx.compose.bom))
+
 
     // Debug
     debugImplementation(libs.androidx.compose.ui)
