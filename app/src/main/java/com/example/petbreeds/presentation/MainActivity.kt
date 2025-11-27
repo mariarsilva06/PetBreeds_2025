@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
@@ -75,9 +74,10 @@ class MainActivity : ComponentActivity() {
             }
 
             // Only dismiss splash when both are ready
-            LaunchedEffect(currentPetType, navigationReady) {
-                if (currentPetType != null && navigationReady) {
-                    keepSplashScreen = false
+            LaunchedEffect(isFirstLaunch, navigationReady) {
+                when {
+                    isFirstLaunch -> keepSplashScreen = false
+                    navigationReady -> keepSplashScreen = false
                 }
             }
 
