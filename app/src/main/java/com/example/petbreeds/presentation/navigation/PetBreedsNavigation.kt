@@ -28,9 +28,19 @@ fun PetBreedsNavigation(
     val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = null)
     val petType by preferencesManager.petTypeFlow.collectAsState(initial = null)
 
+    if (isFirstLaunch == null) {
+        return
+    }
+
+    val startDestination = if (isFirstLaunch == true || petType == null) {
+        Routes.Onboarding.route
+    } else {
+        Routes.Breeds.route
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.Splash.route, // Always start with splash
+        startDestination = startDestination, // Always start with splash
         modifier = modifier
     ) {
 
