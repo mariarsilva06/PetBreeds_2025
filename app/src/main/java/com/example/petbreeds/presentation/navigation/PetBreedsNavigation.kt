@@ -3,6 +3,7 @@ package com.example.petbreeds.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -14,7 +15,6 @@ import com.example.feature.details.DetailsScreen
 import com.example.feature.favorites.FavoritesScreen
 import com.example.feature.onboarding.OnboardingScreen
 import com.example.feature.profile.ProfileScreen
-import com.example.feature.splash.SplashScreen
 import com.example.preferences.PreferencesManager
 
 @Composable
@@ -26,31 +26,21 @@ fun PetBreedsNavigation(
     val isFirstLaunch by preferencesManager.isFirstLaunchFlow.collectAsState(initial = null)
     val petType by preferencesManager.petTypeFlow.collectAsState(initial = null)
 
+    val startDestination = remember(isFirstLaunch, petType) {
+        if (isFirstLaunch == null) {
+            Routes.Onboarding.route
+        } else if (isFirstLaunch == true || petType == null) {
+            Routes.Onboarding.route
+        } else {
+            Routes.Breeds.route
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = Routes.Splash.route, // Always start with splash
+        startDestination = startDestination,
         modifier = modifier,
     ) {
-        composable(Routes.Splash.route) {
-            val isLoaded = isFirstLaunch != null
-
-            SplashScreen(
-                onSplashFinished = {
-                    if (isLoaded) {
-                        if (isFirstLaunch == true || petType == null) {
-                            navController.navigate(Routes.Onboarding.route) {
-                                popUpTo(Routes.Splash.route) { inclusive = true }
-                            }
-                        }
-                    } else {
-                        navController.navigate(Routes.Breeds.route) {
-                            popUpTo(Routes.Splash.route) { inclusive = true }
-                        }
-                    }
-                },
-            )
-        }
-
         composable(Routes.Onboarding.route) {
             OnboardingScreen(
                 onPetTypeSelected = {
