@@ -16,8 +16,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -42,11 +46,12 @@ fun FullScreenImageViewer(
     images: List<String>,
     initialIndex: Int = 0,
     petName: String = "Pet",
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var isDownloading by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val pagerState = rememberPagerState(
         initialPage = initialIndex.coerceIn(0, images.size - 1),
@@ -141,7 +146,15 @@ fun FullScreenImageViewer(
                                     imageUrl = images[pagerState.currentPage],
                                     fileName = "${petName}_${pagerState.currentPage + 1}",
                                     onStart = { isDownloading = true },
-                                    onComplete = { isDownloading = false }
+                                    onComplete = {
+                                        isDownloading = false
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                message = "Image saved to gallery",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -159,8 +172,8 @@ fun FullScreenImageViewer(
                         )
                     } else {
                         Icon(
-                            imageVector = Icons.Default.Download,
-                            contentDescription = "Download",
+                            imageVector = Icons.Default.SaveAlt,
+                            contentDescription = "Save to Gallery",
                             tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
@@ -177,15 +190,14 @@ fun FullScreenImageViewer(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
                             .padding(16.dp)
-                            .size(56.dp)
+                            .size(width = 40.dp, height = 40.dp)
                             .clip(CircleShape)
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Previous image",
                             tint = Color.White,
-                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -199,15 +211,14 @@ fun FullScreenImageViewer(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(16.dp)
-                            .size(56.dp)
+                            .size(width = 40.dp, height = 40.dp)
                             .clip(CircleShape)
                             .background(Color.Black.copy(alpha = 0.5f))
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = "Next image",
                             tint = Color.White,
-                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -242,6 +253,12 @@ fun FullScreenImageViewer(
                     }
                 }
             }
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 100.dp)
+            )
         }
     }
 }
